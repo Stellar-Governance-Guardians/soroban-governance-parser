@@ -1,0 +1,17 @@
+[package]
+name = "soroban-governance-core"
+description = "Sans-IO core for decoding Soroban governance ScVal payloads via contractspecv0, with governor-agnostic adapter trait. No network, no filesystem."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+stellar-xdr.workspace = true
+stellar-strkey = "0.0.13"
+thiserror.workspace = true
+
+[lints]
+workspace = true
