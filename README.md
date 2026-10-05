@@ -9,7 +9,12 @@ Part of the Stellar-Governance-Guardians suite:
 [indexer](https://github.com/Stellar-Governance-Guardians/governance-event-indexer) →
 [dashboard](https://github.com/Stellar-Governance-Guardians/delegate-portal-dashboard).
 
-## What it does (phase 1)
+Phase status: the merged work in this repository is **Phase 1a**. Parser
+completion — seed v2 from pinned upstream SHAs, Script3/OpenZeppelin adapters,
+`RiskContext`, vote-power/tally replicas, dry-run modeling, wasm-pack packaging,
+differential tests — is **Phase 1b** and is not yet complete.
+
+## What it does (phase 1a)
 - **ScVal → JSON**: total converter over the stellar-xdr 28 type set. Integers
   ≥ 64-bit become decimal strings (no precision loss). Non-representable
   constructs (e.g. non-string map keys) are errors, never coercions.
@@ -22,7 +27,7 @@ Part of the Stellar-Governance-Guardians suite:
   (`crates/core/src/risk.rs`). Every classification exposes the rule that
   matched. Unknown functions are `unverified`, never silently `low`.
 - **`GovernorAdapter` trait**: governor-specific decoding lands behind this
-  trait (adapters for Script3 + OpenZeppelin governors are phase 2; verified
+  trait (adapters for Script3 + OpenZeppelin governors are phase 1b; verified
   research with sources is already in `docs/adapters/`).
 
 ## Crates
@@ -67,7 +72,7 @@ All items below are machine-checked by `scripts/check-claims.sh` (see
 
 ## Honest limitations
 - **No concrete governor adapters yet.** The trait and verified research exist
-  (docs/adapters/); Script3 and OpenZeppelin adapters are phase 2. Until then,
+  (docs/adapters/); Script3 and OpenZeppelin adapters are phase 1b. Until then,
   governor attribution is always `unverified` — by design.
 - Event shapes in `docs/adapters/` were read from upstream source, not yet
   observed by us on live deployments (neither project publishes testnet IDs).
@@ -78,7 +83,7 @@ All items below are machine-checked by `scripts/check-claims.sh` (see
   backfill (Galexie/Hubble) is an indexer-phase concern.
 - `simulateTransaction` is NOT yet modeled. `ExecutionImpact` exists in the
   schema with `estimate: true` const, but no producer until the live response
-  shape is inspected (phase 2/3).
+  shape is inspected (phase 1b/2).
 - Vote-weight decay: UNVERIFIED on both governors; no claims made.
 - The fixture deployer key is a throwaway testnet key; its secret is not in
   this repo. The fixture contract holds no value and is not a governor.

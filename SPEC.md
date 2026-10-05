@@ -1,6 +1,6 @@
 # SPEC — soroban-governance-parser
 
-Version: v1 (phase 1). Status of every claim is tracked in `claims.json` and
+Version: v1 (phase 1a). Status of every claim is tracked in `claims.json` and
 machine-checked by `scripts/check-claims.sh` in CI.
 
 ## Purpose
@@ -38,7 +38,7 @@ consume `schemas/` and pin `schema-v1` via their `schema.lock` files.
 6. **Simulation outputs are estimates.** `ExecutionImpact.estimate` is `const true`
    in `schemas/schema-v1.json`; `simulated_at_ledger` is mandatory.
 
-## Phase 1 scope (this revision)
+## Phase 1a scope (delivered)
 - Workspace + three crates compiling clean under `clippy::pedantic` (-D warnings).
 - ScVal→JSON total converter with fail-closed edge cases (unit-tested, incl. a
   real testnet-captured XDR vector).
@@ -50,14 +50,14 @@ consume `schemas/` and pin `schema-v1` via their `schema.lock` files.
   real deployed contract, fail-closed demonstration on the non-WASM SAC contract.
 - CI: fmt, clippy pedantic, tests, wasm build, fixture-import check, claims check.
 
-## Out of scope for phase 1 (next phases)
-- Concrete `GovernorAdapter` impls for Script3 and OZ governors (phase 2;
+## Out of scope for phase 1a (delivered in later phases)
+- Concrete `GovernorAdapter` impls for Script3 and OZ governors (phase 1b;
   research already recorded with sources in `docs/adapters/`).
-- `simulateTransaction`-based `ExecutionImpact` producer (phase 2/3; response
+- `simulateTransaction`-based `ExecutionImpact` producer (phase 1b/2; response
   shape must be inspected live before modeling — rule: verify first).
 - Vote-weight decay, delegate metrics (indexer/dashboard phases).
 
-## Ground truths verified in phase 1 (live testnet, 2026-10-05)
+## Ground truths verified in phase 1a (live testnet, 2026-10-05)
 - SDF public testnet RPC `https://soroban-testnet.stellar.org`:
   `getHealth` reports `ledgerRetentionWindow: 120960` ledgers; the
   oldest/latest ledger pair drifts with every capture, the window does not.
