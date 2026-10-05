@@ -1,0 +1,51 @@
+{
+  "$comment": "Deployment registry. Every contract ID here was deployed by us on live testnet with the recorded tx hash, or captured from a public source listed in tests/fixtures/README.md. No mock IDs. Update via PR only.",
+  "schemaVersion": 1,
+  "networks": {
+    "testnet": {
+      "rpcUrl": "https://soroban-testnet.stellar.org",
+      "networkPassphrase": "Test SDF Network ; September 2015",
+      "ledgerRetentionWindow": 120960,
+      "retentionWindowVerifiedAt": "2026-10-05",
+      "retentionWindowEvidence": "tests/fixtures/phase1-proof.json"
+    }
+  },
+  "contracts": {
+    "testnet": {
+      "fixtureGovernor": {
+        "$comment": "Deployed by scripts/seed-testnet on 2026-10-05 during the phase 1 proof. All hashes/ledgers verified on live testnet (Horizon + Soroban RPC).",
+        "contractId": "CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE",
+        "wasmHash": null,
+        "deployTxHash": "a37b875db6c67674801f604c6a0dea1194cea6ab205bfa5252d55cecdb6d9bda",
+        "deployedAtLedger": 5035901,
+        "sourceCrate": "scripts/seed-testnet",
+        "purpose": "Real WASM-backed governance-shaped contract for parser proof. NOT a production governor.",
+        "wasmSha256": "a54dd248e58f0fa945c718ac3badfa03dbaa1642d2a08dc409caeaf3d3555b38",
+        "wasmBytes": 2951,
+        "wasmUploadTxHash": "5b6fc833ed2120cd1616bedfb5be5ba91d8d2b5224c9d2fd52b5cf62b145f03d",
+        "deployerAccount": "GAMARWFU4EN24QSZWDYMTKK4FIRA7WGPPXH57PPWPUNVRXWNEYEAUP3C",
+        "fundingTxHash": "cd82c803a21ad1146edbdfb05187665217ba81d1f79940f020ed2100cf0cb677",
+        "fixtureEvents": {
+          "propose": {
+            "txHash": "34dd7cef8df6234f381563fff88b27a1163557f344f39832ff0e9901711215e3",
+            "ledger": 5035906
+          },
+          "vote": {
+            "txHash": "ddef35404ed2fbef74c1e2324af631398aed9949ff2c7586d56d7cb17bfbea38",
+            "ledger": 5035908
+          }
+        },
+        "deployedAt": "2026-10-05T12:24:52Z"
+      }
+    }
+  },
+  "knownThirdParty": {
+    "$comment": "Third-party deployments discovered in research, with sources. We did not deploy these; treat as unverified until queried live.",
+    "mainnet": {
+      "script3YieldBloxGovernor": {
+        "contractId": "CANSYFVMIP7JVYEZQ463Y2I2VLEVNLDJJ4QNZTDBGLOOGKURPTW4A6FQ",
+        "source": "https://mainnet.governance.script3.io JS config (see docs/adapters/script3.md)"
+      }
+    }
+  }
+}
