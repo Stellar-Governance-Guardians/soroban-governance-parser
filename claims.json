@@ -52,10 +52,10 @@
     },
     {
       "id": "org-namespace-only",
-      "claim": "every github.com URL in tracked files points at the Stellar-Governance-Guardians org or an allow-listed upstream source citation (script3, OpenZeppelin — research provenance required by charter rule 3)",
+      "claim": "every github.com URL in tracked files (including api.github.com/repos API URLs) points at the Stellar-Governance-Guardians org or an allow-listed upstream source citation (script3, OpenZeppelin — research provenance required by charter rule 3)",
       "statedIn": ["README.md"],
       "online": false,
-      "check": { "cmd": "! grep -rEoh --exclude-dir=target 'github\\.com/[A-Za-z0-9_.-]+' --include='*.md' --include='*.json' --include='*.yml' --include='*.yaml' --include='*.toml' --include='*.graphql' . | grep -vE 'github.com/(Stellar-Governance-Guardians|script3|OpenZeppelin)' | grep -q ." }
+      "check": { "cmd": "! grep -rEoh --exclude-dir=target 'https?://(api\\.)?github\\.com/(repos/)?[A-Za-z0-9_.-]+' --include='*.md' --include='*.json' --include='*.yml' --include='*.yaml' --include='*.toml' --include='*.graphql' . | sed 's|https://api\\.github\\.com/repos/|https://github.com/|' | grep -vE '^https?://github\\.com/(Stellar-Governance-Guardians|script3|OpenZeppelin)$' | grep -q ." }
     },
     {
       "id": "no-personal-accounts",

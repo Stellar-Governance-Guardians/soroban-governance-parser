@@ -43,7 +43,7 @@ jobs:
       # upstream governor sources cited as research provenance (rule 3).
       - name: org namespace only
         run: |
-          bad=$(grep -rEoh 'github\.com/[A-Za-z0-9_.-]+' --include='*.md' --include='*.json' --include='*.yml' --include='*.yaml' --include='*.toml' --include='*.graphql' . | grep -vE 'github.com/(Stellar-Governance-Guardians|script3|OpenZeppelin)' || true)
+          bad=$(grep -rEoh 'https?://(api\.)?github\.com/(repos/)?[A-Za-z0-9_.-]+' --include='*.md' --include='*.json' --include='*.yml' --include='*.yaml' --include='*.toml' --include='*.graphql' . | sed 's|https://api\.github\.com/repos/|https://github.com/|' | grep -vE '^https?://github\.com/(Stellar-Governance-Guardians|script3|OpenZeppelin)$' || true)
           if [ -n "$bad" ]; then echo "FAIL: non-org GitHub URLs:"; echo "$bad"; exit 1; fi
       - uses: dtolnay/rust-toolchain@master
         with:

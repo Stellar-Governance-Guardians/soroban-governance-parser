@@ -265,9 +265,7 @@ mod tests {
 
     #[test]
     fn real_function_entry_roundtrips() {
-        use stellar_xdr::{
-            ScSpecFunctionInputV0, ScSpecFunctionV0, ScSymbol,
-        };
+        use stellar_xdr::{ScSpecFunctionInputV0, ScSpecFunctionV0, ScSymbol};
         let f = ScSpecFunctionV0 {
             doc: "".parse().expect("empty doc"),
             name: ScSymbol("propose".parse().expect("symbol")),
