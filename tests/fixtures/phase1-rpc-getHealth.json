@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":1,"result":{"status":"healthy","latestLedger":5035284,"latestLedgerCloseTime":"1791200007","oldestLedger":4914325,"oldestLedgerCloseTime":"1790595212","ledgerRetentionWindow":120960}}

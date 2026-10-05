@@ -1,0 +1,234 @@
+{
+  "phase": 1,
+  "generatedAtUtc": "2026-10-05T13:31:25.137645+00:00",
+  "rpc": "https://soroban-testnet.stellar.org",
+  "health": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+      "status": "healthy",
+      "latestLedger": 5035284,
+      "latestLedgerCloseTime": "1791200007",
+      "oldestLedger": 4914325,
+      "oldestLedgerCloseTime": "1790595212",
+      "ledgerRetentionWindow": 120960
+    }
+  },
+  "fixtureContract": {
+    "contractId": "CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE",
+    "deployedAtLedger": 5035901,
+    "eventsCaptured": [
+      {
+        "type": "contract",
+        "ledger": 5035906,
+        "ledgerClosedAt": "2026-10-05T12:25:17Z",
+        "contractId": "CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE",
+        "id": "0021629051575758848-0000000000",
+        "operationIndex": 0,
+        "transactionIndex": 7,
+        "txHash": "34dd7cef8df6234f381563fff88b27a1163557f344f39832ff0e9901711215e3",
+        "inSuccessfulContractCall": true,
+        "topic": [
+          "AAAADwAAABBwcm9wb3NhbF9jcmVhdGVk",
+          "AAAAAwAAAAE=",
+          "AAAAEgAAAAAAAAAAGAjYtOEbrkJZsPDJqVwqIg/Yz33P3732fRtY3s0mCAo="
+        ],
+        "value": "AAAAEAAAAAEAAAACAAAADgAAABFGdW5kIHBhcnNlciBhdWRpdAAAAAAAAAkAAAAAAAAAAAAAAAAAD0JA"
+      },
+      {
+        "type": "contract",
+        "ledger": 5035908,
+        "ledgerClosedAt": "2026-10-05T12:25:27Z",
+        "contractId": "CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE",
+        "id": "0021629060165730304-0000000000",
+        "operationIndex": 0,
+        "transactionIndex": 16,
+        "txHash": "ddef35404ed2fbef74c1e2324af631398aed9949ff2c7586d56d7cb17bfbea38",
+        "inSuccessfulContractCall": true,
+        "topic": [
+          "AAAADwAAAAl2b3RlX2Nhc3QAAAA=",
+          "AAAAAwAAAAE=",
+          "AAAAEgAAAAAAAAAAGAjYtOEbrkJZsPDJqVwqIg/Yz33P3732fRtY3s0mCAo="
+        ],
+        "value": "AAAAEAAAAAEAAAACAAAAAwAAAAEAAAAJAAAAAAAAAAAAAAAAAA9CQA=="
+      }
+    ],
+    "eventsDecoded": [
+      {
+        "ledger": 5035906,
+        "txHash": "34dd7cef8df6234f381563fff88b27a1163557f344f39832ff0e9901711215e3",
+        "topics": [
+          "proposal_created",
+          1,
+          {
+            "_type": "address:account",
+            "value": "GAMARWFU4EN24QSZWDYMTKK4FIRA7WGPPXH57PPWPUNVRXWNEYEAUP3C"
+          }
+        ],
+        "value": [
+          "Fund parser audit",
+          {
+            "_type": "u128",
+            "value": "1000000"
+          }
+        ]
+      },
+      {
+        "ledger": 5035908,
+        "txHash": "ddef35404ed2fbef74c1e2324af631398aed9949ff2c7586d56d7cb17bfbea38",
+        "topics": [
+          "vote_cast",
+          1,
+          {
+            "_type": "address:account",
+            "value": "GAMARWFU4EN24QSZWDYMTKK4FIRA7WGPPXH57PPWPUNVRXWNEYEAUP3C"
+          }
+        ],
+        "value": [
+          1,
+          {
+            "_type": "u128",
+            "value": "1000000"
+          }
+        ]
+      }
+    ],
+    "liveSpec": {
+      "source": {
+        "atLedger": 5036690,
+        "contractId": "CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE",
+        "ledgerRetentionWindow": 120960,
+        "oldestLedger": 4915731,
+        "rpc": "https://soroban-testnet.stellar.org",
+        "wasmBytes": 2951
+      },
+      "spec": {
+        "enums": [],
+        "errors": [],
+        "events": [],
+        "functions": [
+          {
+            "doc": "Cast a vote. Emits `vote_cast` (Script3-shaped topics).\nsupport: 0=Against, 1=For, 2=Abstain (same encoding as Script3 governor).",
+            "inputs": [
+              {
+                "doc": "",
+                "name": "voter",
+                "type": {
+                  "name": "address"
+                }
+              },
+              {
+                "doc": "",
+                "name": "proposal_id",
+                "type": {
+                  "name": "u32"
+                }
+              },
+              {
+                "doc": "",
+                "name": "support",
+                "type": {
+                  "name": "u32"
+                }
+              }
+            ],
+            "name": "vote",
+            "outputs": []
+          },
+          {
+            "doc": "Create a proposal. Emits `proposal_created` (Script3-shaped topics).",
+            "inputs": [
+              {
+                "doc": "",
+                "name": "creator",
+                "type": {
+                  "name": "address"
+                }
+              },
+              {
+                "doc": "",
+                "name": "title",
+                "type": {
+                  "name": "string"
+                }
+              },
+              {
+                "doc": "",
+                "name": "threshold",
+                "type": {
+                  "name": "u128"
+                }
+              }
+            ],
+            "name": "propose",
+            "outputs": [
+              {
+                "name": "u32"
+              }
+            ]
+          },
+          {
+            "doc": "Read a stored proposal.",
+            "inputs": [
+              {
+                "doc": "",
+                "name": "proposal_id",
+                "type": {
+                  "name": "u32"
+                }
+              }
+            ],
+            "name": "get_proposal",
+            "outputs": [
+              {
+                "name": "option<ProposalRecord>"
+              }
+            ]
+          }
+        ],
+        "spec_version": "contractspecv0",
+        "structs": [
+          {
+            "fields": [
+              {
+                "doc": "",
+                "name": "creator",
+                "type": {
+                  "name": "address"
+                }
+              },
+              {
+                "doc": "",
+                "name": "threshold",
+                "type": {
+                  "name": "u128"
+                }
+              },
+              {
+                "doc": "",
+                "name": "title",
+                "type": {
+                  "name": "string"
+                }
+              }
+            ],
+            "lib": "",
+            "name": "ProposalRecord"
+          }
+        ],
+        "unions": []
+      }
+    }
+  },
+  "negativeProof": {
+    "contractId": "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
+    "expectedFailure": true,
+    "exitCode": 1,
+    "error": "Error: \"unexpected RPC response shape: contract is not WASM-backed (executable: stellar_asset); no contractspecv0 available\""
+  },
+  "toolchain": {
+    "unitTestsPassed": 23,
+    "clippy": "clean",
+    "parserWasmSha256": "614c3e4e31b9f8e153535ef6c5f7a188922c80039e2af4504bbe1b247160f459"
+  }
+}

@@ -1,0 +1,54 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust:
+    name: fmt / clippy-pedantic / test / wasm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Toolchain pinned by rust-toolchain.toml (1.96.0)
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.96.0"
+          components: rustfmt, clippy
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all --check
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+      - run: cargo test --workspace
+      - run: cargo build -p soroban-governance-wasm --target wasm32-unknown-unknown --release
+      - run: test -s target/wasm32-unknown-unknown/release/soroban_governance_wasm.wasm
+
+  hygiene:
+    name: charter rules (fixtures, namespace, claims)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Rule 1: production crates never reference fixtures
+      - name: no fixture imports in production code
+        run: |
+          if grep -rn 'tests/fixtures\|fixtures/' crates/*/src/ --include='*.rs'; then
+            echo "FAIL: production code references fixtures"; exit 1
+          fi
+      # Rule 7: org namespace only; no personal-account URLs. Allow-list:
+      # upstream governor sources cited as research provenance (rule 3).
+      - name: org namespace only
+        run: |
+          bad=$(grep -rEoh 'https?://(api\.)?github\.com/(repos/)?[A-Za-z0-9_.-]+' --include='*.md' --include='*.json' --include='*.yml' --include='*.yaml' --include='*.toml' --include='*.graphql' . | sed 's|https://api\.github\.com/repos/|https://github.com/|' | grep -vE '^https?://github\.com/(Stellar-Governance-Guardians|script3|OpenZeppelin)$' || true)
+          if [ -n "$bad" ]; then echo "FAIL: non-org GitHub URLs:"; echo "$bad"; exit 1; fi
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.96.0"
+      - uses: Swatinem/rust-cache@v2
+      # Rule 8: claims ledger (online claims run in CI; they hit public testnet RPC)
+      - name: check-claims
+        run: bash scripts/check-claims.sh
