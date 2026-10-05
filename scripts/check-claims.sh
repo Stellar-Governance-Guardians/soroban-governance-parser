@@ -13,7 +13,9 @@ claims = json.load(open("claims.json"))["claims"]
 print("set -u")
 print("FAILED=0; PASSED=0; SKIPPED=0")
 for c in claims:
-    cmd = c["check"]["cmd"].replace('"', '\\"')
+    # Escape for embedding in the generated double-quoted `bash -c "..."`:
+    # `"` must not close the string, `$` must expand in the inner shell only.
+    cmd = c["check"]["cmd"].replace('"', '\\"').replace("$", "\\$")
     if c.get("online") and offline:
         print(f'echo "SKIP  {c["id"]} (online claim, OFFLINE=1)"; SKIPPED=$((SKIPPED+1))')
     else:
