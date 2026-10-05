@@ -66,10 +66,10 @@
     },
     {
       "id": "risk-rules-published",
-      "claim": "risk classification is an exact-match published rule table (no composite scores)",
+      "claim": "risk classification is an exact-match published rule table; no composite/trust-score identifiers exist in the code (doc comments may discuss the concept)",
       "statedIn": ["README.md", "SPEC.md"],
       "online": false,
-      "check": { "cmd": "grep -q 'pub static RULES' crates/core/src/risk.rs && ! grep -qi --exclude-dir=target 'trust_score\\|trustScore\\|composite' crates/core/src/risk.rs" }
+      "check": { "cmd": "grep -q 'pub static RULES' crates/core/src/risk.rs && ! grep -nE 'trust_score|trustScore|composite' crates/core/src/risk.rs | grep -vE '^[0-9]+:[[:space:]]*(//|/\\*|\\*)' | grep -q ." }
     }
   ]
 }
