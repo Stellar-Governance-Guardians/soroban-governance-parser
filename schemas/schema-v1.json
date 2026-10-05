@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Stellar-Governance-Guardians/soroban-governance-parser/schemas/schema-v1.json",
+  "title": "Soroban Governance Parser — normalized output schema v1",
+  "description": "Single source of truth shared by soroban-governance-parser, governance-event-indexer and delegate-portal-dashboard. Bumping this version requires a schema.lock update in every consumer repo.",
+  "type": "object",
+  "$defs": {
+    "decodingStatus": {
+      "enum": ["verified", "unverified"],
+      "description": "verified = names checked against contractspecv0; unverified = raw ScVal passthrough. Fail-closed: never default to verified."
+    },
+    "riskTier": {
+      "enum": ["critical", "high", "medium", "low", "unverified"],
+      "description": "Output of the published rule table in crates/core/src/risk.rs. Data, not a verdict."
+    },
+    "riskClassification": {
+      "type": "object",
+      "required": ["tier", "matched_rule", "verified"],
+      "properties": {
+        "tier": { "$ref": "#/$defs/riskTier" },
+        "matched_rule": {
+          "type": "string",
+          "description": "The exact published rule (or the exact reason for unverified). Always present so classifications are auditable."
+        },
+        "verified": {
+          "type": "boolean",
+          "description": "true only when the function name came from a verified contract spec."
+        }
+      }
+    },
+    "decodedCall": {
+      "type": "object",
+      "required": ["contract_id", "function_name", "arguments", "decoding", "risk"],
+      "properties": {
+        "contract_id": { "type": "string", "pattern": "^C[A-Z2-7]{55}$" },
+        "function_name": { "type": "string" },
+        "arguments": {
+          "description": "Named object when decoding=verified; positional array when decoding=unverified."
+        },
+        "decoding": { "$ref": "#/$defs/decodingStatus" },
+        "risk": { "$ref": "#/$defs/riskClassification" }
+      }
+    },
+    "decodedProposal": {
+      "type": "object",
+      "required": ["governor", "proposal_id", "calls", "decoding"],
+      "properties": {
+        "governor": {
+          "type": "string",
+          "description": "Adapter id (e.g. script3-soroban-governor) or the literal string 'unverified'. Never guessed."
+        },
+        "proposal_id": { "type": "string" },
+        "proposer": { "type": ["string", "null"] },
+        "calls": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/decodedCall" }
+        },
+        "decoding": { "$ref": "#/$defs/decodingStatus" }
+      }
+    },
+    "normalizedEvent": {
+      "type": "object",
+      "required": ["governor", "topics", "ledger", "tx_hash", "contract_id", "payload", "decoding"],
+      "properties": {
+        "governor": { "type": "string" },
+        "topics": { "type": "array", "items": { "type": "string" } },
+        "ledger": { "type": "integer", "minimum": 1 },
+        "tx_hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "contract_id": { "type": "string", "pattern": "^C[A-Z2-7]{55}$" },
+        "payload": true,
+        "decoding": { "$ref": "#/$defs/decodingStatus" }
+      }
+    },
+    "executionImpact": {
+      "type": "object",
+      "required": ["estimate", "simulated_at_ledger", "decode_status"],
+      "description": "Dry-run output. estimate is ALWAYS true in v1 (charter rule 5): simulation runs against the current ledger, not the future execution ledger.",
+      "properties": {
+        "estimate": { "const": true },
+        "simulated_at_ledger": { "type": "integer", "minimum": 1 },
+        "cpu_instructions": { "type": ["string", "null"] },
+        "memory_bytes": { "type": ["string", "null"] },
+        "min_resource_fee_stroops": { "type": ["string", "null"] },
+        "state_changes": {
+          "description": "null when the RPC did not return state changes. Absence is meaningful; never defaulted to empty-success."
+        },
+        "decode_status": { "$ref": "#/$defs/decodingStatus" }
+      }
+    }
+  }
+}
