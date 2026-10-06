@@ -49,6 +49,7 @@ jobs:
         with:
           toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
-      # Rule 8: claims ledger (online claims run in CI; they hit public testnet RPC)
-      - name: check-claims
-        run: bash scripts/check-claims.sh
+      # Rule 8: claims ledger. PR gate runs OFFLINE claims only (process rule 2);
+      # testnet claims live in the live tier (live-checks.yml, nightly + manual).
+      - name: check-claims (offline)
+        run: OFFLINE=1 bash scripts/check-claims.sh
