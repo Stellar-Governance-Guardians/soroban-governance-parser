@@ -104,7 +104,7 @@ deployments.json deployment registry (real tx hashes and ledgers only)
 ## Development
 ```bash
 cargo fmt --all && cargo clippy --workspace --all-targets -- -D warnings && cargo test --workspace
-scripts/check-claims.sh     # OFFLINE=1 to skip network claims
+scripts/check-claims.sh     # all claims; OFFLINE=1 (PR gate) or ONLINE_ONLY=1 (live tier)
 scripts/check-proof.py      # verify the recorded proof supports the evidence table
 scripts/prove-phase1.sh     # live testnet proof (needs network)
 ```

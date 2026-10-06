@@ -1,0 +1,39 @@
+name: live-checks
+
+# Live tier (process rule 2): testnet claims and fixture checks. NOT part of
+# the PR gate — deliberately allowed to fail without blocking merges. On
+# failure it opens/updates a single tracking issue with the re-seed command.
+
+on:
+  schedule:
+    - cron: '23 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  live:
+    name: live tier (testnet claims)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: run online claims
+        id: claims
+        run: ONLINE_ONLY=1 bash scripts/check-claims.sh
+      - name: report failure as issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          body="Live-tier checks failed at $(date -u +%FT%TZ) in run ${GITHUB_RUN_ID} (${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}).
+
+          Usual cause: testnet reset, RPC change, or contract TTL expiry.
+          Re-seed: bash scripts/prove-phase1.sh (re-deploys the fixture governor and re-captures proofs), then re-run this workflow via the Actions tab."
+          num=$(gh issue list --state open --search "live-tier checks failed in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$num" ]; then
+            gh issue comment "$num" --body "$body"
+          else
+            gh issue create --title "live-tier checks failed" --body "$body" --label bug
+          fi

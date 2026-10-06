@@ -38,6 +38,16 @@ consume `schemas/` and pin `schema-v1` via their `schema.lock` files.
 6. **Simulation outputs are estimates.** `ExecutionImpact.estimate` is `const true`
    in `schemas/schema-v1.json`; `simulated_at_ledger` is mandatory.
 
+## Claims tiers (process rule 2)
+Claims in `claims.json` run in two tiers:
+- **PR gate (required, deterministic, offline):** CI runs
+  `OFFLINE=1 bash scripts/check-claims.sh` on every PR; testnet claims are
+  skipped and reported as SKIP, never PASS.
+- **Live tier (not required):** `.github/workflows/live-checks.yml` runs
+  `ONLINE_ONLY=1 bash scripts/check-claims.sh` nightly and on manual dispatch;
+  on failure it opens or updates a single tracking issue with the re-seed
+  command. It never blocks merges.
+
 ## Phase 1a scope (delivered)
 - Workspace + three crates compiling clean under `clippy::pedantic` (-D warnings).
 - ScVal→JSON total converter with fail-closed edge cases (unit-tested, incl. a

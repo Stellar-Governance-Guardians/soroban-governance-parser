@@ -1,5 +1,5 @@
 {
-  "$comment": "Claims ledger (charter rule 8). Every claim made in README.md/SPEC.md that is machine-checkable appears here with the exact command that verifies it. check-claims.sh runs each `check.cmd` with bash; exit 0 = claim holds. `online: true` claims hit live testnet and are skipped when OFFLINE=1.",
+  "$comment": "Claims ledger (charter rule 8). Every claim made in README.md/SPEC.md that is machine-checkable appears here with the exact command that verifies it. check-claims.sh runs each `check.cmd` with bash; exit 0 = claim holds. Two tiers (process rule 2): PR gate runs OFFLINE=1 (deterministic only); the live tier (live-checks.yml, nightly + manual dispatch) runs ONLINE_ONLY=1 and reports failures to a tracking issue instead of blocking merges. `online: true` claims hit live testnet and are skipped in the PR gate.",
   "claims": [
     {
       "id": "stellar-xdr-version",
@@ -35,6 +35,13 @@
       "statedIn": ["README.md", "SPEC.md", "deployments.json"],
       "online": true,
       "check": { "cmd": "curl -sS --max-time 60 -X POST https://soroban-testnet.stellar.org -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getHealth\",\"params\":{}}' | grep -q '\"ledgerRetentionWindow\":120960'" }
+    },
+    {
+      "id": "fixture-events-queryable",
+      "claim": "the phase 1a fixture governor's events are still queryable on testnet (contract alive and its events within retention)",
+      "statedIn": ["README.md"],
+      "online": true,
+      "check": { "cmd": "curl -sS --max-time 60 -X POST https://soroban-testnet.stellar.org -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getEvents\",\"params\":{\"startLedger\":5035900,\"filters\":[{\"type\":\"contract\",\"contractIds\":[\"CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE\"]}],\"pagination\":{\"limit\":5}}}' | jq -e '.result.events | length > 0'" }
     },
     {
       "id": "phase1-proof-recorded",
