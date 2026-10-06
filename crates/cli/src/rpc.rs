@@ -43,6 +43,13 @@ struct GetHealthResult {
     pub ledger_retention_window: u32,
 }
 
+/// Protocol 29 TTL reads for one contract: instance and code entries.
+pub struct ContractTtl {
+    pub latest_ledger: u32,
+    pub instance_live_until: u32,
+    pub code_live_until: u32,
+}
+
 impl RpcClient {
     pub fn new(url: &str) -> Self {
         Self {
@@ -90,13 +97,57 @@ impl RpcClient {
     /// Two ledger-entry hops: ContractData(ledger_key_contract_instance) ->
     /// executable wasm hash -> ContractCode(hash).
     pub async fn fetch_contract_wasm(&self, contract_id: &str) -> Result<Vec<u8>, RpcError> {
-        let hash = contract_strkey_to_hash(contract_id)
-            .map_err(|e| RpcError::Shape(format!("bad contract id: {e}")))?;
-        let key = LedgerKey::ContractData(LedgerKeyContractData {
-            contract: ScAddress::Contract(stellar_xdr::ContractId(hash)),
-            key: ScVal::LedgerKeyContractInstance,
-            durability: ContractDataDurability::Persistent,
-        });
+        let wasm_hash = self.instance_wasm_hash(contract_id).await?;
+        let code_key = LedgerKey::ContractCode(LedgerKeyContractCode { hash: wasm_hash });
+        let code_xdr = self.get_ledger_entry(&code_key).await?;
+        let code = stellar_xdr::LedgerEntryData::from_xdr_base64(&code_xdr, Limits::none())
+            .map_err(|e| RpcError::Shape(format!("code XDR: {e}")))?;
+        match code {
+            stellar_xdr::LedgerEntryData::ContractCode(c) => Ok(c.code.into()),
+            _ => Err(RpcError::Shape("expected ContractCode entry".into())),
+        }
+    }
+
+    /// Protocol 29 TTL reads for a contract: instance and code entries.
+    /// Fails closed: a missing TtlEntry is an error, not a pass.
+    pub async fn contract_ttl(
+        &self,
+        contract_id: &str,
+        latest_ledger: u32,
+    ) -> Result<ContractTtl, RpcError> {
+        let instance_key = contract_instance_key(contract_id)?;
+        let instance_live_until = self.ledger_entry_ttl(&instance_key).await?;
+        let wasm_hash = self.instance_wasm_hash(contract_id).await?;
+        let code_key = LedgerKey::ContractCode(LedgerKeyContractCode { hash: wasm_hash });
+        let code_live_until = self.ledger_entry_ttl(&code_key).await?;
+        Ok(ContractTtl {
+            latest_ledger,
+            instance_live_until,
+            code_live_until,
+        })
+    }
+
+    /// Read the live_until_ledger of a ledger entry (protocol 29).
+    /// soroban-rpc rejects direct TtlEntry queries ("ledger ttl entries cannot
+    /// be queried directly"); instead each entry response carries a
+    /// `liveUntilLedgerSeq` metadata field (verified: equals the value
+    /// `stellar contract read` reports). Fails closed when the field is absent.
+    async fn ledger_entry_ttl(&self, key: &LedgerKey) -> Result<u32, RpcError> {
+        let entry = self.get_ledger_entry_json(key).await?;
+        entry
+            .get("liveUntilLedgerSeq")
+            .and_then(Value::as_u64)
+            .map(|v| u32::try_from(v).unwrap_or(u32::MAX))
+            .ok_or_else(|| {
+                RpcError::Shape(
+                    "entry response has no liveUntilLedgerSeq field (not TTL-tracked?)".into(),
+                )
+            })
+    }
+
+    /// ContractData(instance) -> executable wasm hash.
+    async fn instance_wasm_hash(&self, contract_id: &str) -> Result<Hash, RpcError> {
+        let key = contract_instance_key(contract_id)?;
         let entry_xdr = self.get_ledger_entry(&key).await?;
         let entry = stellar_xdr::LedgerEntryData::from_xdr_base64(&entry_xdr, Limits::none())
             .map_err(|e| RpcError::Shape(format!("entry XDR: {e}")))?;
@@ -118,26 +169,26 @@ impl RpcClient {
                 )))
             }
         };
-        let wasm_hash = match instance.executable {
-            stellar_xdr::ContractExecutable::Wasm(h) => h,
-            other => {
-                return Err(RpcError::Shape(format!(
-                    "contract is not WASM-backed (executable: {}); no contractspecv0 available",
-                    executable_discriminant(&other)
-                )))
-            }
-        };
-        let code_key = LedgerKey::ContractCode(LedgerKeyContractCode { hash: wasm_hash });
-        let code_xdr = self.get_ledger_entry(&code_key).await?;
-        let code = stellar_xdr::LedgerEntryData::from_xdr_base64(&code_xdr, Limits::none())
-            .map_err(|e| RpcError::Shape(format!("code XDR: {e}")))?;
-        match code {
-            stellar_xdr::LedgerEntryData::ContractCode(c) => Ok(c.code.into()),
-            _ => Err(RpcError::Shape("expected ContractCode entry".into())),
+        match instance.executable {
+            stellar_xdr::ContractExecutable::Wasm(h) => Ok(h),
+            other => Err(RpcError::Shape(format!(
+                "contract is not WASM-backed (executable: {}); no contractspecv0 available",
+                executable_discriminant(&other)
+            ))),
         }
     }
 
     async fn get_ledger_entry(&self, key: &LedgerKey) -> Result<String, RpcError> {
+        let entry = self.get_ledger_entry_json(key).await?;
+        entry
+            .get("xdr")
+            .and_then(Value::as_str)
+            .map(str::to_owned)
+            .ok_or_else(|| RpcError::Shape("entry missing xdr field".into()))
+    }
+
+    /// First entry object (full JSON, incl. metadata like liveUntilLedger).
+    async fn get_ledger_entry_json(&self, key: &LedgerKey) -> Result<Value, RpcError> {
         let key_b64 = key
             .to_xdr_base64(Limits::none())
             .map_err(|e| RpcError::Shape(format!("key XDR: {e}")))?;
@@ -148,20 +199,26 @@ impl RpcClient {
             .get("entries")
             .and_then(Value::as_array)
             .ok_or_else(|| RpcError::Shape("missing entries array".into()))?;
-        let first = entries
+        entries
             .first()
-            .ok_or_else(|| RpcError::Shape("no entry returned (missing from ledger?)".into()))?;
-        first
-            .get("xdr")
-            .and_then(Value::as_str)
-            .map(str::to_owned)
-            .ok_or_else(|| RpcError::Shape("entry missing xdr field".into()))
+            .cloned()
+            .ok_or_else(|| RpcError::Shape("no entry returned (missing from ledger?)".into()))
     }
 }
 
 fn contract_strkey_to_hash(s: &str) -> Result<Hash, String> {
     let decoded = stellar_strkey::Contract::from_string(s).map_err(|e| e.to_string())?;
     Ok(Hash(decoded.0))
+}
+
+fn contract_instance_key(contract_id: &str) -> Result<LedgerKey, RpcError> {
+    let hash = contract_strkey_to_hash(contract_id)
+        .map_err(|e| RpcError::Shape(format!("bad contract id: {e}")))?;
+    Ok(LedgerKey::ContractData(LedgerKeyContractData {
+        contract: ScAddress::Contract(stellar_xdr::ContractId(hash)),
+        key: ScVal::LedgerKeyContractInstance,
+        durability: ContractDataDurability::Persistent,
+    }))
 }
 
 fn discriminant(d: &stellar_xdr::LedgerEntryData) -> &'static str {

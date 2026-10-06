@@ -35,7 +35,29 @@
             "ledger": 5035908
           }
         },
-        "deployedAt": "2026-10-05T12:24:52Z"
+        "deployedAt": "2026-10-05T12:24:52Z",
+        "ttl": {
+          "$comment": "Protocol 29 TTL entries. liveUntilLedger read via `sgp ttl` (getLedgerEntries liveUntilLedgerSeq metadata; soroban-rpc rejects direct TtlEntry queries). Extended with `stellar contract extend` (CLI 28.0.0). extendTo = 3110399 = testnet maxEntryTTL (3110400) - 1: stellar-core rejects extendTo == maxEntryTTL as ExtendFootprintTtl(Malformed) (off-by-one in the CLI's client-side check).",
+          "instance": {
+            "liveUntilLedgerBefore": 5156860,
+            "extendedAtLedger": 5049365,
+            "extendedAt": "2026-10-06T07:06:52Z",
+            "extendedByLedgers": 3110399,
+            "liveUntilLedgerAfter": 8159764,
+            "txHash": "71d9be518bf127e68ccd14613a6558e1512ae4a5318b6e3170b103c42588fb2a",
+            "sourceAccount": "GAMARWFU4EN24QSZWDYMTKK4FIRA7WGPPXH57PPWPUNVRXWNEYEAUP3C"
+          },
+          "code": {
+            "liveUntilLedgerBefore": 5156858,
+            "extendedAtLedger": 5049368,
+            "extendedAt": "2026-10-06T07:07:07Z",
+            "extendedByLedgers": 3110399,
+            "liveUntilLedgerAfter": 8159767,
+            "txHash": "1733878b0f9e24db134bc1f09f542fb6c474a39bd8c33b9202e9459499854501",
+            "sourceAccount": "GAMARWFU4EN24QSZWDYMTKK4FIRA7WGPPXH57PPWPUNVRXWNEYEAUP3C",
+            "wasmFile": "scripts/seed-testnet/target/wasm32v1-none/release/sgg_fixture_governor.wasm"
+          }
+        }
       }
     }
   },

@@ -22,6 +22,18 @@ jobs:
       - name: run online claims
         id: claims
         run: ONLINE_ONLY=1 bash scripts/check-claims.sh
+      # Process rule 5: fixture contracts must stay alive. Fail here when the
+      # instance/code TTL drops below ~3 days of ledgers, well before expiry,
+      # so the re-seed/extend command in the issue below still works.
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.96.0"
+      - uses: Swatinem/rust-cache@v2
+      - name: fixture contract TTL check
+        run: |
+          cargo build -p soroban-governance-cli
+          CONTRACT=$(jq -r '.contracts.testnet.fixtureGovernor.contractId' deployments.json)
+          ./target/debug/sgp ttl --contract "$CONTRACT" --min-remaining 50000
       - name: report failure as issue
         if: failure()
         env:
@@ -30,7 +42,8 @@ jobs:
           body="Live-tier checks failed at $(date -u +%FT%TZ) in run ${GITHUB_RUN_ID} (${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}).
 
           Usual cause: testnet reset, RPC change, or contract TTL expiry.
-          Re-seed: bash scripts/prove-phase1.sh (re-deploys the fixture governor and re-captures proofs), then re-run this workflow via the Actions tab."
+          Re-seed: bash scripts/prove-phase1.sh (re-deploys the fixture governor and re-captures proofs), then re-run this workflow via the Actions tab.
+          TTL-only fix: bash scripts/ttl/extend-fixture-ttl.sh (idempotent, extends instance + code)."
           num=$(gh issue list --state open --search "live-tier checks failed in:title" --json number --jq '.[0].number // empty')
           if [ -n "$num" ]; then
             gh issue comment "$num" --body "$body"
