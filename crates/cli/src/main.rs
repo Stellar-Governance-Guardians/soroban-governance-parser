@@ -5,6 +5,7 @@
 //! - spec-from-wasm: contract WASM file -> parsed contractspecv0 JSON (offline)
 //! - fetch-spec: contract id -> live RPC fetch -> parsed contractspecv0 JSON
 //! - health: RPC getHealth summary (retention window verification)
+//! - ttl: read contract instance/code TtlEntries (protocol 29), optional min-remaining gate
 
 mod rpc;
 
@@ -47,6 +48,18 @@ enum Command {
     Health {
         #[arg(long, default_value = rpc::DEFAULT_TESTNET_RPC)]
         rpc: String,
+    },
+    /// Read a contract's instance/code TTL entries (protocol 29) and check
+    /// remaining ledgers. Fails closed: missing TTL entries are errors.
+    Ttl {
+        /// contract id (strkey C...)
+        #[arg(long)]
+        contract: String,
+        #[arg(long, default_value = rpc::DEFAULT_TESTNET_RPC)]
+        rpc: String,
+        /// exit 1 if remaining ledgers fall below this threshold
+        #[arg(long)]
+        min_remaining: Option<u32>,
     },
 }
 
@@ -119,6 +132,56 @@ async fn main() -> Result<(), String> {
                 "{}",
                 serde_json::to_string_pretty(&out).map_err(|e| e.to_string())?
             );
+        }
+        Command::Ttl {
+            contract,
+            rpc,
+            min_remaining,
+        } => {
+            cmd_ttl(contract, rpc, min_remaining).await?;
+        }
+    }
+    Ok(())
+}
+
+async fn cmd_ttl(contract: String, rpc: String, min_remaining: Option<u32>) -> Result<(), String> {
+    let client = rpc::RpcClient::new(&rpc);
+    let (latest, _, _) = client.health().await.map_err(|e| e.to_string())?;
+    let ttl = client
+        .contract_ttl(&contract, latest)
+        .await
+        .map_err(|e| e.to_string())?;
+    let out = serde_json::json!({
+        "contractId": contract,
+        "rpc": rpc,
+        "latestLedger": ttl.latest_ledger,
+        "instance": {
+            "liveUntilLedger": ttl.instance_live_until,
+            "remainingLedgers": ttl.instance_live_until.saturating_sub(ttl.latest_ledger),
+        },
+        "code": {
+            "liveUntilLedger": ttl.code_live_until,
+            "remainingLedgers": ttl.code_live_until.saturating_sub(ttl.latest_ledger),
+        },
+    });
+    println!(
+        "{}",
+        serde_json::to_string_pretty(&out).map_err(|e| e.to_string())?
+    );
+    if let Some(min) = min_remaining {
+        let lows: Vec<&str> = [
+            (ttl.instance_live_until, "instance"),
+            (ttl.code_live_until, "code"),
+        ]
+        .iter()
+        .filter(|(until, _)| until.saturating_sub(ttl.latest_ledger) < min)
+        .map(|(_, name)| *name)
+        .collect();
+        if !lows.is_empty() {
+            return Err(format!(
+                "TTL below minimum remaining {min} ledgers: {}",
+                lows.join(", ")
+            ));
         }
     }
     Ok(())

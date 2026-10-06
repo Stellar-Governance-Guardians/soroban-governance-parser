@@ -77,6 +77,13 @@
       "statedIn": ["README.md", "SPEC.md"],
       "online": false,
       "check": { "cmd": "grep -q 'pub static RULES' crates/core/src/risk.rs && ! grep -nE 'trust_score|trustScore|composite' crates/core/src/risk.rs | grep -vE '^[0-9]+:[[:space:]]*(//|/\\*|\\*)' | grep -q ." }
+    },
+    {
+      "id": "ttl-command-present",
+      "claim": "the CLI has a fail-closed ttl command reading protocol 29 instance/code TTL entries, with a min-remaining gate",
+      "statedIn": ["README.md"],
+      "online": false,
+      "check": { "cmd": "cargo build -p soroban-governance-cli --quiet && ./target/debug/sgp ttl --help | grep -q 'min-remaining'" }
     }
   ]
 }

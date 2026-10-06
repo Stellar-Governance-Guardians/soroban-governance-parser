@@ -53,6 +53,11 @@ cargo build --release -p soroban-governance-cli
 
 # Parse a local WASM
 ./target/release/sgp spec-from-wasm path/to/contract.wasm
+
+# Protocol 29 TTL: instance + code liveUntilLedger (fail closed if missing)
+./target/release/sgp ttl --contract CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE
+# Nightly-live-tier gate form: exit 1 if fewer than N ledgers remain
+./target/release/sgp ttl --contract CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE --min-remaining 50000
 ```
 
 ## Verified evidence (live Stellar testnet, 2026-10-05)
@@ -95,7 +100,8 @@ crates/wasm      wasm-bindgen surface
 crates/cli       sgp binary + RPC client (only IO layer)
 schemas/         cross-repo source of truth (schema-v1.json, governance-v1.graphql)
 docs/adapters/   verified per-governor research with source URLs
-scripts/         prove-phase1.sh, check-claims.sh, check-proof.py, seed-testnet/ (fixture governor)
+scripts/         prove-phase1.sh, check-claims.sh, check-proof.py, seed-testnet/ (fixture governor),
+                 ttl/extend-fixture-ttl.sh (idempotent TTL extension)
 tests/fixtures/  live-captured testnet data + provenance README
 claims.json      machine-checkable claims ledger (charter rule 8)
 deployments.json deployment registry (real tx hashes and ledgers only)
