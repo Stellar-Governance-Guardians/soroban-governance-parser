@@ -119,7 +119,35 @@ async function delegateStep(state, tokenContractId, notePrefix) {
   }
 }
 
-async function script3Seed(state, ctx) {
+/**
+ * Decide whether a proposal's vote phase can still run. Returns 'ok', or
+ * 'skip' when the proposal was never created (KEEP_GOING) or its voting window
+ * has already closed at `latest` (a resume after a long gap cannot cast votes
+ * that were due in the past). Records the skip reason; never silent.
+ */
+function votePhase(state, def, rec, latest, votePeriod, scope) {
+  if (!rec) {
+    if (KEEP_GOING) {
+      console.log(`  skip votes for ${def.key}: proposal was not created`);
+      return 'skip';
+    }
+    throw new Error(`proposal ${def.key} missing from state (fail closed)`);
+  }
+  const voteEnd = rec.createLedger + votePeriod;
+  if (latest > voteEnd) {
+    state.skipped ??= {};
+    state.skipped[`${scope}-votes-${def.key}`] = {
+      at: new Date().toISOString(),
+      reason: `vote window closed (vote_end ${voteEnd} < latest ${latest})`,
+    };
+    saveState(state);
+    console.log(`  SKIP votes for ${def.key}: window closed (vote_end ${voteEnd}, latest ${latest})`);
+    return 'skip';
+  }
+  return 'ok';
+}
+
+async function script3Seed(state, ctx, latest) {
   console.log('== Script3 governor ==');
   const governor = state.contracts.script3Governor.contractId;
   const votes = state.contracts.script3Votes.contractId;
@@ -206,7 +234,7 @@ async function script3Seed(state, ctx) {
   console.log('== Script3 votes ==');
   for (const def of SCRIPT3_PROPOSALS) {
     const rec = state.script3.proposals[def.key];
-    if (!rec) throw new Error(`proposal ${def.key} missing from state (fail closed)`);
+    if (votePhase(state, def, rec, latest, SCHEDULE.script3.votePeriod, 's3') === 'skip') continue;
     for (const v of def.votes) {
       await step(state, `s3-vote-${def.key}-${v.voterId}`, async () => {
         const r = await invoke({
@@ -224,6 +252,10 @@ async function script3Seed(state, ctx) {
   console.log('== Script3 on-chain reads (differential evidence) ==');
   for (const def of SCRIPT3_PROPOSALS) {
     const rec = state.script3.proposals[def.key];
+    if (!rec) {
+      if (KEEP_GOING) continue;
+      throw new Error(`proposal ${def.key} missing from state (fail closed)`);
+    }
     const idSc = scU32(rec.id);
     rec.reads = rec.reads ?? {};
     const getProposal = await simulateRead({ contractId: governor, fn: 'get_proposal', sourceId: DEPLOYER_ID, args: [idSc], note: `read-s3-get_proposal-${def.key}` });
@@ -235,7 +267,7 @@ async function script3Seed(state, ctx) {
   }
 }
 
-async function ozSeed(state, ctx) {
+async function ozSeed(state, ctx, latest) {
   console.log('== OpenZeppelin governor ==');
   const token = state.contracts.ozToken.contractId;
   const governor = state.contracts.ozGovernor.contractId;
@@ -282,7 +314,7 @@ async function ozSeed(state, ctx) {
   console.log('== OZ votes ==');
   for (const def of OZ_PROPOSALS) {
     const rec = state.oz.proposals[def.key];
-    if (!rec) throw new Error(`proposal ${def.key} missing from state (fail closed)`);
+    if (votePhase(state, def, rec, latest, SCHEDULE.openzeppelin.votingPeriod, 'oz') === 'skip') continue;
     for (const v of def.votes) {
       await step(state, `oz-vote-${def.key}-${v.voterId}`, async () => {
         const r = await invoke({
@@ -305,6 +337,10 @@ async function ozSeed(state, ctx) {
   console.log('== OZ on-chain reads (differential evidence) ==');
   for (const def of OZ_PROPOSALS) {
     const rec = state.oz.proposals[def.key];
+    if (!rec) {
+      if (KEEP_GOING) continue;
+      throw new Error(`proposal ${def.key} missing from state (fail closed)`);
+    }
     rec.reads = rec.reads ?? {};
     const stateRead = await simulateRead({
       contractId: governor, fn: 'proposal_state',
@@ -322,14 +358,16 @@ async function main() {
   console.log('== seed v2: seed ==');
   const state = loadState();
   if (!state) throw new Error('no .seed/state.json — run deploy.js first');
-  await health('seed-start');
+  const h = await health('seed-start');
+  const latest = h.result.latestLedger;
+  console.log(`  latest ledger ${latest}`);
   const ctx = ctxFrom(state);
   state.script3 ??= { proposals: {} };
   state.oz ??= { proposals: {} };
   saveState(state);
 
-  await script3Seed(state, ctx);
-  await ozSeed(state, ctx);
+  await script3Seed(state, ctx, latest);
+  await ozSeed(state, ctx, latest);
 
   const failed = Object.keys(state.failures ?? {});
   if (failed.length > 0) {
