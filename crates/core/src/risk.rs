@@ -213,6 +213,7 @@ mod tests {
 /// address does not mean "no treasury outflow", it means the rule cannot be
 /// evaluated, and the flag says so.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct RiskContext {
     /// Governor contract id, for evidence strings.
     pub governor: Option<String>,
