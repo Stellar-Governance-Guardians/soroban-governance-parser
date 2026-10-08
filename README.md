@@ -98,6 +98,51 @@ All items below are machine-checked by `scripts/check-claims.sh` (see
 - The fixture deployer key is a throwaway testnet key; its secret is not in
   this repo. The fixture contract holds no value and is not a governor.
 
+## Testnet contracts can vanish; the fixtures are the evidence
+
+The contract ids in `deployments.json` were real on public testnet on the date
+recorded next to each entry. **Testnet is periodically reset and contracts have a
+TTL, so those ids can stop resolving at any time without warning.** A reset
+typically leaves the ids *addressable but empty*, because a contract id is
+derived from the deploy salt rather than the ledger history.
+
+That is exactly why every claim in this repo is backed by a **committed raw RPC
+response** under `tests/fixtures/`, not by a live query:
+
+- Offline tests, claims and the parser must keep working with the network
+  disabled. They read the fixtures, never testnet.
+- `deployments.json` is not trusted on its own:
+  `scripts/check-deployments.py` re-derives every registered entry from the
+  committed fixtures and the pinned `upstream.lock.json`, and runs in the PR
+  gate.
+- The nightly live tier only *reports* on TTL; it never blocks a merge.
+
+If a registered contract has expired or a reset has wiped it, re-seed rather than
+hand-editing the registry:
+
+```bash
+scripts/upstream/fetch-references.sh          # pinned upstream SHAs into references/
+scripts/upstream/build-upstream.sh            # rebuild + verify pinned wasm hashes
+cd scripts/seed-v2 && npm ci
+node deploy.js && node seed.js && node settle.js
+node capture-fixtures.js                      # refresh committed fixtures + index.json
+node verify.js                                # offline integrity of recorded hashes
+python3 ../../scripts/check-deployments.py    # registry must match the new fixtures
+```
+
+If the contracts are merely **expired but still present**, extend their TTL
+instead of re-deploying — this is idempotent and skips healthy entries:
+
+```bash
+bash scripts/ttl/extend-seed-contracts.sh      # reads ids from .seed/state.json
+```
+
+**TTL extension is not run in CI.** It needs a funded signer, so it only runs on
+the self-hosted soak runner that carries the gitignored `.seed/` working area
+(where the keys live). Hosted CI, including the nightly live tier, only *reads*
+TTL over public RPC — reading TTL needs no secrets at all. That split is
+deliberate: CI can never acquire the authority to sign.
+
 ## Layout
 ```
 crates/core      sans-IO decode pipeline (ScVal, WASM, spec, risk, adapters)
@@ -105,7 +150,8 @@ crates/wasm      wasm-bindgen surface
 crates/cli       sgp binary + RPC client (only IO layer)
 schemas/         cross-repo source of truth (schema-v1.json, governance-v1.graphql)
 docs/adapters/   verified per-governor research with source URLs
-scripts/         prove-phase1.sh, check-claims.sh, check-proof.py, seed-testnet/ (fixture governor),
+scripts/         prove-phase1.sh, check-claims.sh, check-proof.py, check-deployments.py,
+                 list-registered-contracts.sh, seed-testnet/ (fixture governor),
                  ttl/extend-fixture-ttl.sh (idempotent TTL extension)
 tests/fixtures/  live-captured testnet data + provenance README
 claims.json      machine-checkable claims ledger (charter rule 8)

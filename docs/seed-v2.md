@@ -187,6 +187,45 @@ chain. The pinned wasm's contractspec confirms
 `cast_vote(proposal_id: BytesN<32>, vote_type: u32, reason: String, voter: Address)`;
 the adjacent `proposal_state` read already used `scBytes32`. Fixed.
 
+## Registered contracts and their TTL
+
+All seven seed-v2 contracts (plus the phase 1 fixture governor) are now
+registered in `deployments.json` with their contract id, wasm sha256, wasm file,
+deploy tx hash, deploy ledger, upstream repo, upstream commit SHA and license.
+`scripts/check-deployments.py` re-derives every one of those fields from the
+committed fixtures and the pinned `scripts/upstream/upstream.lock.json`, and runs
+as an offline claim in the PR gate, so the registry cannot silently drift from
+the evidence.
+
+`ozMockSubcall` reuses the Script3 mock-subcall wasm, which is why two
+registered contracts share one wasm sha256.
+
+Live TTL snapshot, read over public RPC (no secrets) at ledger ~5085000:
+
+| contract | role | instance ledgers left | code ledgers left |
+|---|---|---|---|
+| `fixtureGovernor` | `CDJWPKSQ4N…` | 3074927 | 3074930 |
+| `seedV2OpenZeppelin.ozGovernor` | `CAONSV2R2Y…` | 119738 | 106900 |
+| `seedV2OpenZeppelin.ozMockSubcall` | `CAXHKR66BE…` | 119741 | 521873 |
+| `seedV2OpenZeppelin.ozToken` | `CA77UOHZIP…` | 119737 | 106899 |
+| `seedV2OpenZeppelin.ozUpgradeableV1` | `CC3SMQABLU…` | 119739 | 106901 |
+| `seedV2Script3.script3Governor` | `CCKGJBCBBY…` | 776387 | 763791 |
+| `seedV2Script3.script3MockSubcall` | `CAQCXFI6YS…` | 534470 | 521874 |
+| `seedV2Script3.script3Votes` | `CCAUJK6V6G…` | 534466 | 521870 |
+
+Note the two tiers: the Script3 contracts carry a much longer TTL than the
+OpenZeppelin ones, so the OZ contracts are what the live tier will warn about
+first. The live tier **reads** TTL for every registered contract and files a
+tracking issue on failure; it never blocks a merge. TTL **extension** needs a
+funded signer and therefore runs only on the self-hosted soak runner that holds
+the gitignored `.seed/` keys (`scripts/ttl/extend-seed-contracts.sh`). Hosted CI
+can never acquire signing authority.
+
+Contracts on public testnet can disappear on a reset and expire via TTL, so
+`deployments.json` is a record of what was real, not a promise that it still
+resolves. The committed fixtures under `tests/fixtures/seed-v2/` are the durable
+evidence; see "Honest limitations" in the root README for the re-seed command.
+
 ## Status as of 2026-10-08
 
 - **Script3 seed v2: complete.** Six proposals (ids 0–5), 10 votes including 3
@@ -215,7 +254,9 @@ the adjacent `proposal_state` read already used `scBytes32`. Fixed.
     permanent for those proposal ids — new proposals are needed to get abstain
     votes on the `abstain-heavy` shape in the OZ corpus. Script3's
     `s6-abstain-heavy` does carry 3 abstain votes, so abstain is represented.
-  - Seed-v2 contract IDs are **not** yet registered in `deployments.json`.
+  - No `ExtendFootprintTtl` has been run against the seed-v2 contracts yet; the
+    TTL snapshot above is a read, not an extension. The extension script exists
+    but has not been exercised in CI.
   - No `Against` votes exist anywhere in the corpus; the rule set covers the
     `For` and `Abstain` paths against real chain data.
 - **Seed-v2 exit criterion: met.** Re-runs from a clean clone; both governors
