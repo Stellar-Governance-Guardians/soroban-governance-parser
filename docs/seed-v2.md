@@ -20,6 +20,8 @@ and curated into committed fixtures by `capture-fixtures.js`.
 | `scripts/seed-v2/capture-fixtures.js` | curate raw captures into `tests/fixtures/seed-v2/` |
 | `scripts/seed-v2/verify.js` | offline integrity check of every recorded hash |
 | `scripts/seed-v2/test/` | offline unit tests (Node built-in runner) |
+| `scripts/activity/activity.js` | bounded, idempotent on-chain activity generator (keeps fresh data for the indexer) |
+| `scripts/ttl/extend-seed-contracts.sh` | extends instance+code TTL of every seed contract read from `.seed/state.json` |
 
 ## Root-cause record: Script3 S2 `propose` failed on-chain
 
@@ -127,7 +129,14 @@ understood fix, but it is **not validated live** (two focused attempts used).
   11 pass / 0 fail / 2 skip. Seed-v2 unit tests: 4 pass.
 - **Script3 seed v2: complete** (six proposals, all votes, delegations, reads).
 - **OpenZeppelin seed v2: blocked** on the `mint` footprint mismatch above.
-  `settle.js` close/execute and the `scripts/activity/` scheduler + live-tier
-  TTL wiring remain outstanding.
+- **Still outstanding:** `settle.js` close/execute is implemented and runnable
+  (`node settle.js`) but is **not** wired into CI — maturing and executing
+  proposals remains a manual operator step.
+- **Done since the last live run:** `scripts/activity/activity.js` (bounded,
+  idempotent vote generator) and `scripts/ttl/extend-seed-contracts.sh`
+  (instance+code TTL extension for every seed contract) exist and are wired
+  into the live tier behind a `.seed/state.json` guard, so they are no-ops on
+  hosted CI and active only on a self-hosted soak runner. Neither has been
+  exercised against live testnet in CI.
 - **Seed-v2 exit criterion: partially met** — it re-runs from a clean clone and
   Script3 completes; OZ does not.
