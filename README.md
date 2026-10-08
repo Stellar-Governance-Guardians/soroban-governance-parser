@@ -94,7 +94,14 @@ All items below are machine-checked by `scripts/check-claims.sh` (see
 - `simulateTransaction` is NOT yet modeled. `ExecutionImpact` exists in the
   schema with `estimate: true` const, but no producer until the live response
   shape is inspected (phase 1b/2).
-- Vote-weight decay: UNVERIFIED on both governors; no claims made.
+- Vote-weight decay: **verified absent in both governor sources** (2026-10-08).
+  Script3 derives power from `get_past_votes` checkpoint lookups
+  (`references/soroban-governor/contracts/votes/src/checkpoints.rs`) and the
+  OpenZeppelin stack from `get_votes_at_checkpoint`
+  (`references/stellar-contracts/packages/governance/src/votes/storage.rs`):
+  both are snapshot reads of stored balances with no time-decay term anywhere
+  in their vote-accounting code. No decay is implemented in this parser,
+  because neither governor implements it.
 - The fixture deployer key is a throwaway testnet key; its secret is not in
   this repo. The fixture contract holds no value and is not a governor.
 
@@ -125,6 +132,7 @@ scripts/upstream/fetch-references.sh          # pinned upstream SHAs into refere
 scripts/upstream/build-upstream.sh            # rebuild + verify pinned wasm hashes
 cd scripts/seed-v2 && npm ci
 node deploy.js && node seed.js && node settle.js
+node snapshot-power.js                    # power-at-snapshot reads (N3 evidence)
 node capture-fixtures.js                      # refresh committed fixtures + index.json
 node verify.js                                # offline integrity of recorded hashes
 python3 ../../scripts/check-deployments.py    # registry must match the new fixtures

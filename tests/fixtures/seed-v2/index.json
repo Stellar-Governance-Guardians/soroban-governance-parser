@@ -1,6 +1,6 @@
 {
   "$comment": "Provenance for committed seed-v2 fixtures. Each entry is a verbatim raw Soroban RPC response copied from .seed/capture/ (gitignored). Regenerate with `node capture-fixtures.js` after a live run.",
-  "generatedAtUtc": "2026-10-08T08:05:35.907Z",
+  "generatedAtUtc": "2026-10-08T10:14:44.273Z",
   "source": ".seed/capture",
   "fixtures": [
     {
@@ -1766,6 +1766,196 @@
       "method": "simulateTransaction",
       "note": "read-oz-proposal_state-o6-abstain-heavy",
       "capturedAtUtc": "2026-10-08T08:04:52.032Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0294-simulateTransaction-probe-get_total_supply.json",
+      "method": "simulateTransaction",
+      "note": "probe-get_total_supply",
+      "capturedAtUtc": "2026-10-08T08:29:11.583Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0295-simulateTransaction-probe-get_settings.json",
+      "method": "simulateTransaction",
+      "note": "probe-get_settings",
+      "capturedAtUtc": "2026-10-08T08:29:12.584Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0296-simulateTransaction-probe-total_supply.json",
+      "method": "simulateTransaction",
+      "note": "probe-total_supply",
+      "capturedAtUtc": "2026-10-08T08:29:23.332Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0297-simulateTransaction-probe-settings.json",
+      "method": "simulateTransaction",
+      "note": "probe-settings",
+      "capturedAtUtc": "2026-10-08T08:29:24.001Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0298-getHealth-snapshot-power-start.json",
+      "method": "getHealth",
+      "note": "snapshot-power-start",
+      "capturedAtUtc": "2026-10-08T10:13:46.285Z",
+      "latestLedger": 5086167,
+      "ledgerRetentionWindow": 120960
+    },
+    {
+      "file": "rpc/0299-simulateTransaction-read-s3-get_past_total_supply-s1-transfer-executed.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_total_supply-s1-transfer-executed",
+      "capturedAtUtc": "2026-10-08T10:13:47.200Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0300-simulateTransaction-read-s3-get_past_votes-s1-transfer-executed-sgg-delegate-1.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_votes-s1-transfer-executed-sgg-delegate-1",
+      "capturedAtUtc": "2026-10-08T10:13:49.281Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0301-simulateTransaction-read-s3-get_past_votes-s1-transfer-executed-sgg-delegate-2.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_votes-s1-transfer-executed-sgg-delegate-2",
+      "capturedAtUtc": "2026-10-08T10:13:49.957Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0302-simulateTransaction-read-s3-get_past_votes-s1-transfer-executed-sgg-delegate-3.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_votes-s1-transfer-executed-sgg-delegate-3",
+      "capturedAtUtc": "2026-10-08T10:13:50.981Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0303-simulateTransaction-read-s3-get_past_votes-s1-transfer-executed-creator-sgg-delegate-1.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_votes-s1-transfer-executed-creator-sgg-delegate-1",
+      "capturedAtUtc": "2026-10-08T10:13:51.599Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0304-simulateTransaction-read-s3-get_past_total_supply-s2-contract-upgrade.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_total_supply-s2-contract-upgrade",
+      "capturedAtUtc": "2026-10-08T10:13:52.161Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0305-simulateTransaction-read-s3-get_past_votes-s2-contract-upgrade-sgg-delegate-1.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_votes-s2-contract-upgrade-sgg-delegate-1",
+      "capturedAtUtc": "2026-10-08T10:13:52.656Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0306-simulateTransaction-read-s3-get_past_votes-s2-contract-upgrade-creator-sgg-deployer.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_votes-s2-contract-upgrade-creator-sgg-deployer",
+      "capturedAtUtc": "2026-10-08T10:13:53.154Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0307-simulateTransaction-read-s3-get_past_total_supply-s3-admin-change.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_total_supply-s3-admin-change",
+      "capturedAtUtc": "2026-10-08T10:13:53.834Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0308-simulateTransaction-read-s3-get_past_votes-s3-admin-change-sgg-delegate-2.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_votes-s3-admin-change-sgg-delegate-2",
+      "capturedAtUtc": "2026-10-08T10:13:54.550Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0309-simulateTransaction-read-s3-get_past_votes-s3-admin-change-sgg-delegate-3.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_votes-s3-admin-change-sgg-delegate-3",
+      "capturedAtUtc": "2026-10-08T10:13:55.009Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0310-simulateTransaction-read-s3-get_past_votes-s3-admin-change-creator-sgg-delegate-2.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_votes-s3-admin-change-creator-sgg-delegate-2",
+      "capturedAtUtc": "2026-10-08T10:13:55.583Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0311-simulateTransaction-read-s3-get_past_total_supply-s4-unknown-contract-call.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_total_supply-s4-unknown-contract-call",
+      "capturedAtUtc": "2026-10-08T10:13:56.097Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0312-simulateTransaction-read-s3-get_past_votes-s4-unknown-contract-call-sgg-delegate-3.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_votes-s4-unknown-contract-call-sgg-delegate-3",
+      "capturedAtUtc": "2026-10-08T10:13:56.567Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0313-simulateTransaction-read-s3-get_past_votes-s4-unknown-contract-call-creator-sgg-delegate-3.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_votes-s4-unknown-contract-call-creator-sgg-delegate-3",
+      "capturedAtUtc": "2026-10-08T10:13:57.077Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0314-simulateTransaction-read-s3-get_past_total_supply-s5-failing-quorum.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_total_supply-s5-failing-quorum",
+      "capturedAtUtc": "2026-10-08T10:13:58.817Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0315-simulateTransaction-read-s3-get_past_votes-s5-failing-quorum-creator-sgg-delegate-4.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_votes-s5-failing-quorum-creator-sgg-delegate-4",
+      "capturedAtUtc": "2026-10-08T10:13:59.752Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0316-simulateTransaction-read-s3-get_past_total_supply-s6-abstain-heavy.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_total_supply-s6-abstain-heavy",
+      "capturedAtUtc": "2026-10-08T10:14:00.306Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0317-simulateTransaction-read-s3-get_past_votes-s6-abstain-heavy-sgg-delegate-1.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_votes-s6-abstain-heavy-sgg-delegate-1",
+      "capturedAtUtc": "2026-10-08T10:14:01.007Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0318-simulateTransaction-read-s3-get_past_votes-s6-abstain-heavy-sgg-delegate-2.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_votes-s6-abstain-heavy-sgg-delegate-2",
+      "capturedAtUtc": "2026-10-08T10:14:01.660Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0319-simulateTransaction-read-s3-get_past_votes-s6-abstain-heavy-sgg-delegate-3.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_votes-s6-abstain-heavy-sgg-delegate-3",
+      "capturedAtUtc": "2026-10-08T10:14:02.490Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0320-simulateTransaction-read-s3-get_past_votes-s6-abstain-heavy-creator-sgg-delegate-5.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_past_votes-s6-abstain-heavy-creator-sgg-delegate-5",
+      "capturedAtUtc": "2026-10-08T10:14:03.262Z",
       "eventCount": 2
     }
   ]

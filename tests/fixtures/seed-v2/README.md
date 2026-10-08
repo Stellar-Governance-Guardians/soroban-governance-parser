@@ -25,7 +25,11 @@ file.
    casts real delegations, creates proposals, and casts real votes.
 4. `scripts/seed-v2/settle.js` closes/executes proposals once their vote windows
    mature.
-5. `scripts/seed-v2/capture-fixtures.js` copies the curated subset of
+5. `scripts/seed-v2/snapshot-power.js` captures power-at-snapshot reads
+   (`get_past_votes(voter, vote_start)` and `get_past_total_supply(vote_start)`)
+   for every Script3 proposal — the weights the governor credits to each cast
+   vote. These are read-only simulations (never submitted).
+6. `scripts/seed-v2/capture-fixtures.js` copies the curated subset of
    `.seed/capture/` (gitignored) into `rpc/` and writes `index.json`.
 
 ## Sanitization
@@ -44,15 +48,18 @@ scripts/upstream/fetch-references.sh
 scripts/upstream/build-upstream.sh          # verifies pinned wasm hashes
 cd scripts/seed-v2 && npm ci
 node deploy.js && node seed.js && node settle.js
+node snapshot-power.js                     # power-at-snapshot reads (N3)
 node capture-fixtures.js                     # refresh rpc/ + index.json
 node verify.js                               # offline integrity of recorded hashes
 ```
 
 ## Honest limitations
 
-- **232 committed RPC responses**, ledgers 5083606–5084619. `verify.js` checks
-  **34 recorded hashes** against 68 captures; all 34 are SUCCESS transactions and
-  none is a wasm sha256.
+- **259 committed RPC responses**, ledgers 5083606–5086043 (the later
+  `get_past_votes`/`get_past_total_supply` snapshot reads were captured
+  2026-10-08 by `snapshot-power.js`; the earlier 232 are unchanged).
+  `verify.js` checks **34 recorded hashes** against 68 captures; all 34 are
+  SUCCESS transactions and none is a wasm sha256.
 - **Three transactions are intentionally `FAILED`** and are kept, not
   overwritten: the OpenZeppelin mints to `delegate-1/3/5` that trapped on
   `[TotalSupplyCheckpoint, 1]`
@@ -86,6 +93,7 @@ scripts/upstream/fetch-references.sh
 scripts/upstream/build-upstream.sh
 cd scripts/seed-v2 && npm ci
 node deploy.js && node seed.js && node settle.js
+node snapshot-power.js
 node capture-fixtures.js && node verify.js
 ```
 
