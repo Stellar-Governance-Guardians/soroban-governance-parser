@@ -58,7 +58,110 @@
             "wasmFile": "scripts/seed-testnet/target/wasm32v1-none/release/sgg_fixture_governor.wasm"
           }
         }
-      }
+      },
+      "seedV2Script3": {
+        "script3Votes": {
+          "$comment": "Deployed by scripts/seed-v2/deploy.js on 2026-10-08 from https://github.com/script3/soroban-governor @ a2ac6de81055be5bd13e31f922c9546309bfdb8a. Public data only; no keys.",
+          "contractId": "CCAUJK6V6GIYQANKCV2JDCMCLGMQD42JCF426TQHHMSXW2F5ZROM4IKY",
+          "role": "votes (checkpointed voting power) for the Script3 governor",
+          "upstreamRepo": "https://github.com/script3/soroban-governor",
+          "upstreamCommitSha": "a2ac6de81055be5bd13e31f922c9546309bfdb8a",
+          "upstreamLicense": "MIT",
+          "wasmFile": "tests/fixtures/seed-v2/wasms/script3-soroban-votes.wasm",
+          "wasmSha256": "e8bbc883b2c7fcd8716b07271929eca801fb40f2d3cf5964b139fa741c40f787",
+          "wasmBytes": 24926,
+          "deployTxHash": "9896582ef9b4919c7c611ec9458ac7e5346239a6fe4fde40931e4c001a596bd5",
+          "deployedAtLedger": 5083606,
+          "deployEvidenceFixture": "tests/fixtures/seed-v2/rpc/0002-getTransaction-deploy-script3Votes.json"
+        },
+        "script3Governor": {
+          "$comment": "Deployed by scripts/seed-v2/deploy.js on 2026-10-08 from https://github.com/script3/soroban-governor @ a2ac6de81055be5bd13e31f922c9546309bfdb8a. Public data only; no keys.",
+          "contractId": "CCKGJBCBBYNWCMSBPV67DFIG3OL72RLDKNGHWJQCR5NASAUHOQRNLEDX",
+          "role": "the pinned Script3 governor",
+          "upstreamRepo": "https://github.com/script3/soroban-governor",
+          "upstreamCommitSha": "a2ac6de81055be5bd13e31f922c9546309bfdb8a",
+          "upstreamLicense": "MIT",
+          "wasmFile": "tests/fixtures/seed-v2/wasms/script3-soroban-governor.wasm",
+          "wasmSha256": "16033b38b740b1d5af82025a671490b3cea2a0df59b7ffad005f3f7ca3fa27f0",
+          "wasmBytes": 39581,
+          "deployTxHash": "9508d28ca1ae070d981ff7899a6673c6ec8c3815cc9811fdddb6e34a4574761d",
+          "deployedAtLedger": 5083608,
+          "deployEvidenceFixture": "tests/fixtures/seed-v2/rpc/0003-getTransaction-deploy-script3Governor.json"
+        },
+        "script3MockSubcall": {
+          "$comment": "Deployed by scripts/seed-v2/deploy.js on 2026-10-08 from https://github.com/script3/soroban-governor @ a2ac6de81055be5bd13e31f922c9546309bfdb8a. Public data only; no keys.",
+          "contractId": "CAQCXFI6YSXWGCB37PRZVG5YNLLJMY45IWLUUTFMTXFIAF2MOZ5DMGJ7",
+          "role": "Script3-side out-of-surface target used by the s4/o4 unknown-contract-call proposals",
+          "upstreamRepo": "https://github.com/script3/soroban-governor",
+          "upstreamCommitSha": "a2ac6de81055be5bd13e31f922c9546309bfdb8a",
+          "upstreamLicense": "MIT",
+          "wasmFile": "tests/fixtures/seed-v2/wasms/script3-mock-subcall.wasm",
+          "wasmSha256": "670215400fffd3d0f6303000d18dfd5bab0e2b1a7b26219e4a8a3bce08eab763",
+          "wasmBytes": 7652,
+          "deployTxHash": "45395fede4b9156b180b47b4882f010cbc205dace1c54dc5fdc3f68dbfffd2b8",
+          "deployedAtLedger": 5083610,
+          "deployEvidenceFixture": "tests/fixtures/seed-v2/rpc/0004-getTransaction-deploy-script3MockSubcall.json"
+        }
+      },
+      "seedV2OpenZeppelin": {
+        "ozToken": {
+          "$comment": "Deployed by scripts/seed-v2/deploy.js on 2026-10-08 from https://github.com/OpenZeppelin/stellar-contracts @ b40c5eaefe6a29f0030f00bd2d730b7a91cce330. Public data only; no keys.",
+          "contractId": "CA77UOHZIPLJKPRVQ7FOYRT5ATAFQYVDTVWRF4ZHNCN2OK274CCQ4V2R",
+          "role": "the pinned OpenZeppelin votes/fungible token (holds voting power)",
+          "upstreamRepo": "https://github.com/OpenZeppelin/stellar-contracts",
+          "upstreamCommitSha": "b40c5eaefe6a29f0030f00bd2d730b7a91cce330",
+          "upstreamLicense": "MIT OR Apache-2.0",
+          "wasmFile": "tests/fixtures/seed-v2/wasms/oz-fungible-governor-token.wasm",
+          "wasmSha256": "b5363f54a65e4134f838c03ae9b90718cd7913be5bb3b446aa731e72c7d97e4b",
+          "wasmBytes": 23856,
+          "deployTxHash": "026fd6edeeea238f8c52cdfe89592d033e34a36a57d534553063b21435b1a006",
+          "deployedAtLedger": 5083612,
+          "deployEvidenceFixture": "tests/fixtures/seed-v2/rpc/0005-getTransaction-deploy-ozToken.json"
+        },
+        "ozGovernor": {
+          "$comment": "Deployed by scripts/seed-v2/deploy.js on 2026-10-08 from https://github.com/OpenZeppelin/stellar-contracts @ b40c5eaefe6a29f0030f00bd2d730b7a91cce330. Public data only; no keys.",
+          "contractId": "CAONSV2R2YCNJS6DSN366M5LXLHWT46ES57MD6KOM725YFQSGRLHDCMM",
+          "role": "the pinned OpenZeppelin governor",
+          "upstreamRepo": "https://github.com/OpenZeppelin/stellar-contracts",
+          "upstreamCommitSha": "b40c5eaefe6a29f0030f00bd2d730b7a91cce330",
+          "upstreamLicense": "MIT OR Apache-2.0",
+          "wasmFile": "tests/fixtures/seed-v2/wasms/oz-fungible-governor-contract.wasm",
+          "wasmSha256": "77a0400e446947330f8b80f3a57f078d375a793e7aacf3674f5289bacb66edf7",
+          "wasmBytes": 26096,
+          "deployTxHash": "fed6be4254223aae40de63bfe44961c73f05f46f7abbf07c8b4d7294a30ee751",
+          "deployedAtLedger": 5083614,
+          "deployEvidenceFixture": "tests/fixtures/seed-v2/rpc/0006-getTransaction-deploy-ozGovernor.json"
+        },
+        "ozUpgradeableV1": {
+          "$comment": "Deployed by scripts/seed-v2/deploy.js on 2026-10-08 from https://github.com/OpenZeppelin/stellar-contracts @ b40c5eaefe6a29f0030f00bd2d730b7a91cce330. Public data only; no keys.",
+          "contractId": "CC3SMQABLUGPGUD56JCY56JTRLMB4JGW5WMNBUVEU5DTN44NMWUR64DZ",
+          "role": "upgrade target for the s2/o2 contract-upgrade proposals",
+          "upstreamRepo": "https://github.com/OpenZeppelin/stellar-contracts",
+          "upstreamCommitSha": "b40c5eaefe6a29f0030f00bd2d730b7a91cce330",
+          "upstreamLicense": "MIT OR Apache-2.0",
+          "wasmFile": "tests/fixtures/seed-v2/wasms/oz-upgradeable-v1-example.wasm",
+          "wasmSha256": "1018bca637343ad206e568dd78a89f0b2a2f768477947be2546682113216c248",
+          "wasmBytes": 15640,
+          "deployTxHash": "468c69a101d9da1a9b797fdbf86734a543148c8f7afb198b09ae6d725116c7c9",
+          "deployedAtLedger": 5083616,
+          "deployEvidenceFixture": "tests/fixtures/seed-v2/rpc/0007-getTransaction-deploy-ozUpgradeableV1.json"
+        },
+        "ozMockSubcall": {
+          "$comment": "Deployed by scripts/seed-v2/deploy.js on 2026-10-08 from https://github.com/script3/soroban-governor @ a2ac6de81055be5bd13e31f922c9546309bfdb8a. Public data only; no keys.",
+          "contractId": "CAXHKR66BEHSTAX4QYKEOCFKLOSUKHSCVADVHBT5WA4IJDE3EBCNVX3O",
+          "role": "OpenZeppelin-side out-of-surface target used by the s4/o4 unknown-contract-call proposals",
+          "upstreamRepo": "https://github.com/script3/soroban-governor",
+          "upstreamCommitSha": "a2ac6de81055be5bd13e31f922c9546309bfdb8a",
+          "upstreamLicense": "MIT",
+          "wasmFile": "tests/fixtures/seed-v2/wasms/script3-mock-subcall.wasm",
+          "wasmSha256": "670215400fffd3d0f6303000d18dfd5bab0e2b1a7b26219e4a8a3bce08eab763",
+          "wasmBytes": 7652,
+          "deployTxHash": "aec4e10d1de6a4f3c24542a249922f0cd7755d7f1400bd016f54fe855f624d11",
+          "deployedAtLedger": 5083618,
+          "deployEvidenceFixture": "tests/fixtures/seed-v2/rpc/0008-getTransaction-deploy-ozMockSubcall.json"
+        }
+      },
+      "$comment": "Two groups: `fixtureGovernor` (phase 1, our own throwaway contract) and the `seedV2*` groups (the pinned UPSTREAM Script3 and OpenZeppelin governors, deployed from SHA-pinned sources). Every contract id here is backed by a committed raw RPC fixture; scripts/check-deployments.py enforces that offline."
     }
   },
   "knownThirdParty": {
