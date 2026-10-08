@@ -86,12 +86,48 @@ npm test          # offline parser unit tests
 node verify.js    # every recorded hash is a SUCCESS tx, none is a wasm hash
 ```
 
+## Live findings (testnet, 2026-10-08)
+
+Two focused live re-runs were made after the fixes (process rule 4).
+
+**Validated on-chain**
+- The resource-margin fix works: Script3 `propose` for `s2-contract-upgrade`
+  succeeded (proposal id 1, ledger 5083482), as did `s3-admin-change` (id 2) and
+  `s4-unknown-contract-call` (id 3) and the Script3 votes for them.
+- The runner no longer wedges: with the guards in place the run completed with a
+  recorded `SEED PARTIAL` failure list instead of aborting.
+
+**Still failing (seed-design defects, exact on-chain errors recorded)**
+- **Script3 `s5`/`s6` propose fail** with `Error(Contract, #211)`. #208 (seen
+  when s5/s6 kept their original creators) was the proposer-below-threshold
+  error; #211 appears once a creator reuses a name that already has an open
+  proposal. Script3 enforces **one open proposal per creator** (see
+  `upstream.lock.json` `oneOpenProposalPerCreator: true`) and the eight
+  power-holders are only `deployer + delegate-1..5`, of which `delegate-4` and
+  `delegate-5` delegate their power away *before* proposing. A correct seed must
+  either create proposals before casting delegations, or add dedicated proposer
+  identities.
+- **OpenZeppelin `o2`/`o3`/`o4`/`o6` propose fail** with `Error(Contract, #5002)`
+  and `get_votes_at_checkpoint` returning `0` for the proposer. OZ only counts
+  **delegated** voting power (no self-votes without a delegation), and the seed
+  only delegates `delegate-4→delegate-1` / `delegate-5→delegate-2`. Every OZ
+  proposer/voter must delegate (including to self) before voting power is live.
+- **OZ mints to `delegate-1`/`3`/`5` fail** with `invoke_host_function: trapped`
+  (the other four mints succeed); needs a focused diagnosis.
+- **Script3 `S1` votes cannot be cast on a resume** whose delay exceeds the vote
+  period (`vote_end 5071759` < current ledger); the runner now records this as a
+  reasoned skip rather than a failure.
+
 ## Status as of 2026-10-08
 
-- **Done:** deploy (7 contracts SUCCESS), Script3 initialize/mint/delegate,
-  proposal S1 created. Resource-margin fix, resumable runner, uploadTxHash fix,
-  `capture-fixtures.js`, `verify.js`, fixtures README and offline tests all land.
-- **Not yet done:** the clean end-to-end re-run on both governors (S2 onward),
-  including the OpenZeppelin stack and the `settle.js` close/execute pass; and
-  `scripts/activity/` + the live-tier TTL wiring. These require live testnet runs
-  and block the seed-v2 exit criterion.
+- **Done and verified:** resource-margin fix (validated live: S2 on-chain),
+  resumable runner with decoded-failure records, vote-window aware skip logic,
+  structured `uploadTxHash` parsing + `verify.js` + offline unit tests,
+  `capture-fixtures.js` + fixtures README + provenance, `fetch-references.sh`,
+  offline wasm-hash claim (6/6), CI org-namespace scoping fix. Offline claims:
+  11 pass / 0 fail / 2 skip. Seed-v2 unit tests: 4 pass.
+- **Not met (seed-v2 exit criterion):** a clean end-to-end run on both
+  governors. Blocked by the seed-design defects above; the fixes (delegations
+  after proposals + a dedicated proposer identity; OZ self-delegation) are
+  understood but **not yet validated live**. `settle.js` close/execute, the
+  `scripts/activity/` scheduler and the live-tier TTL wiring remain outstanding.
