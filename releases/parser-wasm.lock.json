@@ -1,0 +1,12 @@
+{
+  "$comment": "Release lock for the parser WASM package. The README states this sha256; scripts/check-wasm-release.sh checks the two agree, offline. The asset is the GitHub Release asset, not committed to git.",
+  "version": "0.1.0-alpha.1",
+  "tag": "v0.1.0-alpha.1",
+  "assetName": "sgg-parser-wasm-0.1.0-alpha.1.tgz",
+  "assetUrl": "https://github.com/Stellar-Governance-Guardians/soroban-governance-parser/releases/download/v0.1.0-alpha.1/sgg-parser-wasm-0.1.0-alpha.1.tgz",
+  "sha256": "7b2eb9420f0cf0582d079f9603beb1e8548e1c7bac165724688cbae5b9237ecd",
+  "bytes": 245210,
+  "targets": ["nodejs", "web"],
+  "schemaVersion": "v1",
+  "toolchain": "rustc 1.96.0 (ac68faa20 2026-05-25) / wasm-pack 0.13.1"
+}

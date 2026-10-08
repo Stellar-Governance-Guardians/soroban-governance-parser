@@ -76,12 +76,22 @@ Claims in `claims.json` run in two tiers:
   (`crates/core/tests/proptests.rs`).
 - **wasm-bindgen surface** for Script3 decode/state/tally (`crates/wasm`).
 
-## Out of scope for phase 1a/1b (delivered in later phases)
+## Phase 2 (delivered)
+- **WASM package**: `wasm-bindgen` surface built for both `nodejs` and `web`
+  (wasm-pack), packaged deterministically into `sgg-parser-wasm-<version>.tgz`
+  and published as GitHub **pre-release** `v0.1.0-alpha.1`. The README states
+  the sha256; `scripts/check-wasm-release.py` checks it against
+  `releases/parser-wasm.lock.json` offline.
+- **Schema freeze**: v1 SDL + JSON Schema frozen in `schemas/`, recorded in
+  `schemas/CHANGELOG.md`, with an additive-only check
+  (`scripts/check-schema-additive.py`) in the PR gate.
+- **Node wasm test** (`crates/wasm/js-tests/node.test.mjs`) exercises the built
+  `nodejs` package against committed captures.
+
+## Out of scope for phase 1a/1b/2 (delivered in later phases)
 - The **OpenZeppelin adapter** (bounded phase 3; fixtures already captured).
 - `simulateTransaction`-based `ExecutionImpact` producer (phase 4; response
   shape must be inspected live before modeling — rule: verify first).
-- A published wasm package (wasm-pack `.tgz` + pre-release) and the schema
-  freeze/CHANGELOG (phase 2).
 - Delegate metrics (indexer/dashboard phases).
 
 ## Ground truths verified in phase 1a (live testnet, 2026-10-05)
