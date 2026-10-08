@@ -1,0 +1,21 @@
+{
+  "name": "sgp-seed-v2",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Seed v2: deploy pinned upstream governors on live testnet, create real delegations/proposals/votes, capture raw RPC evidence. No mock data.",
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "@stellar/stellar-sdk": "^17.2.1",
+    "js-sha3": "^0.8.0"
+  },
+  "scripts": {
+    "deploy": "node deploy.js",
+    "seed": "node seed.js",
+    "settle": "node settle.js",
+    "capture": "node capture-fixtures.js",
+    "verify": "node verify.js"
+  }
+}
