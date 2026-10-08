@@ -51,13 +51,73 @@
     },
     {
       "id": "unit-test-count",
-      "claim": "at least 23 unit tests pass",
+      "claim": "at least 77 tests pass across the workspace (unit + differential + property)",
       "statedIn": [
         "README.md"
       ],
       "online": false,
       "check": {
-        "cmd": "n=$(cargo test --workspace 2>/dev/null | grep -oE 'ok\\. [0-9]+ passed' | grep -oE '[0-9]+' | sort -rn | head -1); test \"$n\" -ge 23"
+        "cmd": "n=$(cargo test --workspace 2>/dev/null | grep -oE 'ok\\. [0-9]+ passed' | grep -oE '[0-9]+' | awk '{s+=$1} END{print s+0}'); test \"$n\" -ge 77"
+      }
+    },
+    {
+      "id": "script3-adapter-differential",
+      "claim": "the Script3 adapter's decoded state and tally equal the committed on-chain reads for every seeded proposal (ids 0-5), entirely offline",
+      "statedIn": [
+        "README.md",
+        "SPEC.md",
+        "docs/adapters/script3.md"
+      ],
+      "online": false,
+      "check": {
+        "cmd": "cargo test -p soroban-governance-core --test differential --quiet"
+      }
+    },
+    {
+      "id": "script3-adapter-proptests",
+      "claim": "property tests cover zero votes, exact ties, i128 extremes, empty checkpoint history, exact-ledger hits and before-first-checkpoint lookups",
+      "statedIn": [
+        "SPEC.md"
+      ],
+      "online": false,
+      "check": {
+        "cmd": "cargo test -p soroban-governance-core --test proptests --quiet"
+      }
+    },
+    {
+      "id": "risk-contextual-rules-published",
+      "claim": "the contextual risk rules treasury_outflow, self_call, large_value and batched_actions are published in risk.rs, each with a positive and a negative test",
+      "statedIn": [
+        "README.md",
+        "SPEC.md"
+      ],
+      "online": false,
+      "check": {
+        "cmd": "for r in treasury_outflow self_call large_value batched_actions; do grep -q \"$r\" crates/core/src/risk.rs || exit 1; done"
+      }
+    },
+    {
+      "id": "oz-adapter-not-implemented",
+      "claim": "the OpenZeppelin adapter is not implemented yet, matching the README honest limitation",
+      "statedIn": [
+        "README.md",
+        "SPEC.md"
+      ],
+      "online": false,
+      "check": {
+        "cmd": "! test -e crates/core/src/adapters/openzeppelin.rs"
+      }
+    },
+    {
+      "id": "seed-v2-fixture-count",
+      "claim": "the seed-v2 corpus holds 259 committed raw RPC responses and index.json lists exactly that many",
+      "statedIn": [
+        "README.md",
+        "tests/fixtures/seed-v2/README.md"
+      ],
+      "online": false,
+      "check": {
+        "cmd": "n=$(ls tests/fixtures/seed-v2/rpc/*.json | wc -l); i=$(python3 -c \"import json;print(len(json.load(open('tests/fixtures/seed-v2/index.json'))['fixtures']))\"); test \"$n\" -eq 259 && test \"$i\" -eq 259"
       }
     },
     {

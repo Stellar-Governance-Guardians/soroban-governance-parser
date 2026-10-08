@@ -241,7 +241,7 @@ evidence; see "Honest limitations" in the root README for the re-seed command.
   provenance, `fetch-references.sh`, offline wasm-hash claim (6/6), CI
   org-namespace scoping, ledger-close wait, checkpoint-footprint widening
   (12 tests). Offline claims 11 pass / 0 fail / 2 skip. Seed-v2 unit tests: 16
-  pass. Fixtures: 232 raw RPC responses, 34 recorded hashes verified.
+  pass. Fixtures: 259 raw RPC responses, 34 recorded hashes verified.
 - **Still outstanding / not done:**
   - `settle.js` close/execute is implemented and runnable but **not** wired into
     CI — maturing and executing proposals is a manual operator step.

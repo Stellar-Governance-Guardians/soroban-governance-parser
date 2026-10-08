@@ -1,7 +1,7 @@
 # SPEC — soroban-governance-parser
 
-Version: v1 (phase 1a). Status of every claim is tracked in `claims.json` and
-machine-checked by `scripts/check-claims.sh` in CI.
+Version: v1 (phase 1a + partial phase 1b). Status of every claim is tracked in
+`claims.json` and machine-checked by `scripts/check-claims.sh` in CI.
 
 ## Purpose
 Decode raw Soroban `ScVal` governance payloads (events, proposal calldata,
@@ -60,12 +60,29 @@ Claims in `claims.json` run in two tiers:
   real deployed contract, fail-closed demonstration on the non-WASM SAC contract.
 - CI: fmt, clippy pedantic, tests, wasm build, fixture-import check, claims check.
 
-## Out of scope for phase 1a (delivered in later phases)
-- Concrete `GovernorAdapter` impls for Script3 and OZ governors (phase 1b;
-  research already recorded with sources in `docs/adapters/`).
-- `simulateTransaction`-based `ExecutionImpact` producer (phase 1b/2; response
+## Phase 1b (partial, delivered)
+- **Script3 adapter** (`crates/core/src/adapters/script3.rs`) behind
+  `GovernorAdapter`: event identification (contract id + symbol + exact arity),
+  `normalize_event`, `state_from_chain`, `tally_from_chain`, `decode_proposal`,
+  `vote_power_model`. Unknown actions/events fail closed.
+- **`RiskContext` contextual rules** (`crates/core/src/risk.rs`):
+  `treasury_outflow`, `self_call`, `large_value`, `batched_actions`, each with a
+  positive and a negative test.
+- **Pure replicas** of the Script3 checkpoint power model
+  (`crates/core/src/checkpoint.rs`) and the tally/quorum/outcome rules
+  (`crates/core/src/tally.rs`).
+- **Offline differential tests** against committed raw captures for proposals
+  0–5 (`crates/core/tests/differential.rs`) plus `proptest` property tests
+  (`crates/core/tests/proptests.rs`).
+- **wasm-bindgen surface** for Script3 decode/state/tally (`crates/wasm`).
+
+## Out of scope for phase 1a/1b (delivered in later phases)
+- The **OpenZeppelin adapter** (bounded phase 3; fixtures already captured).
+- `simulateTransaction`-based `ExecutionImpact` producer (phase 4; response
   shape must be inspected live before modeling — rule: verify first).
-- Vote-weight decay, delegate metrics (indexer/dashboard phases).
+- A published wasm package (wasm-pack `.tgz` + pre-release) and the schema
+  freeze/CHANGELOG (phase 2).
+- Delegate metrics (indexer/dashboard phases).
 
 ## Ground truths verified in phase 1a (live testnet, 2026-10-05)
 - SDF public testnet RPC `https://soroban-testnet.stellar.org`:

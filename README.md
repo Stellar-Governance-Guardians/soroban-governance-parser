@@ -9,12 +9,14 @@ Part of the Stellar-Governance-Guardians suite:
 [indexer](https://github.com/Stellar-Governance-Guardians/governance-event-indexer) →
 [dashboard](https://github.com/Stellar-Governance-Guardians/delegate-portal-dashboard).
 
-Phase status: the merged work in this repository is **Phase 1a**. Parser
-completion — seed v2 from pinned upstream SHAs, Script3/OpenZeppelin adapters,
-`RiskContext`, vote-power/tally replicas, dry-run modeling, wasm-pack packaging,
-differential tests — is **Phase 1b** and is not yet complete.
+Phase status: the merged work in this repository is **Phase 1a plus the Script3
+half of Phase 1b**. Seed v2 from pinned upstream SHAs, the `Script3Adapter`,
+`RiskContext`, the vote-power/checkpoint and tally/quorum replicas, and the
+offline differential tests against committed captures are done; the
+OpenZeppelin adapter, dry-run `simulateTransaction` modeling and the published
+wasm package are not yet complete. Evidence below.
 
-## What it does (phase 1a)
+## What it does
 - **ScVal → JSON**: total converter over the stellar-xdr 28 type set. Integers
   ≥ 64-bit become decimal strings (no precision loss). Non-representable
   constructs (e.g. non-string map keys) are errors, never coercions.
@@ -27,8 +29,24 @@ differential tests — is **Phase 1b** and is not yet complete.
   (`crates/core/src/risk.rs`). Every classification exposes the rule that
   matched. Unknown functions are `unverified`, never silently `low`.
 - **`GovernorAdapter` trait**: governor-specific decoding lands behind this
-  trait (adapters for Script3 + OpenZeppelin governors are phase 1b; verified
-  research with sources is already in `docs/adapters/`).
+  trait. The **Script3 adapter is implemented**
+  (`crates/core/src/adapters/script3.rs`): it identifies the pinned governor's
+  events by contract id + symbol + exact topic arity, decodes
+  `proposal_created`/`vote_cast`/`proposal_voting_closed`/…, reconstructs
+  proposal state and tally from `get_proposal`/`get_proposal_votes`, and decodes
+  the five `ProposalAction` variants (unknown variants are preserved, never
+  guessed). The **OpenZeppelin adapter is not implemented yet**; its research
+  and fixtures exist (`docs/adapters/openzeppelin.md`,
+  `tests/fixtures/seed-v2/`).
+- **Risk rules are data, not verdicts**: exact-match function-name rules
+  (`crates/core/src/risk.rs`, positive + negative test per rule) plus contextual
+  rules — `treasury_outflow`, `self_call`, `large_value`, `batched_actions` —
+  that evaluate the decoded arguments and emit every fired rule with its
+  evidence. No opaque composite score.
+- **Power/tally replicas**: pure, IO-free replicas of the pinned Script3
+  checkpoint power model (`crates/core/src/checkpoint.rs`) and the tally /
+  quorum / outcome rules (`crates/core/src/tally.rs`), differentially tested
+  against committed on-chain reads.
 
 ## Crates
 | crate | purpose | IO |
@@ -72,14 +90,20 @@ All items below are machine-checked by `scripts/check-claims.sh` (see
 | contractspecv0 parse works on a real deployed contract | fixture governor `CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE` (deploy tx `a37b875d…`, ledger 5035901); spec functions `propose/vote/get_proposal` parsed from live WASM |
 | real governance events decode correctly | `proposal_created` tx `34dd7cef…` ledger 5035906, `vote_cast` tx `ddef3540…` ledger 5035908 — topics/values decoded to `("Fund parser audit", u128 1000000)` and `(1, u128 1000000)` |
 | fail-closed on non-WASM contracts | `sgp fetch-spec` on the testnet SAC contract exits non-zero with "contract is not WASM-backed … no contractspecv0 available" |
-| 23 unit tests pass; clippy pedantic `-D warnings` clean | `cargo test --workspace`, `cargo clippy --workspace --all-targets -- -D warnings` |
-| real upstream governors live on testnet | seed v2 deployed pinned Script3 + OpenZeppelin governors and captured 232 raw RPC fixtures (ledgers 5083606–5084619); `docs/seed-v2.md`, `tests/fixtures/seed-v2/` |
+| 77 tests pass (54 unit + 13 differential + 10 proptest); clippy pedantic `-D warnings` clean | `cargo test --workspace`, `cargo clippy --workspace --all-targets -- -D warnings` |
+| the Script3 adapter reproduces real chain state | differential tests decode committed `simulateTransaction` captures for proposals 0–5 (`get_proposal`, `get_proposal_votes`, `get_past_votes`, `get_past_total_supply`) and assert equality; `crates/core/tests/differential.rs` |
+| real upstream governors live on testnet | seed v2 deployed pinned Script3 + OpenZeppelin governors and captured 259 raw RPC fixtures (ledgers 5083606–5086043); `docs/seed-v2.md`, `tests/fixtures/seed-v2/` |
+| OpenZeppelin fixtures captured; adapter pending | six OZ proposal shapes exist in the corpus (`o1`…`o6`); `o1`/`o3` carry votes, `o2`/`o4`/`o6` do not (their vote windows closed before the checkpoint fix). The OZ adapter is not yet implemented |
 | stellar-xdr pinned 28.0.1 | `Cargo.lock` |
 
 ## Honest limitations
-- **No concrete governor adapters yet.** The trait and verified research exist
-  (docs/adapters/); Script3 and OpenZeppelin adapters are phase 1b. Until then,
-  governor attribution is always `unverified` — by design.
+- **Script3 adapter only; OpenZeppelin is not implemented.** Governor
+  attribution for any contract that is not the pinned Script3 governor stays
+  `unverified` — by design.
+- **Differential coverage is Script3 proposals 0–5 only**, from a single seeded
+  deployment of each governor — not other deployments, not mainnet DAOs. The
+  corpus contains no `Against` votes, and OZ proposals `o2`/`o4`/`o6` carry no
+  votes.
 - Event shapes in `docs/adapters/` were originally read from upstream source
   rather than observed on live deployments. **That changed with seed v2**: the
   pinned upstream Script3 and OpenZeppelin governors are now deployed on live
@@ -151,13 +175,29 @@ the self-hosted soak runner that carries the gitignored `.seed/` working area
 TTL over public RPC — reading TTL needs no secrets at all. That split is
 deliberate: CI can never acquire the authority to sign.
 
+## Codespaces / dev container
+
+Open in Codespaces: <https://codespaces.new/Stellar-Governance-Guardians/soroban-governance-parser>
+
+`.devcontainer/` provisions Rust 1.96 (per `rust-toolchain.toml`) with both wasm
+targets, Node 24, Docker-in-Docker and the GitHub CLI, and
+`.devcontainer/post-create.sh` adds `wasm-pack`, `gitleaks` and `stellar-cli`.
+
+- **Secrets never live in the repo.** Funded testnet keys for the seed-v2
+  workflow and any DB URLs come only from Codespaces secrets / env vars.
+  `.seed/` and `.env*` are gitignored.
+- Run `gitleaks detect --source .` before every push.
+- Codespaces sleep when idle, so do **not** run anything that must stay up
+  (the seed-v2 soak/activity loop) inside one; host it on a VPS instead.
+
 ## Layout
 ```
 crates/core      sans-IO decode pipeline (ScVal, WASM, spec, risk, adapters)
 crates/wasm      wasm-bindgen surface
 crates/cli       sgp binary + RPC client (only IO layer)
 schemas/         cross-repo source of truth (schema-v1.json, governance-v1.graphql)
-docs/adapters/   verified per-governor research with source URLs
+docs/adapters/   per-governor research + source-to-behavior mapping
+                 (Script3 implemented; OpenZeppelin pending)
 scripts/         prove-phase1.sh, check-claims.sh, check-proof.py, check-deployments.py,
                  list-registered-contracts.sh, seed-testnet/ (fixture governor),
                  ttl/extend-fixture-ttl.sh (idempotent TTL extension)
