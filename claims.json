@@ -16,6 +16,13 @@
       "check": { "cmd": "grep -q 'soroban-sdk = \"28.0.0\"' scripts/seed-testnet/Cargo.toml" }
     },
     {
+      "id": "seed-v2-wasm-fixture-hashes",
+      "claim": "every committed seed-v2 upstream wasm fixture hashes exactly as recorded in scripts/upstream/upstream.lock.json",
+      "statedIn": ["tests/fixtures/seed-v2/README.md", "docs/seed-v2.md"],
+      "online": false,
+      "check": { "cmd": "python3 scripts/check-wasm-fixtures.py" }
+    },
+    {
       "id": "unit-test-count",
       "claim": "at least 23 unit tests pass",
       "statedIn": ["README.md"],
