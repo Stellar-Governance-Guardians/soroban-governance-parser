@@ -100,14 +100,15 @@ Adapter: `crates/core/src/adapters/script3.rs`, pinned SHA
 Every row is asserted against committed raw captures in
 `crates/core/tests/differential.rs` (ids 0-5, offline).
 
-### Vote-weight decay: verified ABSENT
+### Vote-weight decay: no decay term found (source reading)
 
-`references/soroban-governor/contracts/votes/src/` contains no decay term —
+`contracts/votes/src/` in the pinned Script3 source contains no decay term —
 power is a stored checkpoint read (`get_past_votes` → `upper_lookup`), never a
 function of elapsed time. The OpenZeppelin stack
-(`references/stellar-contracts/packages/governance/src/votes/`) is the same
-shape. Verified by full-text search of both trees on 2026-10-08; the adapter
-implements no decay because neither governor does.
+(`packages/governance/src/votes/`) is the same shape. Found by full-text search
+of both trees at their pinned SHAs on 2026-10-08; this is a source reading, not
+a live-verified claim. The adapter implements no decay because neither
+governor's vote accounting contains one.
 
 ## UNVERIFIED / honest limitations
 - **No official testnet deployment IDs found.** The repo Makefile ID is a localhost

@@ -50,12 +50,17 @@ fn adapter_err(e: impl std::fmt::Display) -> JsValue {
 ///
 /// Returns the `Script3ProposalState` as JSON.
 #[wasm_bindgen]
-pub fn script3_state_from_chain(proposal_id: u32, get_proposal_xdr_base64: &str) -> Result<String, JsValue> {
+pub fn script3_state_from_chain(
+    proposal_id: u32,
+    get_proposal_xdr_base64: &str,
+) -> Result<String, JsValue> {
     use stellar_xdr::ReadXdr;
     let scval = ScVal::from_xdr_base64(get_proposal_xdr_base64, Limits::none())
         .map_err(|e| JsValue::from_str(&format!("input is not valid XDR base64 ScVal: {e}")))?;
     let adapter = soroban_governance_core::adapters::script3::Script3Adapter;
-    let state = adapter.state_from_chain(proposal_id, &scval).map_err(adapter_err)?;
+    let state = adapter
+        .state_from_chain(proposal_id, &scval)
+        .map_err(adapter_err)?;
     serde_json::to_string(&state).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
@@ -76,15 +81,22 @@ pub fn script3_tally_from_chain(get_proposal_votes_xdr_base64: &str) -> Result<S
 /// `RiskContext` (`{governor, treasury_addresses, large_value_threshold}`);
 /// pass `{}` for defaults (no contextual rules fire).
 #[wasm_bindgen]
-pub fn script3_decode_proposal(state_json: &str, risk_context_json: &str) -> Result<String, JsValue> {
+pub fn script3_decode_proposal(
+    state_json: &str,
+    risk_context_json: &str,
+) -> Result<String, JsValue> {
     let state: soroban_governance_core::adapters::script3::Script3ProposalState =
-        serde_json::from_str(state_json)
-            .map_err(|e| JsValue::from_str(&format!("state_json is not a Script3ProposalState: {e}")))?;
+        serde_json::from_str(state_json).map_err(|e| {
+            JsValue::from_str(&format!("state_json is not a Script3ProposalState: {e}"))
+        })?;
     let context: soroban_governance_core::risk::RiskContext =
-        serde_json::from_str(risk_context_json)
-            .map_err(|e| JsValue::from_str(&format!("risk_context_json is not a RiskContext: {e}")))?;
+        serde_json::from_str(risk_context_json).map_err(|e| {
+            JsValue::from_str(&format!("risk_context_json is not a RiskContext: {e}"))
+        })?;
     let adapter = soroban_governance_core::adapters::script3::Script3Adapter;
-    let proposal = adapter.decode_proposal(&state, &context).map_err(adapter_err)?;
+    let proposal = adapter
+        .decode_proposal(&state, &context)
+        .map_err(adapter_err)?;
     serde_json::to_string(&proposal).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
@@ -105,7 +117,11 @@ pub fn evaluate_risk_context(call_json: &str, risk_context_json: &str) -> Result
 /// `VoteOutcome` as a snake_case string (`successful` / `no_quorum` /
 /// `threshold_not_met`).
 #[wasm_bindgen]
-pub fn evaluate_tally(tally_json: &str, settings_json: &str, total_supply: i128) -> Result<String, JsValue> {
+pub fn evaluate_tally(
+    tally_json: &str,
+    settings_json: &str,
+    total_supply: i128,
+) -> Result<String, JsValue> {
     use soroban_governance_core::tally::{evaluate, GovernorSettings, VoteCount};
     let tally: VoteCount = serde_json::from_str(tally_json)
         .map_err(|e| JsValue::from_str(&format!("tally_json is not a VoteCount: {e}")))?;

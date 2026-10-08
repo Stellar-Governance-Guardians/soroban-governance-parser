@@ -94,14 +94,14 @@ All items below are machine-checked by `scripts/check-claims.sh` (see
 - `simulateTransaction` is NOT yet modeled. `ExecutionImpact` exists in the
   schema with `estimate: true` const, but no producer until the live response
   shape is inspected (phase 1b/2).
-- Vote-weight decay: **verified absent in both governor sources** (2026-10-08).
-  Script3 derives power from `get_past_votes` checkpoint lookups
-  (`references/soroban-governor/contracts/votes/src/checkpoints.rs`) and the
-  OpenZeppelin stack from `get_votes_at_checkpoint`
-  (`references/stellar-contracts/packages/governance/src/votes/storage.rs`):
-  both are snapshot reads of stored balances with no time-decay term anywhere
-  in their vote-accounting code. No decay is implemented in this parser,
-  because neither governor implements it.
+- Vote-weight decay: **not implemented here.** A source reading of both pinned
+  governors — Script3 `contracts/votes/src/checkpoints.rs`
+  (`get_past_votes`) and OpenZeppelin
+  `packages/governance/src/votes/storage.rs` (`get_votes_at_checkpoint`), at the
+  SHAs pinned in `scripts/upstream/upstream.lock.json` — found no time-decay
+  term: power is a stored checkpoint read. This is a **source reading, not a
+  live-verified claim** (reproduce with `scripts/upstream/fetch-references.sh`
+  plus a full-text search), so no decay is modeled.
 - The fixture deployer key is a throwaway testnet key; its secret is not in
   this repo. The fixture contract holds no value and is not a governor.
 
