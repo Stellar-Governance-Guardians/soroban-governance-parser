@@ -176,6 +176,102 @@ export function withResourceMargin(assembledTx, transactionDataB64) {
 }
 
 /**
+ * Declare a small window of OpenZeppelin checkpoint-index keys as read-write in
+ * addition to whatever the simulation predicted.
+ *
+ * `waitForLedgerClose` is the real fix (see above). This is defence in depth
+ * for the one case it cannot cover: if the checkpoint counter advances between
+ * our simulation and our execution ledger anyway, the transaction still traps.
+ * Over-declaring footprint keys is always legal — the contract only touches the
+ * keys it needs and resource fees are charged on what is actually read/written,
+ * not on what was declared — so declaring the next `CHECKPOINT_INDEX_MARGIN`
+ * indices costs nothing when unused and rescues the tx when needed.
+ *
+ * Governor-agnostic by construction: it keys off the declared storage-key
+ * symbol and is a no-op for governors that keep no such counter.
+ */
+export const CHECKPOINT_INDEX_MARGIN = 2;
+const CHECKPOINT_KEY_SYMBOL = 'TotalSupplyCheckpoint';
+
+/**
+ * Read the checkpoint index out of a footprint read-write key, or null if the
+ * key is not a `<symbol TotalSupplyCheckpoint, u32>` vector.
+ *
+ * The decoded XDR is accessed through the SDK's convenience wrappers, where the
+ * discriminant is the `type` property and ScVal symbol payloads are `XdrString`
+ * objects rather than plain strings. `String(...)` normalises both cases.
+ */
+function checkpointIndexOf(ledgerKey) {
+  const arm = ledgerKey?.value;
+  const key = arm?.key;
+  if (!arm || key?.type !== 'scvVec') return null;
+  const parts = key.vec;
+  if (!Array.isArray(parts) || parts.length !== 2) return null;
+  if (parts[0]?.type !== 'scvSymbol') return null;
+  if (String(parts[0].sym) !== CHECKPOINT_KEY_SYMBOL) return null;
+  if (parts[1]?.type !== 'scvU32') return null;
+  return parts[1].u32;
+}
+
+/**
+ * Pure: widen a simulation's SorobanTransactionData so the declared read-write
+ * footprint also covers the next `margin` checkpoint indices. Returns the input
+ * untouched when there is no checkpoint key to widen.
+ */
+export function widenCheckpointFootprint(transactionDataB64, margin = CHECKPOINT_INDEX_MARGIN) {
+  if (!transactionDataB64) {
+    throw new Error('widenCheckpointFootprint requires the simulation transactionData (fail closed)');
+  }
+  if (!Number.isInteger(margin) || margin < 0) {
+    throw new Error('widenCheckpointFootprint requires a non-negative integer margin (fail closed)');
+  }
+  if (margin === 0) return SorobanDataBuilder.fromXdr(transactionDataB64);
+
+  const builder = new SorobanDataBuilder(transactionDataB64);
+  const readWrite = builder.getReadWrite();
+  const declared = new Set(readWrite.map(checkpointIndexOf).filter((i) => i !== null));
+  if (!declared.size) return builder.build();
+
+  // Anchor the window to the highest index the simulation already declared: the
+  // execution ledger can only be ahead by the transactions that land between
+  // simulation and execution, and each successful mint advances the counter by
+  // exactly one.
+  const highest = Math.max(...declared);
+  const contract = readWrite.find((k) => checkpointIndexOf(k) === highest).value;
+  const extra = [];
+
+  for (let idx = highest + 1; idx <= highest + margin; idx += 1) {
+    if (declared.has(idx)) continue;
+    declared.add(idx);
+    extra.push(
+      xdr.LedgerKey.contractData(
+        new xdr.LedgerKeyContractData({
+          contract: contract.contract,
+          key: xdr.ScVal.scvVec([
+            xdr.ScVal.scvSymbol(CHECKPOINT_KEY_SYMBOL),
+            xdr.ScVal.scvU32(idx),
+          ]),
+          durability: contract.durability,
+        }),
+      ),
+    );
+  }
+
+  if (!extra.length) return builder.build();
+  return builder.appendFootprint([], extra).build();
+}
+
+/** Transaction-level wrapper around the pure {@link widenCheckpointFootprint}. */
+export function withCheckpointFootprintMargin(assembledTx, transactionDataB64, margin = CHECKPOINT_INDEX_MARGIN) {
+  const widened = widenCheckpointFootprint(transactionDataB64, margin);
+  return TransactionBuilder.cloneFrom(assembledTx, {
+    fee: assembledTx.fee,
+    sorobanData: widened,
+    networkPassphrase: PASSPHRASE,
+  }).build();
+}
+
+/**
  * Decode a base64 TransactionResult (getTransaction resultXdr) or a failed-send
  * errorResultXdr into JSON. Never throws: an undecodable result becomes
  * `{ decode_error }` so the caller still records *something* auditable.
@@ -211,7 +307,10 @@ export async function invoke({ contractId, fn, args = [], sourceId, signerId = s
 
   const assembled = rpc.assembleTransaction(tx, simResult).build();
   // Pad the simulated resource footprint before signing: see withResourceMargin.
-  const prepared = withResourceMargin(assembled, simResult.transactionData);
+  // Then widen the declared write footprint over the OpenZeppelin checkpoint
+  // index: see withCheckpointFootprintMargin.
+  const margined = withResourceMargin(assembled, simResult.transactionData);
+  const prepared = withCheckpointFootprintMargin(margined, simResult.transactionData);
   // sign() mutates in place and returns void
   prepared.sign(keypairOf(signerId));
   const signed = prepared;
