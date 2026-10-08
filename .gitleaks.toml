@@ -13,3 +13,9 @@ description = "seed-v2 proposal definitions: property named `key` with a slug st
 paths = ['''scripts/seed-v2/lib/proposals\.js$''']
 regexTarget = "match"
 regexes = ['''key:\s*'[a-z0-9-]+',''']
+
+[[allowlists]]
+description = "verbatim Soroban RPC captures: `\"key\": \"<base64 XDR>\"` is the public LedgerKey of a stateChanges entry, not a credential"
+paths = ['''seed-v2/rpc/''']
+regexTarget = "match"
+regexes = ['''"key":\s*"[A-Za-z0-9+/=]+"''']
