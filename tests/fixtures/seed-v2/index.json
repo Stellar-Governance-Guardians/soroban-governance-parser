@@ -1,0 +1,341 @@
+{
+  "$comment": "Provenance for committed seed-v2 fixtures. Each entry is a verbatim raw Soroban RPC response copied from .seed/capture/ (gitignored). Regenerate with `node capture-fixtures.js` after a live run.",
+  "generatedAtUtc": "2026-10-08T06:24:43.444Z",
+  "source": ".seed/capture",
+  "fixtures": [
+    {
+      "file": "rpc/0001-getHealth-deploy-start.json",
+      "method": "getHealth",
+      "note": "deploy-start",
+      "capturedAtUtc": "2026-10-07T12:49:33.385Z",
+      "latestLedger": 5070757,
+      "ledgerRetentionWindow": 120960
+    },
+    {
+      "file": "rpc/0002-getHealth-deploy-start.json",
+      "method": "getHealth",
+      "note": "deploy-start",
+      "capturedAtUtc": "2026-10-07T12:50:19.299Z",
+      "latestLedger": 5070766,
+      "ledgerRetentionWindow": 120960
+    },
+    {
+      "file": "rpc/0003-getTransaction-deploy-script3Votes.json",
+      "method": "getTransaction",
+      "note": "deploy-script3Votes",
+      "capturedAtUtc": "2026-10-07T12:51:38.918Z",
+      "txHash": "030940285cd226e24f5971ae7a1a3e88ad50c0cb612d2575ac060148318f9141",
+      "status": "SUCCESS",
+      "ledger": 5070768
+    },
+    {
+      "file": "rpc/0004-getTransaction-deploy-script3Governor.json",
+      "method": "getTransaction",
+      "note": "deploy-script3Governor",
+      "capturedAtUtc": "2026-10-07T12:51:39.158Z",
+      "txHash": "e808b1d44fc16e7b50b3b986d6da8c4e9b4de7a33114ab063b03d574a2e79324",
+      "status": "SUCCESS",
+      "ledger": 5070770
+    },
+    {
+      "file": "rpc/0005-getTransaction-deploy-script3MockSubcall.json",
+      "method": "getTransaction",
+      "note": "deploy-script3MockSubcall",
+      "capturedAtUtc": "2026-10-07T12:51:39.502Z",
+      "txHash": "fc601fe1ecb44127482928c3bc55eb63474da03ab4751f31359e4d15169650bd",
+      "status": "SUCCESS",
+      "ledger": 5070773
+    },
+    {
+      "file": "rpc/0006-getTransaction-deploy-ozToken.json",
+      "method": "getTransaction",
+      "note": "deploy-ozToken",
+      "capturedAtUtc": "2026-10-07T12:51:39.734Z",
+      "txHash": "47f8afb15bb35dd11f09ff06c2efbc6da99235cf0a198d9fc41766a11902be7a",
+      "status": "SUCCESS",
+      "ledger": 5070775
+    },
+    {
+      "file": "rpc/0007-getTransaction-deploy-ozGovernor.json",
+      "method": "getTransaction",
+      "note": "deploy-ozGovernor",
+      "capturedAtUtc": "2026-10-07T12:51:39.943Z",
+      "txHash": "8d61b3721601a5360b06591ed0e66607450006a666d28cd9706a942eb73418c6",
+      "status": "SUCCESS",
+      "ledger": 5070777
+    },
+    {
+      "file": "rpc/0008-getTransaction-deploy-ozUpgradeableV1.json",
+      "method": "getTransaction",
+      "note": "deploy-ozUpgradeableV1",
+      "capturedAtUtc": "2026-10-07T12:51:40.218Z",
+      "txHash": "ffb480fefa8360179c0c34a5d1256b927bea83cfbd00064c58fe7e64cb3b970a",
+      "status": "SUCCESS",
+      "ledger": 5070780
+    },
+    {
+      "file": "rpc/0009-getTransaction-deploy-ozMockSubcall.json",
+      "method": "getTransaction",
+      "note": "deploy-ozMockSubcall",
+      "capturedAtUtc": "2026-10-07T12:51:40.442Z",
+      "txHash": "a847fe3a42ef47d6205c269163970ec974a1be6f1e19cbba7d4f5013617cda6d",
+      "status": "SUCCESS",
+      "ledger": 5070782
+    },
+    {
+      "file": "rpc/0010-getHealth-seed-start.json",
+      "method": "getHealth",
+      "note": "seed-start",
+      "capturedAtUtc": "2026-10-07T13:03:27.859Z",
+      "latestLedger": 5070924,
+      "ledgerRetentionWindow": 120960
+    },
+    {
+      "file": "rpc/0011-getHealth-seed-start.json",
+      "method": "getHealth",
+      "note": "seed-start",
+      "capturedAtUtc": "2026-10-07T13:09:46.216Z",
+      "latestLedger": 5070999,
+      "ledgerRetentionWindow": 120960
+    },
+    {
+      "file": "rpc/0012-simulateTransaction-simulate-s3-initialize-votes.json",
+      "method": "simulateTransaction",
+      "note": "simulate-s3-initialize-votes",
+      "capturedAtUtc": "2026-10-07T13:09:46.913Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0013-getHealth-seed-start.json",
+      "method": "getHealth",
+      "note": "seed-start",
+      "capturedAtUtc": "2026-10-07T13:11:56.253Z",
+      "latestLedger": 5071025,
+      "ledgerRetentionWindow": 120960
+    },
+    {
+      "file": "rpc/0014-simulateTransaction-simulate-s3-initialize-votes.json",
+      "method": "simulateTransaction",
+      "note": "simulate-s3-initialize-votes",
+      "capturedAtUtc": "2026-10-07T13:11:56.727Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0016-getTransaction-final-s3-initialize-votes.json",
+      "method": "getTransaction",
+      "note": "final-s3-initialize-votes",
+      "capturedAtUtc": "2026-10-07T13:12:03.617Z",
+      "txHash": "528f57942c3df3d3067e939d5f1f1685cfdd265f3bca5e5fc610ea573fce39ec",
+      "status": "SUCCESS",
+      "ledger": 5071027
+    },
+    {
+      "file": "rpc/0017-simulateTransaction-simulate-s3-initialize-governor.json",
+      "method": "simulateTransaction",
+      "note": "simulate-s3-initialize-governor",
+      "capturedAtUtc": "2026-10-07T13:12:04.194Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0019-getTransaction-final-s3-initialize-governor.json",
+      "method": "getTransaction",
+      "note": "final-s3-initialize-governor",
+      "capturedAtUtc": "2026-10-07T13:12:09.016Z",
+      "txHash": "efc7794733abd73f046fcdf2fd3009cdf9a5552f418b5176ac31d879c5106435",
+      "status": "SUCCESS",
+      "ledger": 5071028
+    },
+    {
+      "file": "rpc/0020-simulateTransaction-simulate-s3-initialize-mock-subcall.json",
+      "method": "simulateTransaction",
+      "note": "simulate-s3-initialize-mock-subcall",
+      "capturedAtUtc": "2026-10-07T13:12:09.674Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0022-getTransaction-final-s3-initialize-mock-subcall.json",
+      "method": "getTransaction",
+      "note": "final-s3-initialize-mock-subcall",
+      "capturedAtUtc": "2026-10-07T13:12:14.456Z",
+      "txHash": "c9cd06f04f921d77e20cd577c190b517555941ddadb1df55f6b0346dd0937a04",
+      "status": "SUCCESS",
+      "ledger": 5071029
+    },
+    {
+      "file": "rpc/0023-simulateTransaction-simulate-s3-mint-sgg-deployer.json",
+      "method": "simulateTransaction",
+      "note": "simulate-s3-mint-sgg-deployer",
+      "capturedAtUtc": "2026-10-07T13:12:15.131Z",
+      "eventCount": 4
+    },
+    {
+      "file": "rpc/0025-getTransaction-final-s3-mint-sgg-deployer.json",
+      "method": "getTransaction",
+      "note": "final-s3-mint-sgg-deployer",
+      "capturedAtUtc": "2026-10-07T13:12:17.960Z",
+      "txHash": "2363d59fec2ebc1c95226f9e4c8682dfa1bde298ab3012309fe77de5c286260b",
+      "status": "SUCCESS",
+      "ledger": 5071030
+    },
+    {
+      "file": "rpc/0026-simulateTransaction-simulate-s3-mint-sgg-delegate-1.json",
+      "method": "simulateTransaction",
+      "note": "simulate-s3-mint-sgg-delegate-1",
+      "capturedAtUtc": "2026-10-07T13:12:18.558Z",
+      "eventCount": 4
+    },
+    {
+      "file": "rpc/0028-getTransaction-final-s3-mint-sgg-delegate-1.json",
+      "method": "getTransaction",
+      "note": "final-s3-mint-sgg-delegate-1",
+      "capturedAtUtc": "2026-10-07T13:12:22.671Z",
+      "txHash": "48045d1f3d37521259f2945f7c14d9c3a82db7b449616f2f6bc28c4763f22b17",
+      "status": "SUCCESS",
+      "ledger": 5071031
+    },
+    {
+      "file": "rpc/0029-simulateTransaction-simulate-s3-mint-sgg-delegate-2.json",
+      "method": "simulateTransaction",
+      "note": "simulate-s3-mint-sgg-delegate-2",
+      "capturedAtUtc": "2026-10-07T13:12:23.258Z",
+      "eventCount": 4
+    },
+    {
+      "file": "rpc/0031-getTransaction-final-s3-mint-sgg-delegate-2.json",
+      "method": "getTransaction",
+      "note": "final-s3-mint-sgg-delegate-2",
+      "capturedAtUtc": "2026-10-07T13:12:29.712Z",
+      "txHash": "a5e12a87cda7c493e114d8f39c5af596d2040f0f6d0a039dd114dca89f56bf44",
+      "status": "SUCCESS",
+      "ledger": 5071032
+    },
+    {
+      "file": "rpc/0032-simulateTransaction-simulate-s3-mint-sgg-delegate-3.json",
+      "method": "simulateTransaction",
+      "note": "simulate-s3-mint-sgg-delegate-3",
+      "capturedAtUtc": "2026-10-07T13:12:30.422Z",
+      "eventCount": 4
+    },
+    {
+      "file": "rpc/0034-getTransaction-final-s3-mint-sgg-delegate-3.json",
+      "method": "getTransaction",
+      "note": "final-s3-mint-sgg-delegate-3",
+      "capturedAtUtc": "2026-10-07T13:12:33.287Z",
+      "txHash": "a8d58dcecd47cbd5e7836365570d89c4b5a8629131d948869b100c389d9ca0a3",
+      "status": "SUCCESS",
+      "ledger": 5071033
+    },
+    {
+      "file": "rpc/0035-simulateTransaction-simulate-s3-mint-sgg-delegate-4.json",
+      "method": "simulateTransaction",
+      "note": "simulate-s3-mint-sgg-delegate-4",
+      "capturedAtUtc": "2026-10-07T13:12:34.049Z",
+      "eventCount": 4
+    },
+    {
+      "file": "rpc/0037-getTransaction-final-s3-mint-sgg-delegate-4.json",
+      "method": "getTransaction",
+      "note": "final-s3-mint-sgg-delegate-4",
+      "capturedAtUtc": "2026-10-07T13:12:38.720Z",
+      "txHash": "6def982c9f6bf4a71761d9875e44aeb49703d0792693e1569c70cee2ac02ffa4",
+      "status": "SUCCESS",
+      "ledger": 5071034
+    },
+    {
+      "file": "rpc/0038-simulateTransaction-simulate-s3-mint-sgg-delegate-5.json",
+      "method": "simulateTransaction",
+      "note": "simulate-s3-mint-sgg-delegate-5",
+      "capturedAtUtc": "2026-10-07T13:12:39.571Z",
+      "eventCount": 4
+    },
+    {
+      "file": "rpc/0040-getTransaction-final-s3-mint-sgg-delegate-5.json",
+      "method": "getTransaction",
+      "note": "final-s3-mint-sgg-delegate-5",
+      "capturedAtUtc": "2026-10-07T13:12:44.350Z",
+      "txHash": "8b6f2223dfd261406e218f8ad3e09bc1c2dc3dd12dbc5ae57ecf285520fd2c2b",
+      "status": "SUCCESS",
+      "ledger": 5071035
+    },
+    {
+      "file": "rpc/0041-simulateTransaction-simulate-s3-mint-sgg-governor-treasury.json",
+      "method": "simulateTransaction",
+      "note": "simulate-s3-mint-sgg-governor-treasury",
+      "capturedAtUtc": "2026-10-07T13:12:45.375Z",
+      "eventCount": 4
+    },
+    {
+      "file": "rpc/0043-getTransaction-final-s3-mint-sgg-governor-treasury.json",
+      "method": "getTransaction",
+      "note": "final-s3-mint-sgg-governor-treasury",
+      "capturedAtUtc": "2026-10-07T13:12:48.070Z",
+      "txHash": "874392e1e97f437915ae11b1395818f0a5e996e75bc679eb28ac0c2865105b8e",
+      "status": "SUCCESS",
+      "ledger": 5071036
+    },
+    {
+      "file": "rpc/0044-simulateTransaction-simulate-s3-delegate-sgg-delegate-4.json",
+      "method": "simulateTransaction",
+      "note": "simulate-s3-delegate-sgg-delegate-4",
+      "capturedAtUtc": "2026-10-07T13:12:48.956Z",
+      "eventCount": 5
+    },
+    {
+      "file": "rpc/0046-getTransaction-final-s3-delegate-sgg-delegate-4.json",
+      "method": "getTransaction",
+      "note": "final-s3-delegate-sgg-delegate-4",
+      "capturedAtUtc": "2026-10-07T13:12:53.245Z",
+      "txHash": "f99745c1042b7a344e79bc61d0164e5e74c98186f81267cfbd601e96110a668c",
+      "status": "SUCCESS",
+      "ledger": 5071037
+    },
+    {
+      "file": "rpc/0047-simulateTransaction-simulate-s3-delegate-sgg-delegate-5.json",
+      "method": "simulateTransaction",
+      "note": "simulate-s3-delegate-sgg-delegate-5",
+      "capturedAtUtc": "2026-10-07T13:12:54.189Z",
+      "eventCount": 5
+    },
+    {
+      "file": "rpc/0049-getTransaction-final-s3-delegate-sgg-delegate-5.json",
+      "method": "getTransaction",
+      "note": "final-s3-delegate-sgg-delegate-5",
+      "capturedAtUtc": "2026-10-07T13:12:59.419Z",
+      "txHash": "c2baab2d7f2656e3e76f174c0473436967ae925d6178b9b7ccf03763dd407314",
+      "status": "SUCCESS",
+      "ledger": 5071038
+    },
+    {
+      "file": "rpc/0050-simulateTransaction-simulate-s3-propose-s1-transfer-executed.json",
+      "method": "simulateTransaction",
+      "note": "simulate-s3-propose-s1-transfer-executed",
+      "capturedAtUtc": "2026-10-07T13:12:59.997Z",
+      "eventCount": 7
+    },
+    {
+      "file": "rpc/0052-getTransaction-final-s3-propose-s1-transfer-executed.json",
+      "method": "getTransaction",
+      "note": "final-s3-propose-s1-transfer-executed",
+      "capturedAtUtc": "2026-10-07T13:13:03.408Z",
+      "txHash": "850569141e4934762c465bfffd21e548cd97be0c02a5f161f7811639c04d1da8",
+      "status": "SUCCESS",
+      "ledger": 5071039
+    },
+    {
+      "file": "rpc/0053-simulateTransaction-simulate-s3-propose-s2-contract-upgrade.json",
+      "method": "simulateTransaction",
+      "note": "simulate-s3-propose-s2-contract-upgrade",
+      "capturedAtUtc": "2026-10-07T13:13:04.193Z",
+      "eventCount": 7
+    },
+    {
+      "file": "rpc/0055-getTransaction-final-s3-propose-s2-contract-upgrade.json",
+      "method": "getTransaction",
+      "note": "final-s3-propose-s2-contract-upgrade",
+      "capturedAtUtc": "2026-10-07T13:13:08.615Z",
+      "txHash": "5d6c1b20977771c87d14d90a823599be103df68aeb20a50f1d3a0821890cd0d9",
+      "status": "FAILED",
+      "ledger": 5071040
+    }
+  ]
+}
