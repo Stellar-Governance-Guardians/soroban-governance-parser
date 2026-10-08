@@ -403,6 +403,12 @@ fn voted_amounts_reconstruct_the_captured_tallies() {
     assert_eq!(folded.abstain, 7_500_000_000_000);
 }
 
+/// A single voter's snapshot expectation: fixture-name part, support, power.
+type VoterSnapshotRow = (&'static str, u32, i128);
+
+/// One proposal's snapshot rows: key suffix, vote_start, and its voters.
+type ProposalSnapshotRow = (&'static str, u32, &'static [VoterSnapshotRow]);
+
 /// Power-at-snapshot differential (N3 exit criterion).
 ///
 /// For every Script3 proposal, folding the captured
@@ -421,9 +427,9 @@ fn voted_amounts_reconstruct_the_captured_tallies() {
 /// would mean the snapshot moved, and this test fails.
 #[test]
 fn power_at_snapshot_reconstructs_every_captured_tally() {
-    /// (proposal key suffix, snapshot vote_start, voters as
-    /// (fixture name part, support, expected power)).
-    let rows: &[(&str, u32, &[(&str, u32, i128)])] = &[
+    // (proposal key suffix, snapshot vote_start, voters as
+    // (fixture name part, support, expected power)).
+    let rows: &[ProposalSnapshotRow] = &[
         (
             "s1-transfer-executed",
             5083633,
@@ -433,7 +439,11 @@ fn power_at_snapshot_reconstructs_every_captured_tally() {
                 ("sgg-delegate-3", 1, 2_000_000_000_000),
             ],
         ),
-        ("s2-contract-upgrade", 5083634, &[("sgg-delegate-1", 1, 3_000_000_000_000)]),
+        (
+            "s2-contract-upgrade",
+            5083634,
+            &[("sgg-delegate-1", 1, 3_000_000_000_000)],
+        ),
         (
             "s3-admin-change",
             5083635,
@@ -442,7 +452,11 @@ fn power_at_snapshot_reconstructs_every_captured_tally() {
                 ("sgg-delegate-3", 1, 2_000_000_000_000),
             ],
         ),
-        ("s4-unknown-contract-call", 5083636, &[("sgg-delegate-3", 1, 2_000_000_000_000)]),
+        (
+            "s4-unknown-contract-call",
+            5083636,
+            &[("sgg-delegate-3", 1, 2_000_000_000_000)],
+        ),
         ("s5-failing-quorum", 5083637, &[]),
         (
             "s6-abstain-heavy",
@@ -467,8 +481,7 @@ fn power_at_snapshot_reconstructs_every_captured_tally() {
         );
         assert_eq!(
             supply,
-            (50_000 + 300_000 + 250_000 + 200_000 + 150_000 + 100_000 + 500_000)
-                * 10_000_000,
+            (50_000 + 300_000 + 250_000 + 200_000 + 150_000 + 100_000 + 500_000) * 10_000_000,
             "{key} supply must equal the committed mint constants"
         );
 
@@ -476,9 +489,7 @@ fn power_at_snapshot_reconstructs_every_captured_tally() {
         // cross-checked against the hand-derived mint values.
         let mut folded = VoteCount::default();
         for (voter, support, expected_power) in *voters {
-            let read = decoded_return(&format!(
-                "read-s3-get_past_votes-{key}-{voter}"
-            ));
+            let read = decoded_return(&format!("read-s3-get_past_votes-{key}-{voter}"));
             let power = soroban_governance_core::scval::scval_i128(&read)
                 .unwrap_or_else(|| panic!("{key}/{voter} snapshot power must be i128"));
             assert_eq!(
