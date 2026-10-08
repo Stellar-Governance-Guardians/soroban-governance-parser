@@ -50,13 +50,48 @@ node verify.js                               # offline integrity of recorded has
 
 ## Honest limitations
 
-- These fixtures record a **partial** seed run. As of 2026-10-08 the run stopped
-  at the Script3 S2 (contract-upgrade) propose, which failed on-chain with
-  `resource_limit_exceeded`; see `docs/seed-v2.md`. The remaining proposals and
-  the OpenZeppelin run are not yet captured.
-- `verify.js` currently reports the two historical `uploadTxHash` defects
+- **232 committed RPC responses**, ledgers 5083606–5084619. `verify.js` checks
+  **34 recorded hashes** against 68 captures; all 34 are SUCCESS transactions and
+  none is a wasm sha256.
+- **Three transactions are intentionally `FAILED`** and are kept, not
+  overwritten: the OpenZeppelin mints to `delegate-1/3/5` that trapped on
+  `[TotalSupplyCheckpoint, 1]`
+  (`803d0bc41e1252603c78ae714080f32797b3751032582f19db3ce9ce0651d59e`,
+  `2aef69bdbca83ad47341d9c604cd41ca70fb2bfef62a8bcb18037531d6906945`,
+  `e352ae22bf264bbc3f80af3f8d9c44431ffdef1938374898777bb6f7a94c2b60`). The same
+  mints later appear as SUCCESS in the same directory — that before/after pair is
+  the evidence for the fix. See `docs/seed-v2.md`.
+- **`o2`, `o4` and `o6` (OpenZeppelin) carry no votes.** They were created in an
+  earlier run, so their voting windows closed before the blocker was fixed; vote
+  windows cannot be reopened. Abstain is still represented in the corpus by
+  Script3's `s6-abstain-heavy` (3 abstains).
+- **No `Against` votes exist anywhere in the corpus.** The `For` and `Abstain`
+  paths are backed by real chain data; `Against` is not.
+- **`settle.js` close/execute has not been run** against these proposals, so no
+  `Executed`/`Defeated`/`Succeeded` terminal states are captured beyond whatever
+  the governor already reported.
+- `verify.js` also checks the two historical `uploadTxHash` defects
   (`script3Votes`, `ozMockSubcall` recorded the wasm sha256 instead of a tx
-  hash). Those are from the pre-fix run stored in the gitignored `.seed/state.json`;
-  the deploy.js fix prevents recurrence and a clean re-run clears them.
-- Testnet is periodically reset. If a capture's referenced ledger has aged out of
-  retention it stays valid as a fixture, but it can no longer be re-queried live.
+  hash). Those come from the pre-fix run stored in the gitignored
+  `.seed/state.json`; the `deploy.js` fix prevents recurrence.
+- Testnet is periodically reset and these contracts have a TTL. If a capture's
+  referenced ledger has aged out of retention, or the contract has expired, the
+  fixture stays valid but can no longer be re-queried live. That is the whole
+  reason the responses are committed.
+
+## Re-seed after a testnet reset
+
+```bash
+scripts/upstream/fetch-references.sh
+scripts/upstream/build-upstream.sh
+cd scripts/seed-v2 && npm ci
+node deploy.js && node seed.js && node settle.js
+node capture-fixtures.js && node verify.js
+```
+
+If the contracts are merely expired rather than gone, TTL can be extended
+without re-deploying:
+
+```bash
+bash scripts/ttl/extend-seed-contracts.sh   # reads contract ids from .seed/state.json
+```
