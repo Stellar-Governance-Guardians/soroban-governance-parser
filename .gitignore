@@ -13,3 +13,5 @@ Cargo.lock.bak
 node_modules/
 # stellar CLI local config
 .config/
+# built WASM release asset (published as a GitHub Release asset, not committed)
+/*.tgz

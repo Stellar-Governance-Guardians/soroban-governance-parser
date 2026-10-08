@@ -78,6 +78,39 @@ cargo build --release -p soroban-governance-cli
 ./target/release/sgp ttl --contract CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE --min-remaining 50000
 ```
 
+## WASM package
+
+The parser exposes its decode / risk / tally surface through `wasm-bindgen` for
+both the `nodejs` and `web` targets, packaged in one archive for the dashboard.
+
+| | |
+|---|---|
+| release | GitHub **pre-release** `v0.1.0-alpha.1` (not on npm or crates.io) |
+| asset | `sgg-parser-wasm-0.1.0-alpha.1.tgz` |
+| sha256 | `7b2eb9420f0cf0582d079f9603beb1e8548e1c7bac165724688cbae5b9237ecd` |
+| lock | [`releases/parser-wasm.lock.json`](releases/parser-wasm.lock.json) |
+
+Rebuild it deterministically (sorted tar entries, zeroed mtimes, `gzip -n`), so
+the sha256 is stable:
+
+```bash
+scripts/wasm/package-release.sh 0.1.0-alpha.1
+sha256sum sgg-parser-wasm-0.1.0-alpha.1.tgz   # must equal the lock file
+```
+
+`scripts/check-wasm-release.py` (a PR-gate claim) checks that the README's
+sha256 and asset name match the committed lock file, offline. Sibling repos pin
+this lock file per the interface contract.
+
+## Schemas (v1, frozen)
+
+`schemas/governance-v1.graphql` (GraphQL SDL) and `schemas/schema-v1.json`
+(JSON Schema) are the cross-repo contract. v1 is **additive-only**: see
+[`schemas/CHANGELOG.md`](schemas/CHANGELOG.md), enforced by
+`scripts/check-schema-additive.py` against the committed baseline
+`schemas/governance-v1.baseline.graphql` (a PR-gate claim). Sibling repos pin
+the SDL together with `releases/parser-wasm.lock.json`.
+
 ## Verified evidence (live Stellar testnet, 2026-10-05)
 All items below are machine-checked by `scripts/check-claims.sh` (see
 `claims.json`) and reproducible via `scripts/prove-phase1.sh`

@@ -109,6 +109,29 @@
       }
     },
     {
+      "id": "schema-additive",
+      "claim": "the v1 GraphQL SDL is unchanged or additive relative to the committed baseline (no type, field, argument or enum value removed or retyped)",
+      "statedIn": [
+        "schemas/CHANGELOG.md",
+        "SPEC.md"
+      ],
+      "online": false,
+      "check": {
+        "cmd": "python3 scripts/check-schema-additive.py"
+      }
+    },
+    {
+      "id": "wasm-release-sha256",
+      "claim": "README's stated WASM package sha256 and asset name match the committed release lock file, offline",
+      "statedIn": [
+        "README.md"
+      ],
+      "online": false,
+      "check": {
+        "cmd": "python3 scripts/check-wasm-release.py"
+      }
+    },
+    {
       "id": "seed-v2-fixture-count",
       "claim": "the seed-v2 corpus holds 259 committed raw RPC responses and index.json lists exactly that many",
       "statedIn": [

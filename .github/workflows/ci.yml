@@ -28,6 +28,35 @@ jobs:
       - run: cargo build -p soroban-governance-wasm --target wasm32-unknown-unknown --release
       - run: test -s target/wasm32-unknown-unknown/release/soroban_governance_wasm.wasm
 
+  wasm-package:
+    name: wasm-pack package + Node test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.96.0"
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+      - uses: jetli/wasm-pack-action@v0.4.0
+        with:
+          version: "v0.13.1"
+      - name: build nodejs target
+        run: wasm-pack build crates/wasm --target nodejs --out-dir pkg/nodejs --out-name sgp_parser_wasm
+      - name: Node smoke test of the built artifact
+        run: node --test crates/wasm/js-tests/node.test.mjs
+      - name: build web target
+        run: wasm-pack build crates/wasm --target web --out-dir pkg/web --out-name sgp_parser_wasm
+      - name: install Playwright Chromium
+        working-directory: crates/wasm/js-tests
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: headless browser test of the built artifact
+        run: node crates/wasm/js-tests/browser.test.mjs
+      - name: offline wasm-release claim
+        run: python3 scripts/check-wasm-release.py
+
   hygiene:
     name: charter rules (fixtures, namespace, claims)
     runs-on: ubuntu-latest
