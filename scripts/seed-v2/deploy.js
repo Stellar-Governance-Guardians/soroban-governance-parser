@@ -9,7 +9,7 @@
 import { createHash } from 'node:crypto';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { stellar, extractHashes, extractContractId } from './lib/cli.js';
+import { stellar, extractSigningHashes, extractExplorerTxHashes, extractContractId } from './lib/cli.js';
 import { ensureIdentity, addressOf } from './lib/keys.js';
 import { loadUpstreamLock, WASM_FIXTURES_DIR, DEPLOYER_ID, DELEGATE_IDS, SCHEDULE, KEYS_DIR } from './lib/config.js';
 import { loadState, freshState, saveState } from './lib/state.js';
@@ -63,12 +63,21 @@ function deployContract({ state, name, wasmKey, ctorArgs = [] }) {
   ];
   const { out, stdout } = stellar(args, { logName: `deploy-${name}` });
   const contractId = extractContractId(stdout) ?? extractContractId(out);
-  const hashes = extractHashes(out);
   if (!contractId) throw new Error(`deploy(${name}): no contract id in output:\n${out}`);
-  // CLI output: optional "Signing transaction: <hash>" for the wasm upload,
-  // then one for the contract-create transaction.
-  const deployTxHash = hashes.length >= 1 ? hashes[hashes.length - 1] : null;
-  const uploadTxHash = hashes.length >= 2 ? hashes[0] : null;
+  // Parse only structured signals. NEVER scan for "any 64-hex string": the CLI
+  // prints the wasm sha256 (`Deploying contract using wasm hash <sha>`) which is
+  // not a transaction hash. Submission order is: optional upload tx, then the
+  // contract-create tx. When the wasm was already installed the CLI says
+  // "Skipping install…" and emits only the create tx.
+  const signed = extractSigningHashes(out);
+  const explorer = extractExplorerTxHashes(out);
+  const txHashes = explorer.length > 0 ? explorer : signed;
+  const skippedInstall = /Skipping install because wasm already installed/.test(out);
+  const deployTxHash = txHashes.length >= 1 ? txHashes[txHashes.length - 1] : null;
+  const uploadTxHash = !skippedInstall && txHashes.length >= 2 ? txHashes[0] : null;
+  if (!deployTxHash) {
+    throw new Error(`deploy(${name}): no transaction hash found in CLI output (fail closed):\n${out}`);
+  }
   const record = {
     contractId,
     wasmKey,
