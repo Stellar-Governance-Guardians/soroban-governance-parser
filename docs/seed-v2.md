@@ -22,6 +22,7 @@ and curated into committed fixtures by `capture-fixtures.js`.
 | `scripts/seed-v2/test/` | offline unit tests (Node built-in runner) |
 | `scripts/activity/activity.js` | bounded, idempotent on-chain activity generator (keeps fresh data for the indexer) |
 | `scripts/ttl/extend-seed-contracts.sh` | extends instance+code TTL of every seed contract read from `.seed/state.json` |
+| `test/footprint-margin.test.js` | offline tests for the checkpoint-footprint widening, driven from committed fixtures |
 
 ## Root-cause record: Script3 S2 `propose` failed on-chain
 
@@ -90,8 +91,10 @@ node verify.js    # every recorded hash is a SUCCESS tx, none is a wasm hash
 
 ## Live findings (testnet, 2026-10-08)
 
-Three live runs were made (process rule 4: two focused attempts per blocker,
-labeled fallback next).
+Four live runs were made. The first three resolved the Script3 seed design; the
+fourth resolved the OpenZeppelin blocker on its first focused attempt, after a
+decode-and-compare pass established the real root cause instead of the assumed
+one (process rule 4: test the hypothesis, do not assume it).
 
 **Script3 — complete after a seed redesign.** Script3 enforces *one open
 proposal per creator* and a proposal-threshold power requirement. The original
@@ -103,40 +106,117 @@ generate proposals FIRST, then cast delegations — is now implemented, and a
 clean run created all six proposals (ids 0–5), cast every vote, recorded both
 delegations and captured the on-chain reads with **no Script3 failures**.
 
-**OpenZeppelin — blocked on one root cause.** OZ `mint` to `delegate-1/3/5`
-traps with `error {storage: exceeded_limit}` — "trying to access contract data
-key outside of the footprint" — for key `[TotalSupplyCheckpoint, 1]`: the
-transaction's simulated read/write footprint omits a key the mint actually
-writes. `mint` to `deployer`/`delegate-2`/`delegate-4` succeeds. Because those
-three mints fail, `delegate-1/3/5` hold zero OZ voting power, so the proposals
-they create (`o1`/`o3`/`o5`) fail `#5002` (`get_votes_at_checkpoint` = 0) and
-their votes fail — i.e. every OZ failure traces to the one footprint defect.
-(The self-delegation fix is still required: OZ counts only delegated power.)
+**OpenZeppelin — root cause found and fixed.** See the dedicated section below.
 
-So the OZ blocker is **simulation-footprint staleness** — the same *class* as the
-Script3 S2 resource issue: the footprint/resources `simulateTransaction` returns
-can be stale relative to execution. Re-simulating immediately before signing
-and/or routing the affected calls through the CLI's footprint handling is the
-understood fix, but it is **not validated live** (two focused attempts used).
+## Root cause: the OpenZeppelin checkpoint index (fixed, validated live)
+
+**Symptom.** `mint` to `delegate-1/3/5` trapped with
+`error {storage: exceeded_limit}` — "trying to access contract data key outside
+of the footprint" — for key `[TotalSupplyCheckpoint, 1]`, while the submitted
+footprint declared only `[TotalSupplyCheckpoint, 0]`. `mint` to
+`deployer`/`delegate-2`/`delegate-4` succeeded.
+
+**The obvious reading was wrong.** The obvious diagnosis is "the simulated
+footprint is stale relative to execution", and the submitted transaction's
+footprint appears to confirm it. Decoding the captured simulation's
+`transactionData` and the submitted `envelopeXdr` side by side shows they were
+**identical** — both declared `[TotalSupplyCheckpoint, 0]`. Nothing went stale
+between simulation and signing.
+
+**What actually differs is the ledger the simulation ran against.** `invoke()`
+broke out of its `getTransaction` wait loop as soon as a status came back, and
+that resolves when a transaction is *included* in a ledger, which is **before
+that ledger closes**. So the next operation simulated against a snapshot that
+did not yet include the previous transaction's state changes.
+
+That matters because OpenZeppelin's votes storage reads its checkpoint counter
+from **instance** storage and writes the entry to **persistent** storage at index
+`num` (`references/stellar-contracts` @ `b40c5eaefe6a29f0030f00bd2d730b7a91cce330`,
+`packages/governance/src/votes/storage.rs`, `push_checkpoint` / `get_num_checkpoints`):
+
+```rust
+let num = get_num_checkpoints(e, checkpoint_type);      // instance storage
+let last_checkpoint = if num > 0 { Some(get_checkpoint(e, checkpoint_type, num - 1)) } else { None };
+if last_checkpoint.ledger == e.ledger().sequence() { /* update num-1 in place */ }
+let key = checkpoint_storage_key(checkpoint_type, num);   // else write a NEW one
+```
+
+One successful mint in between increments `num`, so the index the simulation
+predicted is exactly one lower than execution needs.
+
+**The failures were a strict alternation**, not noise — every mint whose
+immediately-preceding mint succeeded failed:
+
+| tx | sim ledger | declared index | exec ledger | result |
+|---|---|---|---|---|
+| `oz-mint-sgg-deployer` | 5083652 | `[0]` | 5083653 | SUCCESS |
+| `oz-mint-sgg-delegate-1` | 5083653 | `[0]` | 5083654 | **FAILED** (wanted `[1]`) |
+| `oz-mint-sgg-delegate-2` | 5083654 | `[1]` | 5083655 | SUCCESS |
+| `oz-mint-sgg-delegate-3` | 5083655 | `[1]` | 5083656 | **FAILED** (wanted `[2]`) |
+| `oz-mint-sgg-delegate-4` | 5083656 | `[2]` | 5083657 | SUCCESS |
+| `oz-mint-sgg-delegate-5` | 5083657 | `[2]` | 5083658 | **FAILED** (wanted `[3]`) |
+
+**Fix 1 (the one that mattered).** `waitForLedgerClose()` in `lib/rpc.js` polls
+`getHealth` until `latestLedger` exceeds the landed ledger, so the next
+simulation observes at least the state execution will. It fails closed rather
+than continuing on a snapshot known to be stale.
+
+**Fix 2 (defence in depth).** `widenCheckpointFootprint()` also declares the
+next `CHECKPOINT_INDEX_MARGIN` indices above the highest one the simulation
+predicted, anchored to that highest index. Over-declaring footprint keys is
+always legal — the contract only touches what it needs, and resource fees are
+charged on what is actually read and written — so this is free when unused. It
+is a no-op for governors that keep no such counter (asserted offline against a
+captured Script3 simulation).
+
+**Validated live.** The same mints, before and after:
+
+| | old | new |
+|---|---|---|
+| `delegate-1` | FAILED, ledger 5083654, `803d0bc41e1252603c78ae714080f32797b3751032582f19db3ce9ce0651d59e`, declared `[0]` | SUCCESS, ledger 5084551, `01333a94a65808002409a9ed3f435f42…`, declared `[4, 5, 6]` |
+| `delegate-3` | FAILED, ledger 5083656, `2aef69bdbca83ad47341d9c604cd41ca70fb2bfef62a8bcb18037531d6906945` | SUCCESS, ledger 5084553, `949a34b99dec07f4068c875f` |
+| `delegate-5` | FAILED, ledger 5083658, `e352ae22bf264bbc3f80af3f8d9c44431ffdef1938374898777bb6f7a94c2b60` | SUCCESS, ledger 5084555, `913270d1c1681af3342de725` |
+
+Both fixture sets are committed; the FAILED transactions were kept rather than
+overwritten so the contrast stays legible.
+
+**One further bug surfaced only once the mints worked.** The OZ vote path
+passed the hex32 proposal id to `scAddress()`, which requires a `G…`/`C…`
+address, so every vote threw `Unsupported address type` before reaching the
+chain. The pinned wasm's contractspec confirms
+`cast_vote(proposal_id: BytesN<32>, vote_type: u32, reason: String, voter: Address)`;
+the adjacent `proposal_state` read already used `scBytes32`. Fixed.
 
 ## Status as of 2026-10-08
 
-- **Done and verified:** resource-margin fix (S2 validated live), resumable
-  runner with decoded-failure records, vote-window skip logic, structured
-  `uploadTxHash` parsing + `verify.js` + 4 offline unit tests,
-  `capture-fixtures.js` + fixtures README + provenance, `fetch-references.sh`,
-  offline wasm-hash claim (6/6), CI org-namespace scoping. Offline claims:
-  11 pass / 0 fail / 2 skip. Seed-v2 unit tests: 4 pass.
-- **Script3 seed v2: complete** (six proposals, all votes, delegations, reads).
-- **OpenZeppelin seed v2: blocked** on the `mint` footprint mismatch above.
-- **Still outstanding:** `settle.js` close/execute is implemented and runnable
-  (`node settle.js`) but is **not** wired into CI — maturing and executing
-  proposals remains a manual operator step.
-- **Done since the last live run:** `scripts/activity/activity.js` (bounded,
-  idempotent vote generator) and `scripts/ttl/extend-seed-contracts.sh`
-  (instance+code TTL extension for every seed contract) exist and are wired
-  into the live tier behind a `.seed/state.json` guard, so they are no-ops on
-  hosted CI and active only on a self-hosted soak runner. Neither has been
-  exercised against live testnet in CI.
-- **Seed-v2 exit criterion: partially met** — it re-runs from a clean clone and
-  Script3 completes; OZ does not.
+- **Script3 seed v2: complete.** Six proposals (ids 0–5), 10 votes including 3
+  abstains on `s6-abstain-heavy`, both delegations, and `get_proposal` /
+  `get_proposal_votes` reads captured for every proposal.
+- **OpenZeppelin seed v2: unblocked, and now six proposals too.** All six shapes
+  exist: `o1` transfer-executed, `o2` contract-upgrade, `o3` admin-change,
+  `o4` unknown-contract-call, `o5` failing-quorum, `o6` abstain-heavy.
+  `o1` and `o3` carry votes; `o5` has none by design.
+- **Done and verified offline:** resource-margin fix (S2), resumable runner
+  with decoded-failure records, vote-window skip logic, structured
+  `uploadTxHash` parsing, `verify.js`, `capture-fixtures.js` + fixtures README +
+  provenance, `fetch-references.sh`, offline wasm-hash claim (6/6), CI
+  org-namespace scoping, ledger-close wait, checkpoint-footprint widening
+  (12 tests). Offline claims 11 pass / 0 fail / 2 skip. Seed-v2 unit tests: 16
+  pass. Fixtures: 232 raw RPC responses, 34 recorded hashes verified.
+- **Still outstanding / not done:**
+  - `settle.js` close/execute is implemented and runnable but **not** wired into
+    CI — maturing and executing proposals is a manual operator step.
+  - `scripts/activity/activity.js` and `scripts/ttl/extend-seed-contracts.sh`
+    exist and are wired into the live tier behind a `.seed/state.json` guard
+    (no-ops on hosted CI, active on a self-hosted soak runner), and have **not**
+    been exercised against live testnet in CI.
+  - `o2`, `o4` and `o6` have **no votes**: they were created in the earlier run,
+    so their voting windows closed before the blocker was fixed. This is
+    permanent for those proposal ids — new proposals are needed to get abstain
+    votes on the `abstain-heavy` shape in the OZ corpus. Script3's
+    `s6-abstain-heavy` does carry 3 abstain votes, so abstain is represented.
+  - Seed-v2 contract IDs are **not** yet registered in `deployments.json`.
+  - No `Against` votes exist anywhere in the corpus; the rule set covers the
+    `For` and `Abstain` paths against real chain data.
+- **Seed-v2 exit criterion: met.** Re-runs from a clean clone; both governors
+  produce all six proposal shapes, delegations and on-chain reads.

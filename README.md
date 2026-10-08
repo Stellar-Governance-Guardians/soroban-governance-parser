@@ -73,16 +73,21 @@ All items below are machine-checked by `scripts/check-claims.sh` (see
 | real governance events decode correctly | `proposal_created` tx `34dd7cef…` ledger 5035906, `vote_cast` tx `ddef3540…` ledger 5035908 — topics/values decoded to `("Fund parser audit", u128 1000000)` and `(1, u128 1000000)` |
 | fail-closed on non-WASM contracts | `sgp fetch-spec` on the testnet SAC contract exits non-zero with "contract is not WASM-backed … no contractspecv0 available" |
 | 23 unit tests pass; clippy pedantic `-D warnings` clean | `cargo test --workspace`, `cargo clippy --workspace --all-targets -- -D warnings` |
+| real upstream governors live on testnet | seed v2 deployed pinned Script3 + OpenZeppelin governors and captured 232 raw RPC fixtures (ledgers 5083606–5084619); `docs/seed-v2.md`, `tests/fixtures/seed-v2/` |
 | stellar-xdr pinned 28.0.1 | `Cargo.lock` |
 
 ## Honest limitations
 - **No concrete governor adapters yet.** The trait and verified research exist
   (docs/adapters/); Script3 and OpenZeppelin adapters are phase 1b. Until then,
   governor attribution is always `unverified` — by design.
-- Event shapes in `docs/adapters/` were read from upstream source, not yet
-  observed by us on live deployments (neither project publishes testnet IDs).
-  The fixture contract emits Script3-shaped topics, but a fixture is not the
-  real governor.
+- Event shapes in `docs/adapters/` were originally read from upstream source
+  rather than observed on live deployments. **That changed with seed v2**: the
+  pinned upstream Script3 and OpenZeppelin governors are now deployed on live
+  testnet and their real proposals, votes and delegations are captured as raw
+  RPC fixtures under `tests/fixtures/seed-v2/`. See
+  [`docs/seed-v2.md`](docs/seed-v2.md). These are testnet deployments of the
+  pinned upstream commits, **not** mainnet DAOs — no mainnet deployment of
+  either governor is claimed.
 - The public testnet RPC times out on wide `getEvents` ranges (>~1000 ledgers);
   consumers must page in small windows. Retention is ~7 days — historical
   backfill (Galexie/Hubble) is an indexer-phase concern.
