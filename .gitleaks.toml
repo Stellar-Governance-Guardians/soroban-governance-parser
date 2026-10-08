@@ -1,0 +1,15 @@
+# gitleaks configuration (charter rule 6: secret scan before every push).
+#
+# Extends the default ruleset. The only allowlist entry below is a *verified
+# false positive*: seed-v2 proposal definitions use an object property literally
+# named `key` whose value is a human-readable slug (e.g. `key: 's5-failing-quorum'`).
+# gitleaks' generic-api-key heuristic flags that property name; it is not a
+# credential. Scope is limited to that one file and that one shape.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "seed-v2 proposal definitions: property named `key` with a slug string is not a credential"
+paths = ['''scripts/seed-v2/lib/proposals\.js$''']
+regexTarget = "match"
+regexes = ['''key:\s*'[a-z0-9-]+',''']

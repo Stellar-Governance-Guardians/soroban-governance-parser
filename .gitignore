@@ -3,6 +3,10 @@
 Cargo.lock.bak
 *.wasm
 !tests/fixtures/*.wasm
+!tests/fixtures/seed-v2/*.wasm
+!tests/fixtures/seed-v2/wasms/*.wasm
+# seed-v2 local state: keys, raw RPC capture log (never committed)
+.seed/
 .DS_Store
 .idea/
 .vscode/

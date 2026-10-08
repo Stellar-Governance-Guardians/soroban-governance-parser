@@ -1,0 +1,121 @@
+{
+  "$comment": "Pinned upstream sources for seed v2. commitSha values are upstream commits that were read and built locally; artifact sha256 values are of the exact .wasm files committed under tests/fixtures/seed-v2/wasms/ and deployed to testnet. Rebuild + verify with scripts/upstream/build-upstream.sh (pass --update-lock only in a PR that documents why hashes moved).",
+  "schemaVersion": 1,
+  "governors": [
+    {
+      "id": "script3-soroban-governor",
+      "repo": "https://github.com/script3/soroban-governor",
+      "refDir": "soroban-governor",
+      "commitSha": "a2ac6de81055be5bd13e31f922c9546309bfdb8a",
+      "commitDate": "2024-07-09",
+      "commitSubject": "Merge pull request #30 from script3/add-audit",
+      "upstreamHeadAtPinTime": "a2ac6de81055be5bd13e31f922c9546309bfdb8a",
+      "license": "MIT",
+      "sdk": "soroban-sdk 20.5.0",
+      "build": {
+        "toolchain": "rustc 1.81.0",
+        "target": "wasm32-unknown-unknown",
+        "note": "Built with rustc 1.81.0 (era-appropriate for the pinned 2024 commit): rustc 1.99 cannot compile ethnum 1.5.0 (E0512) as locked by upstream. The governor build embeds contracts/governor/src/dependencies/votes.rs contractimport! of soroban_votes.wasm, so the votes crate MUST build first and the artifact be present at contracts/governor/target/wasm32-unknown-unknown/release/soroban_votes.wasm (mirrors upstream Makefile ordering: votes before governor).",
+        "recipes": [
+          "cargo +1.81.0 build --release --target wasm32-unknown-unknown -p soroban-votes --no-default-features --features sep-0041",
+          "cargo +1.81.0 build --release --target wasm32-unknown-unknown -p soroban-governor",
+          "cargo +1.81.0 build --release --target wasm32-unknown-unknown -p mock-subcall"
+        ]
+      },
+      "sourceBounds": {
+        "$comment": "Read from contracts/governor/src/constants.rs and settings.rs require_valid_settings at the pinned SHA.",
+        "minVotePeriodLedgers": 720,
+        "maxVotePeriodLedgers": 120960,
+        "minGracePeriodLedgers": 17280,
+        "maxGracePeriodLedgers": 120960,
+        "maxProposalLifetimeLedgers": 535680,
+        "minProposalThreshold": 1,
+        "quorumBps": { "min": 10, "max": 9999 },
+        "voteThresholdBps": { "min": 10, "max": 9999 },
+        "oneOpenProposalPerCreator": true,
+        "upgradeActionRequiresCreatorToBeCouncil": true,
+        "ledgerSecondsAssumed": 5
+      },
+      "artifacts": [
+        {
+          "name": "Script3 governor",
+          "file": "script3-soroban-governor.wasm",
+          "builtFrom": "contracts/governor",
+          "bytes": 39581,
+          "sha256": "16033b38b740b1d5af82025a671490b3cea2a0df59b7ffad005f3f7ca3fa27f0"
+        },
+        {
+          "name": "Script3 votes (SEP-41 admin path)",
+          "file": "script3-soroban-votes.wasm",
+          "builtFrom": "contracts/votes (--no-default-features --features sep-0041)",
+          "bytes": 24926,
+          "sha256": "e8bbc883b2c7fcd8716b07271929eca801fb40f2d3cf5964b139fa741c40f787",
+          "note": "Default features (bonding) were disabled: the admin path mints real checkpointed voting power directly; see tests/fixtures/seed-v2/README.md."
+        },
+        {
+          "name": "Script3 mock-subcall (unknown-target contract)",
+          "file": "script3-mock-subcall.wasm",
+          "builtFrom": "contracts/mock-subcall",
+          "bytes": 7652,
+          "sha256": "670215400fffd3d0f6303000d18dfd5bab0e2b1a7b26219e4a8a3bce08eab763"
+        }
+      ]
+    },
+    {
+      "id": "openzeppelin-stellar-contracts",
+      "repo": "https://github.com/OpenZeppelin/stellar-contracts",
+      "refDir": "stellar-contracts",
+      "commitSha": "b40c5eaefe6a29f0030f00bd2d730b7a91cce330",
+      "commitDate": "2026-09-26",
+      "commitSubject": "chore: bump soroban-sdk to v28 (#866)",
+      "upstreamHeadAtReadTime": "6eb047d52f91e36259b15340bb114ea2b773d54e",
+      "license": "MIT OR Apache-2.0",
+      "sdk": "soroban-sdk 28.0.0",
+      "build": {
+        "toolchain": "rustc stable (1.99.0) via rust-toolchain.toml",
+        "target": "wasm32v1-none",
+        "note": "Built with `stellar contract build` (28.0.0) inside each example crate; plain cargo build fails the repo's build-script check that requires stellar-cli >= 25.2.0.",
+        "recipes": [
+          "cd examples/fungible-governor/token && stellar contract build",
+          "cd examples/fungible-governor/governor && stellar contract build",
+          "cd examples/upgradeable/v1 && stellar contract build"
+        ]
+      },
+      "sourceBounds": {
+        "$comment": "Read from packages/governance/src/governor/storage.rs (set_voting_period rejects only 0; set_voting_delay unbounded; propose uses snapshot = current-1 for threshold, vote_snapshot = current + voting_delay, vote_end = vote_snapshot + voting_period) and examples/fungible-governor/governor/src/governor.rs __constructor.",
+        "minVotingPeriodLedgers": 1,
+        "minVotingDelayLedgers": 0,
+        "oneOpenProposalPerCreator": false,
+        "proposalIdRule": "keccak256(targets.xdr ++ functions.xdr ++ args.xdr ++ description_hash) where description_hash = keccak256(description bytes)",
+        "events": {
+          "proposalCreated": "topics [\"proposal_created\", proposal_id: BytesN<32>, proposer: Address]; data [targets, functions, args, vote_snapshot, vote_end, description]",
+          "voteCast": "topics [\"vote_cast\", voter: Address, proposal_id: BytesN<32>]; data [vote_type: u32, weight: u128, reason: String]"
+        },
+        "ledgerSecondsAssumed": 5
+      },
+      "artifacts": [
+        {
+          "name": "OpenZeppelin fungible governor",
+          "file": "oz-fungible-governor-contract.wasm",
+          "builtFrom": "examples/fungible-governor/governor",
+          "bytes": 26096,
+          "sha256": "77a0400e446947330f8b80f3a57f078d375a793e7aacf3674f5289bacb66edf7"
+        },
+        {
+          "name": "OpenZeppelin fungible votes token",
+          "file": "oz-fungible-governor-token.wasm",
+          "builtFrom": "examples/fungible-governor/token",
+          "bytes": 23856,
+          "sha256": "b5363f54a65e4134f838c03ae9b90718cd7913be5bb3b446aa731e72c7d97e4b"
+        },
+        {
+          "name": "OpenZeppelin upgradeable example v1 (upgrade target)",
+          "file": "oz-upgradeable-v1-example.wasm",
+          "builtFrom": "examples/upgradeable/v1",
+          "bytes": 15640,
+          "sha256": "1018bca637343ad206e568dd78a89f0b2a2f768477947be2546682113216c248"
+        }
+      ]
+    }
+  ]
+}
