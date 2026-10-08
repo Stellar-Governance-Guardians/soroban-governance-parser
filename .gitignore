@@ -15,3 +15,8 @@ node_modules/
 .config/
 # built WASM release asset (published as a GitHub Release asset, not committed)
 /*.tgz
+# cargo-fuzz working dirs
+fuzz/target
+fuzz/corpus
+fuzz/artifacts
+fuzz/coverage
