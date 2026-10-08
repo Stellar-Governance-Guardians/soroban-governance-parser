@@ -1,0 +1,19 @@
+{
+  "capturedAtUtc": "2026-10-08T08:03:49.266Z",
+  "request": {
+    "method": "getHealth",
+    "params": {}
+  },
+  "response": {
+    "jsonrpc": "2.0",
+    "id": 260259,
+    "result": {
+      "status": "healthy",
+      "latestLedger": 5084608,
+      "latestLedgerCloseTime": "1791446627",
+      "oldestLedger": 4963649,
+      "oldestLedgerCloseTime": "1790841832",
+      "ledgerRetentionWindow": 120960
+    }
+  }
+}
