@@ -59,7 +59,10 @@ node verify.js                               # offline integrity of recorded has
   `get_past_votes`/`get_past_total_supply` snapshot reads were captured
   2026-10-08 by `snapshot-power.js`; the earlier 232 are unchanged).
   `verify.js` checks **34 recorded hashes** against 68 captures; all 34 are
-  SUCCESS transactions and none is a wasm sha256.
+  SUCCESS transactions and none is a wasm sha256. From a **clean clone** (no
+  `.seed/state.json`) it falls back to checking all **68 committed**
+  `getTransaction` hashes against their captures: 65 SUCCESS plus the 3
+  documented FAILED mints below, none a wasm sha256.
 - **Three transactions are intentionally `FAILED`** and are kept, not
   overwritten: the OpenZeppelin mints to `delegate-1/3/5` that trapped on
   `[TotalSupplyCheckpoint, 1]`
