@@ -1,0 +1,44 @@
+name: nightly-hardening
+
+# Dependency audit and a short fuzz smoke run. NOT part of the PR gate (fuzz
+# needs nightly while the repo pins stable 1.96; an audit finding may need a
+# judgement call). Runs nightly and on manual dispatch.
+
+on:
+  schedule:
+    - cron: '41 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: cargo-audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.96.0"
+      - uses: Swatinem/rust-cache@v2
+      - name: install cargo-audit
+        run: cargo install cargo-audit --locked
+      - name: audit
+        run: cargo audit
+
+  fuzz-smoke:
+    name: cargo-fuzz smoke (60s each)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: install nightly + cargo-fuzz
+        run: |
+          rustup toolchain install nightly --profile minimal
+          cargo +nightly install cargo-fuzz --locked
+      - name: seed corpora from committed fixtures
+        run: bash scripts/fuzz/seed-corpus.sh
+      - name: fuzz scval_from_xdr
+        run: cargo +nightly fuzz run scval_from_xdr -- -max_total_time=60 -rss_limit_mb=4096
+      - name: fuzz parse_spec
+        run: cargo +nightly fuzz run parse_spec -- -max_total_time=60 -rss_limit_mb=4096

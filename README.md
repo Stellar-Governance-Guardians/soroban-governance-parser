@@ -9,6 +9,18 @@ Part of the Stellar-Governance-Guardians suite:
 [indexer](https://github.com/Stellar-Governance-Guardians/governance-event-indexer) →
 [dashboard](https://github.com/Stellar-Governance-Guardians/delegate-portal-dashboard).
 
+**Who it's for:** indexer/dashboard builders, delegate-tooling authors, and
+anyone who needs to read Soroban governance without trusting a UI.
+
+**Proven (offline, machine-checked):** the Script3 adapter decodes real captured
+proposals 0–5 and reproduces their tallies; 85 tests pass; a frozen v1 schema; a
+WASM package published with a reproducible sha256; a dry-run parser over real
+`simulateTransaction` captures. Dependency audit and a full-history `gitleaks`
+scan are recorded in [`docs/hardening.md`](docs/hardening.md).
+
+**Not proven / not built:** the OpenZeppelin adapter; any mainnet DAO; a CLI
+`simulate` command; rent estimates. See "Honest limitations".
+
 Phase status: the merged work covers **Phase 1a, Phase 1b (Script3), Phase 2
 (WASM package + schema freeze) and Phase 4 (dry-run modeling)**. Seed v2 from
 pinned upstream SHAs, the `Script3Adapter`, `RiskContext`, the

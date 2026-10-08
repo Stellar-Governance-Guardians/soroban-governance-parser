@@ -1,0 +1,31 @@
+[package]
+name = "sgp-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+soroban-governance-core = { path = "../crates/core" }
+stellar-xdr = { version = "28.0.1", default-features = false, features = ["std", "serde", "base64"] }
+
+[[bin]]
+name = "scval_from_xdr"
+path = "fuzz_targets/scval_from_xdr.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "parse_spec"
+path = "fuzz_targets/parse_spec.rs"
+test = false
+doc = false
+bench = false
+
+# Own workspace: cargo-fuzz needs nightly while the repo pins stable 1.96, so
+# this crate is kept out of the main workspace and the PR gate.
+[workspace]
