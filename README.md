@@ -9,12 +9,13 @@ Part of the Stellar-Governance-Guardians suite:
 [indexer](https://github.com/Stellar-Governance-Guardians/governance-event-indexer) →
 [dashboard](https://github.com/Stellar-Governance-Guardians/delegate-portal-dashboard).
 
-Phase status: the merged work in this repository is **Phase 1a plus the Script3
-half of Phase 1b**. Seed v2 from pinned upstream SHAs, the `Script3Adapter`,
-`RiskContext`, the vote-power/checkpoint and tally/quorum replicas, and the
-offline differential tests against committed captures are done; the
-OpenZeppelin adapter, dry-run `simulateTransaction` modeling and the published
-wasm package are not yet complete. Evidence below.
+Phase status: the merged work covers **Phase 1a, Phase 1b (Script3), Phase 2
+(WASM package + schema freeze) and Phase 4 (dry-run modeling)**. Seed v2 from
+pinned upstream SHAs, the `Script3Adapter`, `RiskContext`, the
+vote-power/checkpoint and tally/quorum replicas, the offline differential tests,
+the published WASM package and the sans-IO dry-run parser are done. Pending: the
+OpenZeppelin adapter (bounded phase 3) and a CLI `simulate` command. Evidence
+below.
 
 ## What it does
 - **ScVal → JSON**: total converter over the stellar-xdr 28 type set. Integers
@@ -123,10 +124,11 @@ All items below are machine-checked by `scripts/check-claims.sh` (see
 | contractspecv0 parse works on a real deployed contract | fixture governor `CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE` (deploy tx `a37b875d…`, ledger 5035901); spec functions `propose/vote/get_proposal` parsed from live WASM |
 | real governance events decode correctly | `proposal_created` tx `34dd7cef…` ledger 5035906, `vote_cast` tx `ddef3540…` ledger 5035908 — topics/values decoded to `("Fund parser audit", u128 1000000)` and `(1, u128 1000000)` |
 | fail-closed on non-WASM contracts | `sgp fetch-spec` on the testnet SAC contract exits non-zero with "contract is not WASM-backed … no contractspecv0 available" |
-| 77 tests pass (54 unit + 13 differential + 10 proptest); clippy pedantic `-D warnings` clean | `cargo test --workspace`, `cargo clippy --workspace --all-targets -- -D warnings` |
+| 85 tests pass (unit + differential + proptest + dry-run); clippy pedantic `-D warnings` clean | `cargo test --workspace`, `cargo clippy --workspace --all-targets -- -D warnings` |
 | the Script3 adapter reproduces real chain state | differential tests decode committed `simulateTransaction` captures for proposals 0–5 (`get_proposal`, `get_proposal_votes`, `get_past_votes`, `get_past_total_supply`) and assert equality; `crates/core/tests/differential.rs` |
 | real upstream governors live on testnet | seed v2 deployed pinned Script3 + OpenZeppelin governors and captured 259 raw RPC fixtures (ledgers 5083606–5086043); `docs/seed-v2.md`, `tests/fixtures/seed-v2/` |
 | OpenZeppelin fixtures captured; adapter pending | six OZ proposal shapes exist in the corpus (`o1`…`o6`); `o1`/`o3` carry votes, `o2`/`o4`/`o6` do not (their vote windows closed before the checkpoint fix). The OZ adapter is not yet implemented |
+| dry-run models real `simulateTransaction` responses | `crates/core/src/simulate.rs` + `crates/core/tests/simulate.rs` parse committed captures: `estimate:true`, `simulated_at_ledger`, `min_resource_fee_stroops`; `cost` was never observed so `cpu_instructions`/`memory_bytes` are `null` |
 | stellar-xdr pinned 28.0.1 | `Cargo.lock` |
 
 ## Honest limitations
@@ -148,9 +150,10 @@ All items below are machine-checked by `scripts/check-claims.sh` (see
 - The public testnet RPC times out on wide `getEvents` ranges (>~1000 ledgers);
   consumers must page in small windows. Retention is ~7 days — historical
   backfill (Galexie/Hubble) is an indexer-phase concern.
-- `simulateTransaction` is NOT yet modeled. `ExecutionImpact` exists in the
-  schema with `estimate: true` const, but no producer until the live response
-  shape is inspected (phase 1b/2).
+- **Dry-run is modeled but not CLI-exposed.** `parse_simulate_response` reads
+  the fields observed in committed `simulateTransaction` captures; the CLI has
+  no `simulate` command yet, so it is exercised by offline tests only. Rent is
+  not modeled ([`docs/dry-run.md`](docs/dry-run.md)).
 - Vote-weight decay: **not implemented here.** A source reading of both pinned
   governors — Script3 `contracts/votes/src/checkpoints.rs`
   (`get_past_votes`) and OpenZeppelin

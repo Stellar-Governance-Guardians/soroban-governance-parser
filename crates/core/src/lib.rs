@@ -10,6 +10,7 @@ pub mod checkpoint;
 pub mod error;
 pub mod risk;
 pub mod scval;
+pub mod simulate;
 pub mod spec;
 pub mod tally;
 pub mod types;
