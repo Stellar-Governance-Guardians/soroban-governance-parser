@@ -96,9 +96,74 @@ function checkDeployments(state, txStatus) {
   return failures;
 }
 
+/**
+ * Clean-clone mode. `.seed/state.json` is gitignored, so a fresh clone has no
+ * "current run" to check; failing outright made the documented reproduce flow
+ * unrunnable offline. Instead verify the COMMITTED corpus: every recorded tx
+ * hash must be 64-hex, must not be a wasm sha256, must match the status in its
+ * own raw capture, and must be SUCCESS unless it is one of the three documented
+ * pre-fix FAILED OpenZeppelin mints (kept on purpose as before/after evidence).
+ */
+function verifyCommittedCorpus() {
+  const KNOWN_FAILED = new Set([
+    '803d0bc41e1252603c78ae714080f32797b3751032582f19db3ce9ce0651d59e',
+    '2aef69bdbca83ad47341d9c604cd41ca70fb2bfef62a8bcb18037531d6906945',
+    'e352ae22bf264bbc3f80af3f8d9c44431ffdef1938374898777bb6f7a94c2b60',
+  ]);
+  const wasmHashes = collectWasmHashes();
+  const index = JSON.parse(readFileSync(join(FIXTURES_DIR, 'index.json'), 'utf8'));
+  const problems = [];
+  let ok = 0;
+  let failed = 0;
+  for (const f of index.fixtures ?? []) {
+    if (!f.txHash) continue;
+    const where = `committed:${f.file}`;
+    if (!HEX64.test(f.txHash)) {
+      problems.push(`${where}: not a 64-hex hash: ${f.txHash}`);
+      continue;
+    }
+    if (wasmHashes.has(f.txHash)) {
+      problems.push(`${where}: hash equals a wasm sha256, not a transaction: ${f.txHash}`);
+      continue;
+    }
+    // Cross-check the provenance manifest against the raw capture itself.
+    let rawStatus;
+    try {
+      const raw = JSON.parse(readFileSync(join(FIXTURES_DIR, f.file), 'utf8'));
+      rawStatus = raw?.response?.result?.status;
+    } catch {
+      problems.push(`${where}: raw capture is unreadable`);
+      continue;
+    }
+    if (rawStatus !== undefined && rawStatus !== f.status) {
+      problems.push(`${where}: index status ${f.status} != capture status ${rawStatus}`);
+      continue;
+    }
+    if (f.status === 'SUCCESS') {
+      ok += 1;
+    } else if (f.status === 'FAILED' && KNOWN_FAILED.has(f.txHash)) {
+      failed += 1;
+    } else {
+      problems.push(`${where}: unexpected status ${f.status}: ${f.txHash}`);
+    }
+  }
+  console.log('no .seed/state.json (clean clone): verifying the committed corpus');
+  console.log(`checked ${ok + failed + problems.length} committed tx hashes`);
+  console.log(`  success: ${ok}, documented failures: ${failed}`);
+  if (problems.length > 0) {
+    console.log('  FAILURES:');
+    for (const p of problems) console.log(`   - ${p}`);
+    process.exit(1);
+  }
+  console.log('VERIFY OK — every committed hash is a transaction, none is a wasm hash');
+}
+
 function main() {
   const state = loadState();
-  if (!state) throw new Error('no .seed/state.json — nothing to verify (run deploy.js/seed.js first)');
+  if (!state) {
+    verifyCommittedCorpus();
+    return;
+  }
   const wasmHashes = collectWasmHashes();
   const txStatus = collectTxStatus();
   const recorded = collectRecordedHashes(state);

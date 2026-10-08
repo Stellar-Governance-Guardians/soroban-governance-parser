@@ -37,6 +37,17 @@
       }
     },
     {
+      "id": "seed-v2-verify",
+      "claim": "seed-v2 verify.js passes offline from a clean clone, checking every committed tx hash against its own capture (65 SUCCESS plus 3 documented FAILED mints, none a wasm sha256)",
+      "statedIn": [
+        "tests/fixtures/seed-v2/README.md"
+      ],
+      "online": false,
+      "check": {
+        "cmd": "node scripts/seed-v2/verify.js"
+      }
+    },
+    {
       "id": "deployments-registry-matches-fixtures",
       "claim": "every contract id, deploy tx hash, deploy ledger, wasm sha256 and upstream SHA in deployments.json is backed by a committed raw RPC fixture and the pinned upstream.lock.json, and the registry contains no secret material",
       "statedIn": [
