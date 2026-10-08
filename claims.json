@@ -4,93 +4,167 @@
     {
       "id": "stellar-xdr-version",
       "claim": "stellar-xdr is pinned to 28.0.1",
-      "statedIn": ["README.md", "SPEC.md"],
+      "statedIn": [
+        "README.md",
+        "SPEC.md"
+      ],
       "online": false,
-      "check": { "cmd": "grep -A1 'name = \"stellar-xdr\"' Cargo.lock | grep -q '28.0.1'" }
+      "check": {
+        "cmd": "grep -A1 'name = \"stellar-xdr\"' Cargo.lock | grep -q '28.0.1'"
+      }
     },
     {
       "id": "soroban-sdk-fixture-version",
       "claim": "the seed-testnet fixture contract builds against soroban-sdk 28.0.0",
-      "statedIn": ["README.md"],
+      "statedIn": [
+        "README.md"
+      ],
       "online": false,
-      "check": { "cmd": "grep -q 'soroban-sdk = \"28.0.0\"' scripts/seed-testnet/Cargo.toml" }
+      "check": {
+        "cmd": "grep -q 'soroban-sdk = \"28.0.0\"' scripts/seed-testnet/Cargo.toml"
+      }
     },
     {
       "id": "seed-v2-wasm-fixture-hashes",
       "claim": "every committed seed-v2 upstream wasm fixture hashes exactly as recorded in scripts/upstream/upstream.lock.json",
-      "statedIn": ["tests/fixtures/seed-v2/README.md", "docs/seed-v2.md"],
+      "statedIn": [
+        "tests/fixtures/seed-v2/README.md",
+        "docs/seed-v2.md"
+      ],
       "online": false,
-      "check": { "cmd": "python3 scripts/check-wasm-fixtures.py" }
+      "check": {
+        "cmd": "python3 scripts/check-wasm-fixtures.py"
+      }
+    },
+    {
+      "id": "deployments-registry-matches-fixtures",
+      "claim": "every contract id, deploy tx hash, deploy ledger, wasm sha256 and upstream SHA in deployments.json is backed by a committed raw RPC fixture and the pinned upstream.lock.json, and the registry contains no secret material",
+      "statedIn": [
+        "deployments.json",
+        "README.md",
+        "docs/seed-v2.md"
+      ],
+      "online": false,
+      "check": {
+        "cmd": "python3 scripts/check-deployments.py"
+      }
     },
     {
       "id": "unit-test-count",
       "claim": "at least 23 unit tests pass",
-      "statedIn": ["README.md"],
+      "statedIn": [
+        "README.md"
+      ],
       "online": false,
-      "check": { "cmd": "n=$(cargo test --workspace 2>/dev/null | grep -oE 'ok\\. [0-9]+ passed' | grep -oE '[0-9]+' | sort -rn | head -1); test \"$n\" -ge 23" }
+      "check": {
+        "cmd": "n=$(cargo test --workspace 2>/dev/null | grep -oE 'ok\\. [0-9]+ passed' | grep -oE '[0-9]+' | sort -rn | head -1); test \"$n\" -ge 23"
+      }
     },
     {
       "id": "wasm-builds",
       "claim": "the wasm crate builds for wasm32-unknown-unknown (release)",
-      "statedIn": ["README.md"],
+      "statedIn": [
+        "README.md"
+      ],
       "online": false,
-      "check": { "cmd": "cargo build -p soroban-governance-wasm --target wasm32-unknown-unknown --release && test -s target/wasm32-unknown-unknown/release/soroban_governance_wasm.wasm" }
+      "check": {
+        "cmd": "cargo build -p soroban-governance-wasm --target wasm32-unknown-unknown --release && test -s target/wasm32-unknown-unknown/release/soroban_governance_wasm.wasm"
+      }
     },
     {
       "id": "rpc-retention-window",
       "claim": "SDF public testnet RPC reports ledgerRetentionWindow = 120960",
-      "statedIn": ["README.md", "SPEC.md", "deployments.json"],
+      "statedIn": [
+        "README.md",
+        "SPEC.md",
+        "deployments.json"
+      ],
       "online": true,
-      "check": { "cmd": "curl -sS --max-time 60 -X POST https://soroban-testnet.stellar.org -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getHealth\",\"params\":{}}' | grep -q '\"ledgerRetentionWindow\":120960'" }
+      "check": {
+        "cmd": "curl -sS --max-time 60 -X POST https://soroban-testnet.stellar.org -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getHealth\",\"params\":{}}' | grep -q '\"ledgerRetentionWindow\":120960'"
+      }
     },
     {
       "id": "fixture-events-queryable",
       "claim": "the phase 1a fixture governor's events are still queryable on testnet (contract alive and its events within retention)",
-      "statedIn": ["README.md"],
+      "statedIn": [
+        "README.md"
+      ],
       "online": true,
-      "check": { "cmd": "curl -sS --max-time 60 -X POST https://soroban-testnet.stellar.org -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getEvents\",\"params\":{\"startLedger\":5035900,\"filters\":[{\"type\":\"contract\",\"contractIds\":[\"CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE\"]}],\"pagination\":{\"limit\":5}}}' | jq -e '.result.events | length > 0'" }
+      "check": {
+        "cmd": "curl -sS --max-time 60 -X POST https://soroban-testnet.stellar.org -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getEvents\",\"params\":{\"startLedger\":5035900,\"filters\":[{\"type\":\"contract\",\"contractIds\":[\"CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE\"]}],\"pagination\":{\"limit\":5}}}' | jq -e '.result.events | length > 0'"
+      }
     },
     {
       "id": "phase1-proof-recorded",
       "claim": "the recorded live-testnet proof (tests/fixtures/phase1-proof.json) supports every fact in the README evidence table: retention window 120960, >=2 captured fixture events with 64-hex tx hashes, decoded proposal_created/vote_cast topics, live contractspecv0 with propose/vote/get_proposal, fail-closed negative proof on the SAC contract, >=23 unit tests, clippy clean",
-      "statedIn": ["README.md", "SPEC.md", "tests/fixtures/README.md", "deployments.json"],
+      "statedIn": [
+        "README.md",
+        "SPEC.md",
+        "tests/fixtures/README.md",
+        "deployments.json"
+      ],
       "online": false,
-      "check": { "cmd": "python3 scripts/check-proof.py" }
+      "check": {
+        "cmd": "python3 scripts/check-proof.py"
+      }
     },
     {
       "id": "zero-fixture-imports",
       "claim": "no production crate source references tests/fixtures",
-      "statedIn": ["README.md", "SPEC.md"],
+      "statedIn": [
+        "README.md",
+        "SPEC.md"
+      ],
       "online": false,
-      "check": { "cmd": "! grep -rn --exclude-dir=target 'tests/fixtures\\|fixtures/' crates/*/src/ --include='*.rs'" }
+      "check": {
+        "cmd": "! grep -rn --exclude-dir=target 'tests/fixtures\\|fixtures/' crates/*/src/ --include='*.rs'"
+      }
     },
     {
       "id": "org-namespace-only",
-      "claim": "every github.com URL in tracked first-party files (including api.github.com/repos API URLs) points at the Stellar-Governance-Guardians org or an allow-listed upstream source citation (script3, OpenZeppelin — research provenance required by charter rule 3). Generated dependency lockfiles (package-lock.json) are excluded: their URLs are third-party registry metadata, not project references. The scan is restricted to `git ls-files` so untracked working-tree dirs (node_modules/) cannot affect it, matching CI.",
-      "statedIn": ["README.md"],
+      "claim": "every github.com URL in tracked first-party files (including api.github.com/repos API URLs) points at the Stellar-Governance-Guardians org or an allow-listed upstream source citation (script3, OpenZeppelin \u2014 research provenance required by charter rule 3). Generated dependency lockfiles (package-lock.json) are excluded: their URLs are third-party registry metadata, not project references. The scan is restricted to `git ls-files` so untracked working-tree dirs (node_modules/) cannot affect it, matching CI.",
+      "statedIn": [
+        "README.md"
+      ],
       "online": false,
-      "check": { "cmd": "! (git ls-files -z -- '*.md' '*.json' '*.yml' '*.yaml' '*.toml' '*.graphql' | grep -zv 'package-lock\\.json' | xargs -0 -r grep -Eoh 'https?://(api\\.)?github\\.com/(repos/)?[A-Za-z0-9_.-]+' 2>/dev/null | sed 's|https://api\\.github\\.com/repos/|https://github.com/|' | grep -vE '^https?://github\\.com/(Stellar-Governance-Guardians|script3|OpenZeppelin)$' | grep -q .)" }
+      "check": {
+        "cmd": "! (git ls-files -z -- '*.md' '*.json' '*.yml' '*.yaml' '*.toml' '*.graphql' | grep -zv 'package-lock\\.json' | xargs -0 -r grep -Eoh 'https?://(api\\.)?github\\.com/(repos/)?[A-Za-z0-9_.-]+' 2>/dev/null | sed 's|https://api\\.github\\.com/repos/|https://github.com/|' | grep -vE '^https?://github\\.com/(Stellar-Governance-Guardians|script3|OpenZeppelin)$' | grep -q .)"
+      }
     },
     {
       "id": "no-personal-accounts",
       "claim": "no personal GitHub account names appear in tracked files",
-      "statedIn": ["README.md"],
+      "statedIn": [
+        "README.md"
+      ],
       "online": false,
-      "check": { "cmd": "! grep -rniE --exclude-dir=target 'ojuotimi932|dawnaurora25|aigbagbobila' --include='*.md' --include='*.json' --include='*.yml' --include='*.toml' --include='*.rs' --include='*.graphql' . | grep -v '^\\./claims\\.json:' | grep -q ." }
+      "check": {
+        "cmd": "! grep -rniE --exclude-dir=target 'ojuotimi932|dawnaurora25|aigbagbobila' --include='*.md' --include='*.json' --include='*.yml' --include='*.toml' --include='*.rs' --include='*.graphql' . | grep -v '^\\./claims\\.json:' | grep -q ."
+      }
     },
     {
       "id": "risk-rules-published",
       "claim": "risk classification is an exact-match published rule table; no composite/trust-score identifiers exist in the code (doc comments may discuss the concept)",
-      "statedIn": ["README.md", "SPEC.md"],
+      "statedIn": [
+        "README.md",
+        "SPEC.md"
+      ],
       "online": false,
-      "check": { "cmd": "grep -q 'pub static RULES' crates/core/src/risk.rs && ! grep -nE 'trust_score|trustScore|composite' crates/core/src/risk.rs | grep -vE '^[0-9]+:[[:space:]]*(//|/\\*|\\*)' | grep -q ." }
+      "check": {
+        "cmd": "grep -q 'pub static RULES' crates/core/src/risk.rs && ! grep -nE 'trust_score|trustScore|composite' crates/core/src/risk.rs | grep -vE '^[0-9]+:[[:space:]]*(//|/\\*|\\*)' | grep -q ."
+      }
     },
     {
       "id": "ttl-command-present",
       "claim": "the CLI has a fail-closed ttl command reading protocol 29 instance/code TTL entries, with a min-remaining gate",
-      "statedIn": ["README.md"],
+      "statedIn": [
+        "README.md"
+      ],
       "online": false,
-      "check": { "cmd": "cargo build -p soroban-governance-cli --quiet && ./target/debug/sgp ttl --help | grep -q 'min-remaining'" }
+      "check": {
+        "cmd": "cargo build -p soroban-governance-cli --quiet && ./target/debug/sgp ttl --help | grep -q 'min-remaining'"
+      }
     }
   ]
 }
