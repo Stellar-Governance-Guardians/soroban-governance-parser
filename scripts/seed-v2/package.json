@@ -16,6 +16,7 @@
     "seed": "node seed.js",
     "settle": "node settle.js",
     "capture": "node capture-fixtures.js",
-    "verify": "node verify.js"
+    "verify": "node verify.js",
+    "test": "node --test"
   }
 }

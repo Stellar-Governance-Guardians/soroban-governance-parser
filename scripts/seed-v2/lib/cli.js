@@ -22,9 +22,22 @@ export function stellar(args, { allowFail = false, logName } = {}) {
   return { status: res.status, stdout: res.stdout ?? '', stderr: res.stderr ?? '', out };
 }
 
-/** Pull every 64-hex string out of CLI output, in order of appearance. */
-export function extractHashes(out) {
-  return [...out.matchAll(/\b[0-9a-f]{64}\b/g)].map((m) => m[0]);
+/**
+ * Every tx hash the CLI logs as `Signing transaction: <64-hex>`, in order of
+ * submission. This is the authoritative source: unlike a blind "first 64-hex
+ * string" scan, it can never mistake a wasm sha256 (`Deploying contract using
+ * wasm hash <sha>`) for a transaction hash.
+ */
+export function extractSigningHashes(out) {
+  return [...out.matchAll(/Signing transaction:\s*([0-9a-f]{64})/g)].map((m) => m[1]);
+}
+
+/**
+ * Every tx hash from stellar.expert explorer URLs (`…/tx/<64-hex>`), in order.
+ * Used as a cross-check/fallback for the signing lines above.
+ */
+export function extractExplorerTxHashes(out) {
+  return [...out.matchAll(/explorer\/testnet\/tx\/([0-9a-f]{64})/g)].map((m) => m[1]);
 }
 
 /** Pull the first Stellar contract id (C...) out of CLI output. */
