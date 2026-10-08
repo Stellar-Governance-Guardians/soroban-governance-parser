@@ -51,13 +51,13 @@
     },
     {
       "id": "unit-test-count",
-      "claim": "at least 77 tests pass across the workspace (unit + differential + property)",
+      "claim": "at least 85 tests pass across the workspace (unit + differential + property + dry-run)",
       "statedIn": [
         "README.md"
       ],
       "online": false,
       "check": {
-        "cmd": "n=$(cargo test --workspace 2>/dev/null | grep -oE 'ok\\. [0-9]+ passed' | grep -oE '[0-9]+' | awk '{s+=$1} END{print s+0}'); test \"$n\" -ge 77"
+        "cmd": "n=$(cargo test --workspace 2>/dev/null | grep -oE 'ok\\. [0-9]+ passed' | grep -oE '[0-9]+' | awk '{s+=$1} END{print s+0}'); test \"$n\" -ge 85"
       }
     },
     {
@@ -106,6 +106,19 @@
       "online": false,
       "check": {
         "cmd": "! test -e crates/core/src/adapters/openzeppelin.rs"
+      }
+    },
+    {
+      "id": "dry-run-simulate",
+      "claim": "the parser models simulateTransaction dry-run output from committed real captures, always estimate:true + a mandatory simulatedAtLedger, with absent fields null and cost fields null because no capture showed them",
+      "statedIn": [
+        "README.md",
+        "SPEC.md",
+        "docs/dry-run.md"
+      ],
+      "online": false,
+      "check": {
+        "cmd": "cargo test -p soroban-governance-core --test simulate --quiet"
       }
     },
     {

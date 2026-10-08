@@ -88,10 +88,18 @@ Claims in `claims.json` run in two tiers:
 - **Node wasm test** (`crates/wasm/js-tests/node.test.mjs`) exercises the built
   `nodejs` package against committed captures.
 
-## Out of scope for phase 1a/1b/2 (delivered in later phases)
+## Phase 4 (delivered)
+- **Sans-IO dry-run** (`crates/core/src/simulate.rs`):
+  `build_simulate_request(transaction_xdr_base64, request_id)` builds and
+  validates the JSON-RPC request; `parse_simulate_response(json)` produces an
+  [`ExecutionImpact`] with `estimate: true` and a mandatory `simulated_at_ledger`.
+  Only fields observed in committed real responses are modeled; absent fields are
+  `null`. Rent is not modeled (see `docs/dry-run.md`). Tests:
+  `crates/core/tests/simulate.rs` over committed captures.
+
+## Out of scope for phase 1a/1b/2/4 (delivered in later phases)
 - The **OpenZeppelin adapter** (bounded phase 3; fixtures already captured).
-- `simulateTransaction`-based `ExecutionImpact` producer (phase 4; response
-  shape must be inspected live before modeling — rule: verify first).
+- A CLI `simulate` command (the parser is done; IO wiring is not).
 - Delegate metrics (indexer/dashboard phases).
 
 ## Ground truths verified in phase 1a (live testnet, 2026-10-05)
