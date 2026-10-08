@@ -9,7 +9,7 @@
 // Usage: node seed.js
 import jsSha3 from 'js-sha3';
 import { loadState, saveState } from './lib/state.js';
-import { DEPLOYER_ID, MINTS, SCHEDULE, DECIMALS } from './lib/config.js';
+import { DEPLOYER_ID, DELEGATE_IDS, MINTS, SCHEDULE, DECIMALS } from './lib/config.js';
 import { invoke, simulateRead, health } from './lib/rpc.js';
 import { scAddress, scString, scU32, scI128, scStruct, scVec, scBytes32 } from './lib/scval.js';
 import { retU32, retBytes32Hex } from './lib/parse.js';
@@ -108,6 +108,23 @@ function mintTo(state, tokenContract, notePrefix) {
   };
 }
 
+/**
+ * Self-delegation. OpenZeppelin's votes module only counts *delegated* power
+ * (no self-votes otherwise), so every identity that must propose or vote has to
+ * delegate — including to itself. Script3 does not need this (the admin mint
+ * path writes checkpointed power directly), but the call is harmless there.
+ */
+async function selfDelegateStep(state, tokenContractId, notePrefix, ids) {
+  for (const id of ids) {
+    await step(state, `${notePrefix}-selfdelegate-${id}`, () =>
+      invoke({
+        contractId: tokenContractId, fn: 'delegate', sourceId: id,
+        args: [scAddress(state.identities[id]), scAddress(state.identities[id])],
+        note: `${notePrefix}-selfdelegate-${id}`,
+      }).then((r) => console.log(`  ${id} self-delegated (tx ${r.hash.slice(0, 16)}…)`)));
+  }
+}
+
 async function delegateStep(state, tokenContractId, notePrefix) {
   for (const d of DELEGATIONS) {
     await step(state, `${notePrefix}-delegate-${d.from}`, () =>
@@ -202,9 +219,6 @@ async function script3Seed(state, ctx, latest) {
   const mintS3 = mintTo(state, { contractId: votes, governorAddress: governor }, 's3');
   for (const [who, amount] of Object.entries(MINTS)) await mintS3(who, amount);
 
-  console.log('== Script3 delegations ==');
-  await delegateStep(state, votes, 's3');
-
   console.log('== Script3 proposals ==');
   for (const def of SCRIPT3_PROPOSALS) {
     await step(state, `s3-propose-${def.key}`, async () => {
@@ -230,6 +244,12 @@ async function script3Seed(state, ctx, latest) {
       console.log(`  ${def.key} -> id ${id} (tx ${r.hash.slice(0, 16)}…, ledger ${r.ledger})`);
     });
   }
+
+  // Delegations are cast AFTER proposals: Script3 enforces one open proposal
+  // per creator, and the s5/s6 creators (delegate-4/-5) must still hold
+  // proposal-threshold power when they propose. Delegating first would zero it.
+  console.log('== Script3 delegations ==');
+  await delegateStep(state, votes, 's3');
 
   console.log('== Script3 votes ==');
   for (const def of SCRIPT3_PROPOSALS) {
@@ -276,8 +296,8 @@ async function ozSeed(state, ctx, latest) {
   const mintOZ = mintTo(state, { contractId: token, governorAddress: governor }, 'oz');
   for (const [who, amount] of Object.entries(MINTS)) await mintOZ(who, amount);
 
-  console.log('== OZ delegations ==');
-  await delegateStep(state, token, 'oz');
+  console.log('== OZ self-delegations (activate voting power) ==');
+  await selfDelegateStep(state, token, 'oz', [DEPLOYER_ID, ...DELEGATE_IDS]);
 
   console.log('== OZ proposals ==');
   for (const def of OZ_PROPOSALS) {
@@ -310,6 +330,9 @@ async function ozSeed(state, ctx, latest) {
       console.log(`  ${def.key} -> id ${id.slice(0, 16)}… (tx ${r.hash.slice(0, 16)}…, ledger ${r.ledger})`);
     });
   }
+
+  console.log('== OZ pair delegations ==');
+  await delegateStep(state, token, 'oz');
 
   console.log('== OZ votes ==');
   for (const def of OZ_PROPOSALS) {
