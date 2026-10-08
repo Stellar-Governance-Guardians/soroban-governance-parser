@@ -13,5 +13,9 @@ stellar-xdr.workspace = true
 stellar-strkey = "0.0.13"
 thiserror.workspace = true
 
+[dev-dependencies]
+# Property tests for the tally/quorum/checkpoint replicas (N3). Offline only.
+proptest = "1"
+
 [lints]
 workspace = true

@@ -198,6 +198,55 @@ fn u128_parts_to_string(p: &UInt128Parts) -> String {
     (((u128::from(p.hi)) << 64) | u128::from(p.lo)).to_string()
 }
 
+/// Exact `i128` value of an `ScVal::I128`, or `None` for any other variant.
+///
+/// Exposed because tally arithmetic and risk thresholds need the numeric value,
+/// and re-deriving it from the JSON string would be both lossy-looking and a
+/// second place to get the sign wrong. Composition matches
+/// [`i128_parts_to_string`]: `hi` is the signed high word, `lo` the unsigned low.
+pub fn scval_i128(val: &ScVal) -> Option<i128> {
+    match val {
+        ScVal::I128(parts) => Some((i128::from(parts.hi) << 64) | i128::from(parts.lo)),
+        _ => None,
+    }
+}
+
+/// Exact `i128` out of JSON produced by [`scval_to_json`] — the tagged
+/// `{"_type":"i128","value":"…"}` object — or out of a bare decimal
+/// string/number. `None` for anything else: never a guess, never a default.
+pub fn json_i128(val: &Value) -> Option<i128> {
+    match val {
+        Value::Number(n) => n.as_i64().map(i128::from),
+        Value::String(s) => s.parse().ok(),
+        Value::Object(m) => {
+            let tag = m.get(TYPE_KEY)?.as_str()?;
+            if !matches!(tag, "i128" | "u128" | "i64" | "u64") {
+                return None;
+            }
+            m.get("value")?.as_str()?.parse().ok()
+        }
+        _ => None,
+    }
+}
+
+/// Address string out of JSON produced by [`scval_to_json`] — either a bare
+/// string or the tagged `{"_type":"address:*","value":"G…/C…"}` object.
+/// `None` for any other shape, so a non-address argument is never mistaken
+/// for one.
+pub fn json_address_str(val: &Value) -> Option<&str> {
+    match val {
+        Value::String(s) => Some(s),
+        Value::Object(m) => {
+            let tag = m.get(TYPE_KEY)?.as_str()?;
+            if !tag.starts_with("address") {
+                return None;
+            }
+            m.get("value")?.as_str()
+        }
+        _ => None,
+    }
+}
+
 fn i128_parts_to_string(p: &Int128Parts) -> String {
     // Exact bit composition: hi is the signed high word, lo the unsigned low.
     let raw = (i128::from(p.hi) << 64) | i128::from(p.lo);

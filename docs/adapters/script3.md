@@ -1,7 +1,10 @@
 # Adapter notes: Script3 soroban-governor
 
-Status: **researched from source, adapter NOT yet implemented** (phase 2 deliverable).
-Everything below was read from the project's repository/docs on **2026-10-05**.
+Status: **implemented** in `crates/core/src/adapters/script3.rs`
+(`Script3Adapter`), verified offline against committed live-testnet captures by
+`crates/core/tests/differential.rs`. Everything below was read from the pinned
+upstream source; the source-to-behavior mapping table at the bottom says which
+file each decoded shape comes from.
 Repo lives at `github.com/script3/soroban-governor` (org `script3`, NOT `script3-io`).
 
 ## Version verified
@@ -71,6 +74,40 @@ Source: https://github.com/script3/soroban-governor/tree/main/contracts/votes/sr
 | Soroban Domains | `CDXTT5PBPZ3ERZCC5S6NE2M3NMUNDKL4SJLT26DD3CYUWUWSUV5QPZRW` | `CC4Y5WAI5MF3HF77BAM4YOS3Y4NFZAW3FTRFS25GRLCRBGPDWPYN6VZ3` |
 
 Source: JS config of https://mainnet.governance.script3.io (linked from https://script3.io).
+
+## Source-to-behavior mapping (adapter implementation)
+
+Adapter: `crates/core/src/adapters/script3.rs`, pinned SHA
+`a2ac6de81055be5bd13e31f922c9546309bfdb8a` (same commit as
+`scripts/upstream/upstream.lock.json`). Each decoded shape maps to one file:
+
+| Adapter code path | Upstream file | What it decodes |
+|---|---|---|
+| `EVENT_ARITY` + `matches_event` | `contracts/governor/src/events.rs` | topic[0] symbol + exact topic arity per event |
+| `normalize_event` `proposal_created` | `contracts/governor/src/events.rs` | topics `[symbol, id u32, proposer]`; data `[title, desc, action, vote_start, vote_end]` |
+| `normalize_event` `vote_cast` | `contracts/governor/src/events.rs` | topics `[symbol, id u32, voter]`; data `[support u32, amount i128]` |
+| `normalize_event` `proposal_voting_closed` | `contracts/governor/src/events.rs` | topics `[symbol, id u32, status u32, eta u32]`; data `VoteCount` map |
+| `decode_action` (5 variants + fail-closed `Unknown`) | `contracts/governor/src/types.rs` | `ProposalAction = Calldata | Upgrade | Settings | Council | Snapshot` |
+| `decode_calldata` | `contracts/governor/src/types.rs` | `Calldata { contract_id, function, args, auths }` (recursive) |
+| `decode_settings` | `contracts/governor/src/types.rs` | `GovernorSettings` (all 9 fields required) |
+| `decode_vote_count` | `contracts/governor/src/types.rs` | `VoteCount { against, _for, abstain }` |
+| `state_from_chain` | `contracts/governor/src/types.rs` | `Proposal { id, config, data }` layout from `get_proposal` |
+| `crates/core/src/tally.rs` | `contracts/governor/src/vote_count.rs`, `constants.rs` | `add_vote`, `count_quorum`, `is_over_quorum`, `is_over_threshold` (strict `>`, floored) |
+| `crates/core/src/checkpoint.rs` | `contracts/votes/src/checkpoints.rs` | packed `u128` checkpoints, `upper_lookup` floor semantics |
+| `AMOUNT_POSITIONS` | `contracts/votes/src/contract.rs` | `transfer(from,to,amount)` → amount at `args[2]` |
+| `VotePowerModel` | `contracts/governor/src/contract.rs:268` | power = `get_past_votes(voter, vote_start)` at snapshot |
+
+Every row is asserted against committed raw captures in
+`crates/core/tests/differential.rs` (ids 0-5, offline).
+
+### Vote-weight decay: verified ABSENT
+
+`references/soroban-governor/contracts/votes/src/` contains no decay term —
+power is a stored checkpoint read (`get_past_votes` → `upper_lookup`), never a
+function of elapsed time. The OpenZeppelin stack
+(`references/stellar-contracts/packages/governance/src/votes/`) is the same
+shape. Verified by full-text search of both trees on 2026-10-08; the adapter
+implements no decay because neither governor does.
 
 ## UNVERIFIED / honest limitations
 - **No official testnet deployment IDs found.** The repo Makefile ID is a localhost
