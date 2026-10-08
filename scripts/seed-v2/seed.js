@@ -343,7 +343,9 @@ async function ozSeed(state, ctx, latest) {
         const r = await invoke({
           contractId: governor, fn: 'cast_vote', sourceId: v.voterId,
           args: [
-            scAddress(Buffer.from(rec.id, 'hex')),
+            // proposal_id is a BytesN<32> hash, NOT an address (see the OZ
+            // governor's contractspec for cast_vote).
+            scBytes32(rec.id),
             scU32(v.support),
             scString(`Seed v2 vote on ${def.key}`),
             scAddress(state.identities[v.voterId]),
