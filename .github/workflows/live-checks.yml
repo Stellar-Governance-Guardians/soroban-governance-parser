@@ -34,6 +34,15 @@ jobs:
           cargo build -p soroban-governance-cli
           CONTRACT=$(jq -r '.contracts.testnet.fixtureGovernor.contractId' deployments.json)
           ./target/debug/sgp ttl --contract "$CONTRACT" --min-remaining 50000
+      # Seed-v2 contracts live in the gitignored .seed/ working area, so this
+      # step is a no-op on hosted CI and active only on a self-hosted soak
+      # runner that carries .seed/. It keeps every seed contract alive and
+      # generates real on-chain activity for the indexer.
+      - name: seed-v2 TTL + activity (self-hosted soak runner only)
+        if: ${{ hashFiles('.seed/state.json') != '' }}
+        run: |
+          bash scripts/ttl/extend-seed-contracts.sh
+          (cd scripts/seed-v2 && npm ci && node ../activity/activity.js --once)
       - name: report failure as issue
         if: failure()
         env:

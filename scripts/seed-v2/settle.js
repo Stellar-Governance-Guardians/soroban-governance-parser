@@ -134,7 +134,7 @@ async function settleOz(state, latestLedger) {
       contractId: governor, fn: 'proposal_state', sourceId: DEPLOYER_ID,
       args: [scBytes32(rec.id)], note: `read-oz-proposal_state-settled-${def.key}`,
     });
-    const status = retSymbolName(stateRead);
+    const status = retSymbolName(stateRead.raw);
     rec.status = status;
     rec.reads.settledStateReturnXdr = stateRead.returnXdr;
     saveState(state);
@@ -161,7 +161,7 @@ async function settleOz(state, latestLedger) {
         contractId: governor, fn: 'proposal_state', sourceId: DEPLOYER_ID,
         args: [scBytes32(rec.id)], note: `read-oz-proposal_state-executed-${def.key}`,
       });
-      rec.status = retSymbolName(after);
+      rec.status = retSymbolName(after.raw);
       rec.reads.executedStateReturnXdr = after.returnXdr;
       saveState(state);
       console.log(`  post-execute state=${rec.status}`);
