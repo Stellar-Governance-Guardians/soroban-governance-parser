@@ -22,18 +22,35 @@ jobs:
       - name: run online claims
         id: claims
         run: ONLINE_ONLY=1 bash scripts/check-claims.sh
-      # Process rule 5: fixture contracts must stay alive. Fail here when the
-      # instance/code TTL drops below ~3 days of ledgers, well before expiry,
-      # so the re-seed/extend command in the issue below still works.
+      # Process rule 5: fixture contracts must stay alive. Check EVERY contract
+      # registered in deployments.json, not just the phase 1 fixture: TTL reads
+      # are public (getLedgerEntries), so no secrets are needed here.
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
-      - name: fixture contract TTL check
+      - name: registered contract TTL check
         run: |
           cargo build -p soroban-governance-cli
-          CONTRACT=$(jq -r '.contracts.testnet.fixtureGovernor.contractId' deployments.json)
-          ./target/debug/sgp ttl --contract "$CONTRACT" --min-remaining 50000
+          contracts=$(bash scripts/list-registered-contracts.sh)
+          total=0
+          bad=0
+          for contract in $contracts; do
+            total=$((total + 1))
+            echo "::group::TTL $contract"
+            if ./target/debug/sgp ttl --contract "$contract" --min-remaining 50000; then
+              echo "ok $contract"
+            else
+              echo "::warning::TTL below threshold, or the contract is gone: $contract"
+              bad=$((bad + 1))
+            fi
+            echo "::endgroup::"
+          done
+          echo "checked $total registered contracts, $bad unhealthy"
+          # Fail loudly if the registry went empty: a check that silently checks
+          # nothing is worse than no check.
+          test "$total" -gt 0
+          test "$bad" -eq 0
       # Seed-v2 contracts live in the gitignored .seed/ working area, so this
       # step is a no-op on hosted CI and active only on a self-hosted soak
       # runner that carries .seed/. It keeps every seed contract alive and
