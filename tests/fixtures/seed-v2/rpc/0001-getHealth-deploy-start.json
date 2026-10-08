@@ -1,5 +1,5 @@
 {
-  "capturedAtUtc": "2026-10-07T12:49:33.385Z",
+  "capturedAtUtc": "2026-10-08T06:39:24.941Z",
   "request": {
     "method": "getHealth",
     "params": {}
@@ -9,10 +9,10 @@
     "id": 1000,
     "result": {
       "status": "healthy",
-      "latestLedger": 5070757,
-      "latestLedgerCloseTime": "1791377372",
-      "oldestLedger": 4949798,
-      "oldestLedgerCloseTime": "1790772577",
+      "latestLedger": 5083595,
+      "latestLedgerCloseTime": "1791441562",
+      "oldestLedger": 4962636,
+      "oldestLedgerCloseTime": "1790836767",
       "ledgerRetentionWindow": 120960
     }
   }

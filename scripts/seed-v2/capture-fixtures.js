@@ -10,7 +10,7 @@
 // needed as evidence plus an index.json manifest.
 //
 // Usage: node capture-fixtures.js
-import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { CAPTURE_DIR, FIXTURES_DIR } from './lib/config.js';
 
@@ -45,6 +45,9 @@ function derive(response) {
 }
 
 function main() {
+  // Clear the output dir so committed fixtures exactly match the current run
+  // (stale files from an earlier run must not linger as apparent evidence).
+  rmSync(OUT_RPC, { recursive: true, force: true });
   mkdirSync(OUT_RPC, { recursive: true });
   const index = readIndex();
   const manifest = {

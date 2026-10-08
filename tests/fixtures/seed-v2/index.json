@@ -1,791 +1,947 @@
 {
   "$comment": "Provenance for committed seed-v2 fixtures. Each entry is a verbatim raw Soroban RPC response copied from .seed/capture/ (gitignored). Regenerate with `node capture-fixtures.js` after a live run.",
-  "generatedAtUtc": "2026-10-08T06:36:14.553Z",
+  "generatedAtUtc": "2026-10-08T06:47:56.032Z",
   "source": ".seed/capture",
   "fixtures": [
     {
       "file": "rpc/0001-getHealth-deploy-start.json",
       "method": "getHealth",
       "note": "deploy-start",
-      "capturedAtUtc": "2026-10-07T12:49:33.385Z",
-      "latestLedger": 5070757,
+      "capturedAtUtc": "2026-10-08T06:39:24.941Z",
+      "latestLedger": 5083595,
       "ledgerRetentionWindow": 120960
     },
     {
-      "file": "rpc/0002-getHealth-deploy-start.json",
-      "method": "getHealth",
-      "note": "deploy-start",
-      "capturedAtUtc": "2026-10-07T12:50:19.299Z",
-      "latestLedger": 5070766,
-      "ledgerRetentionWindow": 120960
-    },
-    {
-      "file": "rpc/0003-getTransaction-deploy-script3Votes.json",
+      "file": "rpc/0002-getTransaction-deploy-script3Votes.json",
       "method": "getTransaction",
       "note": "deploy-script3Votes",
-      "capturedAtUtc": "2026-10-07T12:51:38.918Z",
-      "txHash": "030940285cd226e24f5971ae7a1a3e88ad50c0cb612d2575ac060148318f9141",
+      "capturedAtUtc": "2026-10-08T06:41:18.930Z",
+      "txHash": "9896582ef9b4919c7c611ec9458ac7e5346239a6fe4fde40931e4c001a596bd5",
       "status": "SUCCESS",
-      "ledger": 5070768
+      "ledger": 5083606
     },
     {
-      "file": "rpc/0004-getTransaction-deploy-script3Governor.json",
+      "file": "rpc/0003-getTransaction-deploy-script3Governor.json",
       "method": "getTransaction",
       "note": "deploy-script3Governor",
-      "capturedAtUtc": "2026-10-07T12:51:39.158Z",
-      "txHash": "e808b1d44fc16e7b50b3b986d6da8c4e9b4de7a33114ab063b03d574a2e79324",
+      "capturedAtUtc": "2026-10-08T06:41:19.158Z",
+      "txHash": "9508d28ca1ae070d981ff7899a6673c6ec8c3815cc9811fdddb6e34a4574761d",
       "status": "SUCCESS",
-      "ledger": 5070770
+      "ledger": 5083608
     },
     {
-      "file": "rpc/0005-getTransaction-deploy-script3MockSubcall.json",
+      "file": "rpc/0004-getTransaction-deploy-script3MockSubcall.json",
       "method": "getTransaction",
       "note": "deploy-script3MockSubcall",
-      "capturedAtUtc": "2026-10-07T12:51:39.502Z",
-      "txHash": "fc601fe1ecb44127482928c3bc55eb63474da03ab4751f31359e4d15169650bd",
+      "capturedAtUtc": "2026-10-08T06:41:19.440Z",
+      "txHash": "45395fede4b9156b180b47b4882f010cbc205dace1c54dc5fdc3f68dbfffd2b8",
       "status": "SUCCESS",
-      "ledger": 5070773
+      "ledger": 5083610
     },
     {
-      "file": "rpc/0006-getTransaction-deploy-ozToken.json",
+      "file": "rpc/0005-getTransaction-deploy-ozToken.json",
       "method": "getTransaction",
       "note": "deploy-ozToken",
-      "capturedAtUtc": "2026-10-07T12:51:39.734Z",
-      "txHash": "47f8afb15bb35dd11f09ff06c2efbc6da99235cf0a198d9fc41766a11902be7a",
+      "capturedAtUtc": "2026-10-08T06:41:19.710Z",
+      "txHash": "026fd6edeeea238f8c52cdfe89592d033e34a36a57d534553063b21435b1a006",
       "status": "SUCCESS",
-      "ledger": 5070775
+      "ledger": 5083612
     },
     {
-      "file": "rpc/0007-getTransaction-deploy-ozGovernor.json",
+      "file": "rpc/0006-getTransaction-deploy-ozGovernor.json",
       "method": "getTransaction",
       "note": "deploy-ozGovernor",
-      "capturedAtUtc": "2026-10-07T12:51:39.943Z",
-      "txHash": "8d61b3721601a5360b06591ed0e66607450006a666d28cd9706a942eb73418c6",
+      "capturedAtUtc": "2026-10-08T06:41:19.928Z",
+      "txHash": "fed6be4254223aae40de63bfe44961c73f05f46f7abbf07c8b4d7294a30ee751",
       "status": "SUCCESS",
-      "ledger": 5070777
+      "ledger": 5083614
     },
     {
-      "file": "rpc/0008-getTransaction-deploy-ozUpgradeableV1.json",
+      "file": "rpc/0007-getTransaction-deploy-ozUpgradeableV1.json",
       "method": "getTransaction",
       "note": "deploy-ozUpgradeableV1",
-      "capturedAtUtc": "2026-10-07T12:51:40.218Z",
-      "txHash": "ffb480fefa8360179c0c34a5d1256b927bea83cfbd00064c58fe7e64cb3b970a",
+      "capturedAtUtc": "2026-10-08T06:41:20.363Z",
+      "txHash": "468c69a101d9da1a9b797fdbf86734a543148c8f7afb198b09ae6d725116c7c9",
       "status": "SUCCESS",
-      "ledger": 5070780
+      "ledger": 5083616
     },
     {
-      "file": "rpc/0009-getTransaction-deploy-ozMockSubcall.json",
+      "file": "rpc/0008-getTransaction-deploy-ozMockSubcall.json",
       "method": "getTransaction",
       "note": "deploy-ozMockSubcall",
-      "capturedAtUtc": "2026-10-07T12:51:40.442Z",
-      "txHash": "a847fe3a42ef47d6205c269163970ec974a1be6f1e19cbba7d4f5013617cda6d",
+      "capturedAtUtc": "2026-10-08T06:41:20.578Z",
+      "txHash": "aec4e10d1de6a4f3c24542a249922f0cd7755d7f1400bd016f54fe855f624d11",
       "status": "SUCCESS",
-      "ledger": 5070782
+      "ledger": 5083618
     },
     {
-      "file": "rpc/0010-getHealth-seed-start.json",
+      "file": "rpc/0009-getHealth-seed-start.json",
       "method": "getHealth",
       "note": "seed-start",
-      "capturedAtUtc": "2026-10-07T13:03:27.859Z",
-      "latestLedger": 5070924,
+      "capturedAtUtc": "2026-10-08T06:41:36.400Z",
+      "latestLedger": 5083621,
       "ledgerRetentionWindow": 120960
     },
     {
-      "file": "rpc/0011-getHealth-seed-start.json",
-      "method": "getHealth",
-      "note": "seed-start",
-      "capturedAtUtc": "2026-10-07T13:09:46.216Z",
-      "latestLedger": 5070999,
-      "ledgerRetentionWindow": 120960
-    },
-    {
-      "file": "rpc/0012-simulateTransaction-simulate-s3-initialize-votes.json",
+      "file": "rpc/0010-simulateTransaction-simulate-s3-initialize-votes.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-initialize-votes",
-      "capturedAtUtc": "2026-10-07T13:09:46.913Z",
+      "capturedAtUtc": "2026-10-08T06:41:36.980Z",
       "eventCount": 2
     },
     {
-      "file": "rpc/0013-getHealth-seed-start.json",
-      "method": "getHealth",
-      "note": "seed-start",
-      "capturedAtUtc": "2026-10-07T13:11:56.253Z",
-      "latestLedger": 5071025,
-      "ledgerRetentionWindow": 120960
-    },
-    {
-      "file": "rpc/0014-simulateTransaction-simulate-s3-initialize-votes.json",
-      "method": "simulateTransaction",
-      "note": "simulate-s3-initialize-votes",
-      "capturedAtUtc": "2026-10-07T13:11:56.727Z",
-      "eventCount": 2
-    },
-    {
-      "file": "rpc/0016-getTransaction-final-s3-initialize-votes.json",
+      "file": "rpc/0012-getTransaction-final-s3-initialize-votes.json",
       "method": "getTransaction",
       "note": "final-s3-initialize-votes",
-      "capturedAtUtc": "2026-10-07T13:12:03.617Z",
-      "txHash": "528f57942c3df3d3067e939d5f1f1685cfdd265f3bca5e5fc610ea573fce39ec",
+      "capturedAtUtc": "2026-10-08T06:41:43.691Z",
+      "txHash": "f3458529f2f0d1dad236117144adc75b48c644adf7056a88fafb711eb2403380",
       "status": "SUCCESS",
-      "ledger": 5071027
+      "ledger": 5083623
     },
     {
-      "file": "rpc/0017-simulateTransaction-simulate-s3-initialize-governor.json",
+      "file": "rpc/0013-simulateTransaction-simulate-s3-initialize-governor.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-initialize-governor",
-      "capturedAtUtc": "2026-10-07T13:12:04.194Z",
+      "capturedAtUtc": "2026-10-08T06:41:44.715Z",
       "eventCount": 2
     },
     {
-      "file": "rpc/0019-getTransaction-final-s3-initialize-governor.json",
+      "file": "rpc/0015-getTransaction-final-s3-initialize-governor.json",
       "method": "getTransaction",
       "note": "final-s3-initialize-governor",
-      "capturedAtUtc": "2026-10-07T13:12:09.016Z",
-      "txHash": "efc7794733abd73f046fcdf2fd3009cdf9a5552f418b5176ac31d879c5106435",
+      "capturedAtUtc": "2026-10-08T06:41:47.901Z",
+      "txHash": "024ee15ba6a6bf35a85d3ef7bbdb3af3aa37fccfa016afa01b0b1205266dc266",
       "status": "SUCCESS",
-      "ledger": 5071028
+      "ledger": 5083624
     },
     {
-      "file": "rpc/0020-simulateTransaction-simulate-s3-initialize-mock-subcall.json",
+      "file": "rpc/0016-simulateTransaction-simulate-s3-initialize-mock-subcall.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-initialize-mock-subcall",
-      "capturedAtUtc": "2026-10-07T13:12:09.674Z",
+      "capturedAtUtc": "2026-10-08T06:41:48.561Z",
       "eventCount": 2
     },
     {
-      "file": "rpc/0022-getTransaction-final-s3-initialize-mock-subcall.json",
+      "file": "rpc/0018-getTransaction-final-s3-initialize-mock-subcall.json",
       "method": "getTransaction",
       "note": "final-s3-initialize-mock-subcall",
-      "capturedAtUtc": "2026-10-07T13:12:14.456Z",
-      "txHash": "c9cd06f04f921d77e20cd577c190b517555941ddadb1df55f6b0346dd0937a04",
+      "capturedAtUtc": "2026-10-08T06:41:52.847Z",
+      "txHash": "6bdbbe2ac7d9a2eeeea7ba24f8c18258d90b00dc5b0d9a3766ca0f057e3e3616",
       "status": "SUCCESS",
-      "ledger": 5071029
+      "ledger": 5083625
     },
     {
-      "file": "rpc/0023-simulateTransaction-simulate-s3-mint-sgg-deployer.json",
+      "file": "rpc/0019-simulateTransaction-simulate-s3-mint-sgg-deployer.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-mint-sgg-deployer",
-      "capturedAtUtc": "2026-10-07T13:12:15.131Z",
+      "capturedAtUtc": "2026-10-08T06:41:53.619Z",
       "eventCount": 4
     },
     {
-      "file": "rpc/0025-getTransaction-final-s3-mint-sgg-deployer.json",
+      "file": "rpc/0021-getTransaction-final-s3-mint-sgg-deployer.json",
       "method": "getTransaction",
       "note": "final-s3-mint-sgg-deployer",
-      "capturedAtUtc": "2026-10-07T13:12:17.960Z",
-      "txHash": "2363d59fec2ebc1c95226f9e4c8682dfa1bde298ab3012309fe77de5c286260b",
+      "capturedAtUtc": "2026-10-08T06:41:57.718Z",
+      "txHash": "8179975bcfed0c06023465d14b4960ff2d1ffdbfbff3d78aa96d2ea708266da0",
       "status": "SUCCESS",
-      "ledger": 5071030
+      "ledger": 5083626
     },
     {
-      "file": "rpc/0026-simulateTransaction-simulate-s3-mint-sgg-delegate-1.json",
+      "file": "rpc/0022-simulateTransaction-simulate-s3-mint-sgg-delegate-1.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-mint-sgg-delegate-1",
-      "capturedAtUtc": "2026-10-07T13:12:18.558Z",
+      "capturedAtUtc": "2026-10-08T06:41:58.616Z",
       "eventCount": 4
     },
     {
-      "file": "rpc/0028-getTransaction-final-s3-mint-sgg-delegate-1.json",
+      "file": "rpc/0024-getTransaction-final-s3-mint-sgg-delegate-1.json",
       "method": "getTransaction",
       "note": "final-s3-mint-sgg-delegate-1",
-      "capturedAtUtc": "2026-10-07T13:12:22.671Z",
-      "txHash": "48045d1f3d37521259f2945f7c14d9c3a82db7b449616f2f6bc28c4763f22b17",
+      "capturedAtUtc": "2026-10-08T06:42:02.799Z",
+      "txHash": "256611c3db08b0761b703435eb7b83019991fd466903c7ae01cd8faab9ea52ac",
       "status": "SUCCESS",
-      "ledger": 5071031
+      "ledger": 5083627
     },
     {
-      "file": "rpc/0029-simulateTransaction-simulate-s3-mint-sgg-delegate-2.json",
+      "file": "rpc/0025-simulateTransaction-simulate-s3-mint-sgg-delegate-2.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-mint-sgg-delegate-2",
-      "capturedAtUtc": "2026-10-07T13:12:23.258Z",
+      "capturedAtUtc": "2026-10-08T06:42:03.578Z",
       "eventCount": 4
     },
     {
-      "file": "rpc/0031-getTransaction-final-s3-mint-sgg-delegate-2.json",
+      "file": "rpc/0027-getTransaction-final-s3-mint-sgg-delegate-2.json",
       "method": "getTransaction",
       "note": "final-s3-mint-sgg-delegate-2",
-      "capturedAtUtc": "2026-10-07T13:12:29.712Z",
-      "txHash": "a5e12a87cda7c493e114d8f39c5af596d2040f0f6d0a039dd114dca89f56bf44",
+      "capturedAtUtc": "2026-10-08T06:42:07.740Z",
+      "txHash": "1918a6a528d48a70a2b77dee2cbd8849bbf5171427f1dc3d047ce9adf711244e",
       "status": "SUCCESS",
-      "ledger": 5071032
+      "ledger": 5083628
     },
     {
-      "file": "rpc/0032-simulateTransaction-simulate-s3-mint-sgg-delegate-3.json",
+      "file": "rpc/0028-simulateTransaction-simulate-s3-mint-sgg-delegate-3.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-mint-sgg-delegate-3",
-      "capturedAtUtc": "2026-10-07T13:12:30.422Z",
+      "capturedAtUtc": "2026-10-08T06:42:08.357Z",
       "eventCount": 4
     },
     {
-      "file": "rpc/0034-getTransaction-final-s3-mint-sgg-delegate-3.json",
+      "file": "rpc/0030-getTransaction-final-s3-mint-sgg-delegate-3.json",
       "method": "getTransaction",
       "note": "final-s3-mint-sgg-delegate-3",
-      "capturedAtUtc": "2026-10-07T13:12:33.287Z",
-      "txHash": "a8d58dcecd47cbd5e7836365570d89c4b5a8629131d948869b100c389d9ca0a3",
+      "capturedAtUtc": "2026-10-08T06:42:12.947Z",
+      "txHash": "79151e05c74efc408710b1dfd734aecf87cb5886f60ea8b9fd70845604d856af",
       "status": "SUCCESS",
-      "ledger": 5071033
+      "ledger": 5083629
     },
     {
-      "file": "rpc/0035-simulateTransaction-simulate-s3-mint-sgg-delegate-4.json",
+      "file": "rpc/0031-simulateTransaction-simulate-s3-mint-sgg-delegate-4.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-mint-sgg-delegate-4",
-      "capturedAtUtc": "2026-10-07T13:12:34.049Z",
+      "capturedAtUtc": "2026-10-08T06:42:13.801Z",
       "eventCount": 4
     },
     {
-      "file": "rpc/0037-getTransaction-final-s3-mint-sgg-delegate-4.json",
+      "file": "rpc/0033-getTransaction-final-s3-mint-sgg-delegate-4.json",
       "method": "getTransaction",
       "note": "final-s3-mint-sgg-delegate-4",
-      "capturedAtUtc": "2026-10-07T13:12:38.720Z",
-      "txHash": "6def982c9f6bf4a71761d9875e44aeb49703d0792693e1569c70cee2ac02ffa4",
+      "capturedAtUtc": "2026-10-08T06:42:18.693Z",
+      "txHash": "6ebc5e1d1b8a04322c22c79fbaaf0c172c71456683cc3e421e9f4e4a57526724",
       "status": "SUCCESS",
-      "ledger": 5071034
+      "ledger": 5083630
     },
     {
-      "file": "rpc/0038-simulateTransaction-simulate-s3-mint-sgg-delegate-5.json",
+      "file": "rpc/0034-simulateTransaction-simulate-s3-mint-sgg-delegate-5.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-mint-sgg-delegate-5",
-      "capturedAtUtc": "2026-10-07T13:12:39.571Z",
+      "capturedAtUtc": "2026-10-08T06:42:19.614Z",
       "eventCount": 4
     },
     {
-      "file": "rpc/0040-getTransaction-final-s3-mint-sgg-delegate-5.json",
+      "file": "rpc/0036-getTransaction-final-s3-mint-sgg-delegate-5.json",
       "method": "getTransaction",
       "note": "final-s3-mint-sgg-delegate-5",
-      "capturedAtUtc": "2026-10-07T13:12:44.350Z",
-      "txHash": "8b6f2223dfd261406e218f8ad3e09bc1c2dc3dd12dbc5ae57ecf285520fd2c2b",
+      "capturedAtUtc": "2026-10-08T06:42:24.112Z",
+      "txHash": "a7226ef05d6c4097a0ad90cbb3c666d2606f1f337aecc9583bcbc31a7c4db60b",
       "status": "SUCCESS",
-      "ledger": 5071035
+      "ledger": 5083631
     },
     {
-      "file": "rpc/0041-simulateTransaction-simulate-s3-mint-sgg-governor-treasury.json",
+      "file": "rpc/0037-simulateTransaction-simulate-s3-mint-sgg-governor-treasury.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-mint-sgg-governor-treasury",
-      "capturedAtUtc": "2026-10-07T13:12:45.375Z",
+      "capturedAtUtc": "2026-10-08T06:42:25.095Z",
       "eventCount": 4
     },
     {
-      "file": "rpc/0043-getTransaction-final-s3-mint-sgg-governor-treasury.json",
+      "file": "rpc/0039-getTransaction-final-s3-mint-sgg-governor-treasury.json",
       "method": "getTransaction",
       "note": "final-s3-mint-sgg-governor-treasury",
-      "capturedAtUtc": "2026-10-07T13:12:48.070Z",
-      "txHash": "874392e1e97f437915ae11b1395818f0a5e996e75bc679eb28ac0c2865105b8e",
+      "capturedAtUtc": "2026-10-08T06:42:27.508Z",
+      "txHash": "4fddc753bf71106a17864096132e493e53c816e6f8de87d5a048d73491ed0bea",
       "status": "SUCCESS",
-      "ledger": 5071036
+      "ledger": 5083632
     },
     {
-      "file": "rpc/0044-simulateTransaction-simulate-s3-delegate-sgg-delegate-4.json",
-      "method": "simulateTransaction",
-      "note": "simulate-s3-delegate-sgg-delegate-4",
-      "capturedAtUtc": "2026-10-07T13:12:48.956Z",
-      "eventCount": 5
-    },
-    {
-      "file": "rpc/0046-getTransaction-final-s3-delegate-sgg-delegate-4.json",
-      "method": "getTransaction",
-      "note": "final-s3-delegate-sgg-delegate-4",
-      "capturedAtUtc": "2026-10-07T13:12:53.245Z",
-      "txHash": "f99745c1042b7a344e79bc61d0164e5e74c98186f81267cfbd601e96110a668c",
-      "status": "SUCCESS",
-      "ledger": 5071037
-    },
-    {
-      "file": "rpc/0047-simulateTransaction-simulate-s3-delegate-sgg-delegate-5.json",
-      "method": "simulateTransaction",
-      "note": "simulate-s3-delegate-sgg-delegate-5",
-      "capturedAtUtc": "2026-10-07T13:12:54.189Z",
-      "eventCount": 5
-    },
-    {
-      "file": "rpc/0049-getTransaction-final-s3-delegate-sgg-delegate-5.json",
-      "method": "getTransaction",
-      "note": "final-s3-delegate-sgg-delegate-5",
-      "capturedAtUtc": "2026-10-07T13:12:59.419Z",
-      "txHash": "c2baab2d7f2656e3e76f174c0473436967ae925d6178b9b7ccf03763dd407314",
-      "status": "SUCCESS",
-      "ledger": 5071038
-    },
-    {
-      "file": "rpc/0050-simulateTransaction-simulate-s3-propose-s1-transfer-executed.json",
+      "file": "rpc/0040-simulateTransaction-simulate-s3-propose-s1-transfer-executed.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-propose-s1-transfer-executed",
-      "capturedAtUtc": "2026-10-07T13:12:59.997Z",
+      "capturedAtUtc": "2026-10-08T06:42:28.512Z",
       "eventCount": 7
     },
     {
-      "file": "rpc/0052-getTransaction-final-s3-propose-s1-transfer-executed.json",
+      "file": "rpc/0042-getTransaction-final-s3-propose-s1-transfer-executed.json",
       "method": "getTransaction",
       "note": "final-s3-propose-s1-transfer-executed",
-      "capturedAtUtc": "2026-10-07T13:13:03.408Z",
-      "txHash": "850569141e4934762c465bfffd21e548cd97be0c02a5f161f7811639c04d1da8",
+      "capturedAtUtc": "2026-10-08T06:42:32.794Z",
+      "txHash": "44b989397006a5e0353d9e1ddba1dd3a0c46e109f8b914775e66d50bea16477b",
       "status": "SUCCESS",
-      "ledger": 5071039
+      "ledger": 5083633
     },
     {
-      "file": "rpc/0053-simulateTransaction-simulate-s3-propose-s2-contract-upgrade.json",
+      "file": "rpc/0043-simulateTransaction-simulate-s3-propose-s2-contract-upgrade.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-propose-s2-contract-upgrade",
-      "capturedAtUtc": "2026-10-07T13:13:04.193Z",
+      "capturedAtUtc": "2026-10-08T06:42:33.435Z",
       "eventCount": 7
     },
     {
-      "file": "rpc/0055-getTransaction-final-s3-propose-s2-contract-upgrade.json",
+      "file": "rpc/0045-getTransaction-final-s3-propose-s2-contract-upgrade.json",
       "method": "getTransaction",
       "note": "final-s3-propose-s2-contract-upgrade",
-      "capturedAtUtc": "2026-10-07T13:13:08.615Z",
-      "txHash": "5d6c1b20977771c87d14d90a823599be103df68aeb20a50f1d3a0821890cd0d9",
-      "status": "FAILED",
-      "ledger": 5071040
-    },
-    {
-      "file": "rpc/0056-getHealth-seed-start.json",
-      "method": "getHealth",
-      "note": "seed-start",
-      "capturedAtUtc": "2026-10-08T06:29:51.812Z",
-      "latestLedger": 5083480,
-      "ledgerRetentionWindow": 120960
-    },
-    {
-      "file": "rpc/0057-simulateTransaction-simulate-s3-propose-s2-contract-upgrade.json",
-      "method": "simulateTransaction",
-      "note": "simulate-s3-propose-s2-contract-upgrade",
-      "capturedAtUtc": "2026-10-08T06:29:52.690Z",
-      "eventCount": 7
-    },
-    {
-      "file": "rpc/0059-getTransaction-final-s3-propose-s2-contract-upgrade.json",
-      "method": "getTransaction",
-      "note": "final-s3-propose-s2-contract-upgrade",
-      "capturedAtUtc": "2026-10-08T06:29:59.112Z",
-      "txHash": "8898c2c940557b998fb8e86cc5eed51bd644cc3a6272a46fc61a01c562223361",
+      "capturedAtUtc": "2026-10-08T06:42:37.825Z",
+      "txHash": "30127da367d630030ea18c3315801542f2539640c76d6021b3b322f626a1de62",
       "status": "SUCCESS",
-      "ledger": 5083482
+      "ledger": 5083634
     },
     {
-      "file": "rpc/0060-simulateTransaction-simulate-s3-propose-s3-admin-change.json",
+      "file": "rpc/0046-simulateTransaction-simulate-s3-propose-s3-admin-change.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-propose-s3-admin-change",
-      "capturedAtUtc": "2026-10-08T06:29:59.954Z",
+      "capturedAtUtc": "2026-10-08T06:42:38.326Z",
       "eventCount": 7
     },
     {
-      "file": "rpc/0062-getTransaction-final-s3-propose-s3-admin-change.json",
+      "file": "rpc/0048-getTransaction-final-s3-propose-s3-admin-change.json",
       "method": "getTransaction",
       "note": "final-s3-propose-s3-admin-change",
-      "capturedAtUtc": "2026-10-08T06:30:02.648Z",
-      "txHash": "4bb23ee34d0d252b623c242d5393a4e1f2557edf2e24e1d08028278eb50bd846",
+      "capturedAtUtc": "2026-10-08T06:42:42.671Z",
+      "txHash": "d2b5eb6f1073d1b043a59eb3ed0180f7cb31e6d471f712718e42f6008f765c76",
       "status": "SUCCESS",
-      "ledger": 5083483
+      "ledger": 5083635
     },
     {
-      "file": "rpc/0063-simulateTransaction-simulate-s3-propose-s4-unknown-contract-call.json",
+      "file": "rpc/0049-simulateTransaction-simulate-s3-propose-s4-unknown-contract-call.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-propose-s4-unknown-contract-call",
-      "capturedAtUtc": "2026-10-08T06:30:04.057Z",
+      "capturedAtUtc": "2026-10-08T06:42:43.967Z",
       "eventCount": 7
     },
     {
-      "file": "rpc/0065-getTransaction-final-s3-propose-s4-unknown-contract-call.json",
+      "file": "rpc/0051-getTransaction-final-s3-propose-s4-unknown-contract-call.json",
       "method": "getTransaction",
       "note": "final-s3-propose-s4-unknown-contract-call",
-      "capturedAtUtc": "2026-10-08T06:30:08.448Z",
-      "txHash": "c9498d66d5cacb72d6602d41740d33a6e501dcb695997122dda827d84558086d",
+      "capturedAtUtc": "2026-10-08T06:42:49.047Z",
+      "txHash": "5b756c0f605e566b6190e6d3a85b14f147b5cd9af3ec85c109f4a386b24d7f07",
       "status": "SUCCESS",
-      "ledger": 5083484
+      "ledger": 5083636
     },
     {
-      "file": "rpc/0066-simulateTransaction-simulate-s3-propose-s5-failing-quorum.json",
+      "file": "rpc/0052-simulateTransaction-simulate-s3-propose-s5-failing-quorum.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-propose-s5-failing-quorum",
-      "capturedAtUtc": "2026-10-08T06:30:09.058Z",
-      "eventCount": 6
+      "capturedAtUtc": "2026-10-08T06:42:49.844Z",
+      "eventCount": 7
     },
     {
-      "file": "rpc/0067-simulateTransaction-simulate-s3-propose-s6-abstain-heavy.json",
+      "file": "rpc/0054-getTransaction-final-s3-propose-s5-failing-quorum.json",
+      "method": "getTransaction",
+      "note": "final-s3-propose-s5-failing-quorum",
+      "capturedAtUtc": "2026-10-08T06:42:54.181Z",
+      "txHash": "64e51d404a943ef130a23a9b56522f4bae7b1b327da6390a887f6bff4460ddfa",
+      "status": "SUCCESS",
+      "ledger": 5083637
+    },
+    {
+      "file": "rpc/0055-simulateTransaction-simulate-s3-propose-s6-abstain-heavy.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-propose-s6-abstain-heavy",
-      "capturedAtUtc": "2026-10-08T06:30:09.570Z",
-      "eventCount": 6
+      "capturedAtUtc": "2026-10-08T06:42:55.236Z",
+      "eventCount": 7
     },
     {
-      "file": "rpc/0068-simulateTransaction-simulate-s3-vote-s1-transfer-executed-sgg-delegate-1.json",
+      "file": "rpc/0057-getTransaction-final-s3-propose-s6-abstain-heavy.json",
+      "method": "getTransaction",
+      "note": "final-s3-propose-s6-abstain-heavy",
+      "capturedAtUtc": "2026-10-08T06:42:58.204Z",
+      "txHash": "89df4d3b56e26d5ee08ca1f4abf65758cd88cf1f9cf5b3d4b449c223e6095648",
+      "status": "SUCCESS",
+      "ledger": 5083638
+    },
+    {
+      "file": "rpc/0058-simulateTransaction-simulate-s3-delegate-sgg-delegate-4.json",
+      "method": "simulateTransaction",
+      "note": "simulate-s3-delegate-sgg-delegate-4",
+      "capturedAtUtc": "2026-10-08T06:42:59.067Z",
+      "eventCount": 5
+    },
+    {
+      "file": "rpc/0060-getTransaction-final-s3-delegate-sgg-delegate-4.json",
+      "method": "getTransaction",
+      "note": "final-s3-delegate-sgg-delegate-4",
+      "capturedAtUtc": "2026-10-08T06:43:03.494Z",
+      "txHash": "f5061e6e1b0fcc778aee2edbf45ef438721de11b9cd0587edd2985c94be3fa37",
+      "status": "SUCCESS",
+      "ledger": 5083639
+    },
+    {
+      "file": "rpc/0061-simulateTransaction-simulate-s3-delegate-sgg-delegate-5.json",
+      "method": "simulateTransaction",
+      "note": "simulate-s3-delegate-sgg-delegate-5",
+      "capturedAtUtc": "2026-10-08T06:43:04.330Z",
+      "eventCount": 5
+    },
+    {
+      "file": "rpc/0063-getTransaction-final-s3-delegate-sgg-delegate-5.json",
+      "method": "getTransaction",
+      "note": "final-s3-delegate-sgg-delegate-5",
+      "capturedAtUtc": "2026-10-08T06:43:08.571Z",
+      "txHash": "140f49b8116d2e2aacbfdd52863b6deea8c69924eba3713811495da7812a0518",
+      "status": "SUCCESS",
+      "ledger": 5083640
+    },
+    {
+      "file": "rpc/0064-simulateTransaction-simulate-s3-vote-s1-transfer-executed-sgg-delegate-1.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-vote-s1-transfer-executed-sgg-delegate-1",
-      "capturedAtUtc": "2026-10-08T06:30:10.086Z",
-      "eventCount": 4
+      "capturedAtUtc": "2026-10-08T06:43:09.088Z",
+      "eventCount": 5
     },
     {
-      "file": "rpc/0069-simulateTransaction-simulate-s3-vote-s1-transfer-executed-sgg-delegate-2.json",
+      "file": "rpc/0066-getTransaction-final-s3-vote-s1-transfer-executed-sgg-delegate-1.json",
+      "method": "getTransaction",
+      "note": "final-s3-vote-s1-transfer-executed-sgg-delegate-1",
+      "capturedAtUtc": "2026-10-08T06:43:13.275Z",
+      "txHash": "6220c6ae39dfdc36a1dc1aec6ad008124ba25a10359c6e7cb4e81db360e6ec43",
+      "status": "SUCCESS",
+      "ledger": 5083641
+    },
+    {
+      "file": "rpc/0067-simulateTransaction-simulate-s3-vote-s1-transfer-executed-sgg-delegate-2.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-vote-s1-transfer-executed-sgg-delegate-2",
-      "capturedAtUtc": "2026-10-08T06:30:10.573Z",
-      "eventCount": 4
+      "capturedAtUtc": "2026-10-08T06:43:14.051Z",
+      "eventCount": 5
+    },
+    {
+      "file": "rpc/0069-getTransaction-final-s3-vote-s1-transfer-executed-sgg-delegate-2.json",
+      "method": "getTransaction",
+      "note": "final-s3-vote-s1-transfer-executed-sgg-delegate-2",
+      "capturedAtUtc": "2026-10-08T06:43:18.245Z",
+      "txHash": "c7639b2cccab65a79b8504b4a3edc3c89af8da1e0d9cc8abd7f48c62c9050185",
+      "status": "SUCCESS",
+      "ledger": 5083642
     },
     {
       "file": "rpc/0070-simulateTransaction-simulate-s3-vote-s1-transfer-executed-sgg-delegate-3.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-vote-s1-transfer-executed-sgg-delegate-3",
-      "capturedAtUtc": "2026-10-08T06:30:11.042Z",
-      "eventCount": 4
+      "capturedAtUtc": "2026-10-08T06:43:18.700Z",
+      "eventCount": 5
     },
     {
-      "file": "rpc/0071-simulateTransaction-simulate-s3-vote-s2-contract-upgrade-sgg-delegate-1.json",
+      "file": "rpc/0072-getTransaction-final-s3-vote-s1-transfer-executed-sgg-delegate-3.json",
+      "method": "getTransaction",
+      "note": "final-s3-vote-s1-transfer-executed-sgg-delegate-3",
+      "capturedAtUtc": "2026-10-08T06:43:22.958Z",
+      "txHash": "fa6431a6adb6bf22193cc0e5f83d0045365c15916514a8c376300a189dfbb7d9",
+      "status": "SUCCESS",
+      "ledger": 5083643
+    },
+    {
+      "file": "rpc/0073-simulateTransaction-simulate-s3-vote-s2-contract-upgrade-sgg-delegate-1.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-vote-s2-contract-upgrade-sgg-delegate-1",
-      "capturedAtUtc": "2026-10-08T06:30:11.668Z",
+      "capturedAtUtc": "2026-10-08T06:43:23.505Z",
       "eventCount": 5
     },
     {
-      "file": "rpc/0073-getTransaction-final-s3-vote-s2-contract-upgrade-sgg-delegate-1.json",
+      "file": "rpc/0075-getTransaction-final-s3-vote-s2-contract-upgrade-sgg-delegate-1.json",
       "method": "getTransaction",
       "note": "final-s3-vote-s2-contract-upgrade-sgg-delegate-1",
-      "capturedAtUtc": "2026-10-08T06:30:17.756Z",
-      "txHash": "095419195b81a13a98d230f5873fe64242810e355b594c710d2c565ac47f589e",
+      "capturedAtUtc": "2026-10-08T06:43:27.778Z",
+      "txHash": "482dce173d9ae1ab8f9fecd0e9cb631ae32adc7bf42d4b822ce910c2d90a5142",
       "status": "SUCCESS",
-      "ledger": 5083486
+      "ledger": 5083644
     },
     {
-      "file": "rpc/0074-simulateTransaction-simulate-s3-vote-s3-admin-change-sgg-delegate-2.json",
+      "file": "rpc/0076-simulateTransaction-simulate-s3-vote-s3-admin-change-sgg-delegate-2.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-vote-s3-admin-change-sgg-delegate-2",
-      "capturedAtUtc": "2026-10-08T06:30:18.576Z",
+      "capturedAtUtc": "2026-10-08T06:43:28.789Z",
       "eventCount": 5
     },
     {
-      "file": "rpc/0076-getTransaction-final-s3-vote-s3-admin-change-sgg-delegate-2.json",
+      "file": "rpc/0078-getTransaction-final-s3-vote-s3-admin-change-sgg-delegate-2.json",
       "method": "getTransaction",
       "note": "final-s3-vote-s3-admin-change-sgg-delegate-2",
-      "capturedAtUtc": "2026-10-08T06:30:22.675Z",
-      "txHash": "4b16f086a6eb06fcde33439f551e599daac728f4f01a2642c8e1806a497ab977",
+      "capturedAtUtc": "2026-10-08T06:43:33.094Z",
+      "txHash": "bd8360544e1cb48c6d47610665dab6ad9b68f5cfe48189fa11955a8326852090",
       "status": "SUCCESS",
-      "ledger": 5083487
+      "ledger": 5083645
     },
     {
-      "file": "rpc/0077-simulateTransaction-simulate-s3-vote-s3-admin-change-sgg-delegate-3.json",
+      "file": "rpc/0079-simulateTransaction-simulate-s3-vote-s3-admin-change-sgg-delegate-3.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-vote-s3-admin-change-sgg-delegate-3",
-      "capturedAtUtc": "2026-10-08T06:30:23.692Z",
+      "capturedAtUtc": "2026-10-08T06:43:33.573Z",
       "eventCount": 5
     },
     {
-      "file": "rpc/0079-getTransaction-final-s3-vote-s3-admin-change-sgg-delegate-3.json",
+      "file": "rpc/0081-getTransaction-final-s3-vote-s3-admin-change-sgg-delegate-3.json",
       "method": "getTransaction",
       "note": "final-s3-vote-s3-admin-change-sgg-delegate-3",
-      "capturedAtUtc": "2026-10-08T06:30:28.090Z",
-      "txHash": "cf5d3fdcb80368a1d004ed6dea7c6e9712739decbfdcecddc283e707a68a8c07",
+      "capturedAtUtc": "2026-10-08T06:43:37.729Z",
+      "txHash": "d6c392ad35c50267355bb7c4cce29c5a1d0945b62fc4dd84d518b42397b0335c",
       "status": "SUCCESS",
-      "ledger": 5083488
+      "ledger": 5083646
     },
     {
-      "file": "rpc/0080-simulateTransaction-simulate-s3-vote-s4-unknown-contract-call-sgg-delegate-3.json",
+      "file": "rpc/0082-simulateTransaction-simulate-s3-vote-s4-unknown-contract-call-sgg-delegate-3.json",
       "method": "simulateTransaction",
       "note": "simulate-s3-vote-s4-unknown-contract-call-sgg-delegate-3",
-      "capturedAtUtc": "2026-10-08T06:30:28.910Z",
+      "capturedAtUtc": "2026-10-08T06:43:38.226Z",
       "eventCount": 5
     },
     {
-      "file": "rpc/0082-getTransaction-final-s3-vote-s4-unknown-contract-call-sgg-delegate-3.json",
+      "file": "rpc/0084-getTransaction-final-s3-vote-s4-unknown-contract-call-sgg-delegate-3.json",
       "method": "getTransaction",
       "note": "final-s3-vote-s4-unknown-contract-call-sgg-delegate-3",
-      "capturedAtUtc": "2026-10-08T06:30:33.320Z",
-      "txHash": "1379b44b70e49f862934c15d0595c72e326d8cf0ef99319c7886edcb9b2f5229",
+      "capturedAtUtc": "2026-10-08T06:43:42.631Z",
+      "txHash": "22aafedd97a4b33f4948f9ff6d969cdedb2ef16fbfb9ad237d50c0d80aa7e505",
       "status": "SUCCESS",
-      "ledger": 5083489
+      "ledger": 5083647
     },
     {
-      "file": "rpc/0083-getHealth-seed-start.json",
-      "method": "getHealth",
-      "note": "seed-start",
-      "capturedAtUtc": "2026-10-08T06:32:38.988Z",
-      "latestLedger": 5083514,
-      "ledgerRetentionWindow": 120960
-    },
-    {
-      "file": "rpc/0084-simulateTransaction-simulate-s3-propose-s5-failing-quorum.json",
+      "file": "rpc/0085-simulateTransaction-simulate-s3-vote-s6-abstain-heavy-sgg-delegate-1.json",
       "method": "simulateTransaction",
-      "note": "simulate-s3-propose-s5-failing-quorum",
-      "capturedAtUtc": "2026-10-08T06:32:39.638Z",
-      "eventCount": 4
+      "note": "simulate-s3-vote-s6-abstain-heavy-sgg-delegate-1",
+      "capturedAtUtc": "2026-10-08T06:43:43.644Z",
+      "eventCount": 5
     },
     {
-      "file": "rpc/0085-simulateTransaction-simulate-s3-propose-s6-abstain-heavy.json",
+      "file": "rpc/0087-getTransaction-final-s3-vote-s6-abstain-heavy-sgg-delegate-1.json",
+      "method": "getTransaction",
+      "note": "final-s3-vote-s6-abstain-heavy-sgg-delegate-1",
+      "capturedAtUtc": "2026-10-08T06:43:48.437Z",
+      "txHash": "5b2cd48c35a64674b7c471d3cfd99a8e5a10d76381a8b3ab86b1f56307509f8b",
+      "status": "SUCCESS",
+      "ledger": 5083648
+    },
+    {
+      "file": "rpc/0088-simulateTransaction-simulate-s3-vote-s6-abstain-heavy-sgg-delegate-2.json",
       "method": "simulateTransaction",
-      "note": "simulate-s3-propose-s6-abstain-heavy",
-      "capturedAtUtc": "2026-10-08T06:32:40.302Z",
-      "eventCount": 4
+      "note": "simulate-s3-vote-s6-abstain-heavy-sgg-delegate-2",
+      "capturedAtUtc": "2026-10-08T06:43:48.921Z",
+      "eventCount": 5
     },
     {
-      "file": "rpc/0086-simulateTransaction-read-s3-get_proposal-s1-transfer-executed.json",
+      "file": "rpc/0090-getTransaction-final-s3-vote-s6-abstain-heavy-sgg-delegate-2.json",
+      "method": "getTransaction",
+      "note": "final-s3-vote-s6-abstain-heavy-sgg-delegate-2",
+      "capturedAtUtc": "2026-10-08T06:43:53.209Z",
+      "txHash": "0bcd9463bfa639daeb830131dd23d43805a5577edb87b049266838f11c9f78e6",
+      "status": "SUCCESS",
+      "ledger": 5083649
+    },
+    {
+      "file": "rpc/0091-simulateTransaction-simulate-s3-vote-s6-abstain-heavy-sgg-delegate-3.json",
+      "method": "simulateTransaction",
+      "note": "simulate-s3-vote-s6-abstain-heavy-sgg-delegate-3",
+      "capturedAtUtc": "2026-10-08T06:43:54.062Z",
+      "eventCount": 5
+    },
+    {
+      "file": "rpc/0093-getTransaction-final-s3-vote-s6-abstain-heavy-sgg-delegate-3.json",
+      "method": "getTransaction",
+      "note": "final-s3-vote-s6-abstain-heavy-sgg-delegate-3",
+      "capturedAtUtc": "2026-10-08T06:43:58.875Z",
+      "txHash": "11a357a184d5e866403e2eb95cc82cd5bd745337e1c31e5735fc41fdb0aeea15",
+      "status": "SUCCESS",
+      "ledger": 5083650
+    },
+    {
+      "file": "rpc/0094-simulateTransaction-read-s3-get_proposal-s1-transfer-executed.json",
       "method": "simulateTransaction",
       "note": "read-s3-get_proposal-s1-transfer-executed",
-      "capturedAtUtc": "2026-10-08T06:32:40.762Z",
+      "capturedAtUtc": "2026-10-08T06:43:59.503Z",
       "eventCount": 2
     },
     {
-      "file": "rpc/0087-simulateTransaction-read-s3-get_proposal_votes-s1-transfer-executed.json",
+      "file": "rpc/0095-simulateTransaction-read-s3-get_proposal_votes-s1-transfer-executed.json",
       "method": "simulateTransaction",
       "note": "read-s3-get_proposal_votes-s1-transfer-executed",
-      "capturedAtUtc": "2026-10-08T06:32:41.326Z",
+      "capturedAtUtc": "2026-10-08T06:44:00.281Z",
       "eventCount": 2
     },
     {
-      "file": "rpc/0088-simulateTransaction-read-s3-get_proposal-s2-contract-upgrade.json",
+      "file": "rpc/0096-simulateTransaction-read-s3-get_proposal-s2-contract-upgrade.json",
       "method": "simulateTransaction",
       "note": "read-s3-get_proposal-s2-contract-upgrade",
-      "capturedAtUtc": "2026-10-08T06:32:41.808Z",
+      "capturedAtUtc": "2026-10-08T06:44:01.111Z",
       "eventCount": 2
     },
     {
-      "file": "rpc/0089-simulateTransaction-read-s3-get_proposal_votes-s2-contract-upgrade.json",
+      "file": "rpc/0097-simulateTransaction-read-s3-get_proposal_votes-s2-contract-upgrade.json",
       "method": "simulateTransaction",
       "note": "read-s3-get_proposal_votes-s2-contract-upgrade",
-      "capturedAtUtc": "2026-10-08T06:32:42.448Z",
+      "capturedAtUtc": "2026-10-08T06:44:01.690Z",
       "eventCount": 2
     },
     {
-      "file": "rpc/0090-simulateTransaction-read-s3-get_proposal-s3-admin-change.json",
+      "file": "rpc/0098-simulateTransaction-read-s3-get_proposal-s3-admin-change.json",
       "method": "simulateTransaction",
       "note": "read-s3-get_proposal-s3-admin-change",
-      "capturedAtUtc": "2026-10-08T06:32:43.496Z",
+      "capturedAtUtc": "2026-10-08T06:44:02.611Z",
       "eventCount": 2
     },
     {
-      "file": "rpc/0091-simulateTransaction-read-s3-get_proposal_votes-s3-admin-change.json",
+      "file": "rpc/0099-simulateTransaction-read-s3-get_proposal_votes-s3-admin-change.json",
       "method": "simulateTransaction",
       "note": "read-s3-get_proposal_votes-s3-admin-change",
-      "capturedAtUtc": "2026-10-08T06:32:44.306Z",
+      "capturedAtUtc": "2026-10-08T06:44:03.145Z",
       "eventCount": 2
     },
     {
-      "file": "rpc/0092-simulateTransaction-read-s3-get_proposal-s4-unknown-contract-call.json",
+      "file": "rpc/0100-simulateTransaction-read-s3-get_proposal-s4-unknown-contract-call.json",
       "method": "simulateTransaction",
       "note": "read-s3-get_proposal-s4-unknown-contract-call",
-      "capturedAtUtc": "2026-10-08T06:32:45.518Z",
+      "capturedAtUtc": "2026-10-08T06:44:03.746Z",
       "eventCount": 2
     },
     {
-      "file": "rpc/0093-simulateTransaction-read-s3-get_proposal_votes-s4-unknown-contract-call.json",
+      "file": "rpc/0101-simulateTransaction-read-s3-get_proposal_votes-s4-unknown-contract-call.json",
       "method": "simulateTransaction",
       "note": "read-s3-get_proposal_votes-s4-unknown-contract-call",
-      "capturedAtUtc": "2026-10-08T06:32:46.420Z",
+      "capturedAtUtc": "2026-10-08T06:44:04.296Z",
       "eventCount": 2
     },
     {
-      "file": "rpc/0094-simulateTransaction-simulate-oz-mint-sgg-deployer.json",
+      "file": "rpc/0102-simulateTransaction-read-s3-get_proposal-s5-failing-quorum.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_proposal-s5-failing-quorum",
+      "capturedAtUtc": "2026-10-08T06:44:05.036Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0103-simulateTransaction-read-s3-get_proposal_votes-s5-failing-quorum.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_proposal_votes-s5-failing-quorum",
+      "capturedAtUtc": "2026-10-08T06:44:05.947Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0104-simulateTransaction-read-s3-get_proposal-s6-abstain-heavy.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_proposal-s6-abstain-heavy",
+      "capturedAtUtc": "2026-10-08T06:44:06.550Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0105-simulateTransaction-read-s3-get_proposal_votes-s6-abstain-heavy.json",
+      "method": "simulateTransaction",
+      "note": "read-s3-get_proposal_votes-s6-abstain-heavy",
+      "capturedAtUtc": "2026-10-08T06:44:07.150Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0106-simulateTransaction-simulate-oz-mint-sgg-deployer.json",
       "method": "simulateTransaction",
       "note": "simulate-oz-mint-sgg-deployer",
-      "capturedAtUtc": "2026-10-08T06:32:47.260Z",
+      "capturedAtUtc": "2026-10-08T06:44:08.187Z",
       "eventCount": 3
     },
     {
-      "file": "rpc/0096-getTransaction-final-oz-mint-sgg-deployer.json",
+      "file": "rpc/0108-getTransaction-final-oz-mint-sgg-deployer.json",
       "method": "getTransaction",
       "note": "final-oz-mint-sgg-deployer",
-      "capturedAtUtc": "2026-10-08T06:32:53.111Z",
-      "txHash": "0008a96ffe8c6175829f08023e74c798ef55e17cd8eca9768c041f71471e9ef3",
+      "capturedAtUtc": "2026-10-08T06:44:12.549Z",
+      "txHash": "9ddcd4d2cd310a01be910d4ae3024ec10a9e5fa4b0b76b4ac990f6ed6da22717",
       "status": "SUCCESS",
-      "ledger": 5083517
+      "ledger": 5083653
     },
     {
-      "file": "rpc/0097-simulateTransaction-simulate-oz-mint-sgg-delegate-1.json",
+      "file": "rpc/0109-simulateTransaction-simulate-oz-mint-sgg-delegate-1.json",
       "method": "simulateTransaction",
       "note": "simulate-oz-mint-sgg-delegate-1",
-      "capturedAtUtc": "2026-10-08T06:32:53.796Z",
+      "capturedAtUtc": "2026-10-08T06:44:13.304Z",
       "eventCount": 3
     },
     {
-      "file": "rpc/0099-getTransaction-final-oz-mint-sgg-delegate-1.json",
+      "file": "rpc/0111-getTransaction-final-oz-mint-sgg-delegate-1.json",
       "method": "getTransaction",
       "note": "final-oz-mint-sgg-delegate-1",
-      "capturedAtUtc": "2026-10-08T06:32:57.836Z",
-      "txHash": "2baca1aff97f5895492acbb1ebdb30f82198a397e34d7c05431df389e739703b",
+      "capturedAtUtc": "2026-10-08T06:44:17.721Z",
+      "txHash": "803d0bc41e1252603c78ae714080f32797b3751032582f19db3ce9ce0651d59e",
       "status": "FAILED",
-      "ledger": 5083518
+      "ledger": 5083654
     },
     {
-      "file": "rpc/0100-simulateTransaction-simulate-oz-mint-sgg-delegate-2.json",
+      "file": "rpc/0112-simulateTransaction-simulate-oz-mint-sgg-delegate-2.json",
       "method": "simulateTransaction",
       "note": "simulate-oz-mint-sgg-delegate-2",
-      "capturedAtUtc": "2026-10-08T06:32:58.310Z",
+      "capturedAtUtc": "2026-10-08T06:44:18.317Z",
       "eventCount": 3
     },
     {
-      "file": "rpc/0102-getTransaction-final-oz-mint-sgg-delegate-2.json",
+      "file": "rpc/0114-getTransaction-final-oz-mint-sgg-delegate-2.json",
       "method": "getTransaction",
       "note": "final-oz-mint-sgg-delegate-2",
-      "capturedAtUtc": "2026-10-08T06:33:04.346Z",
-      "txHash": "0c70ca36e51242ae139477a377178548d58008925838728020acbb45e024d224",
+      "capturedAtUtc": "2026-10-08T06:44:22.496Z",
+      "txHash": "392aa5156602fcbc794132e046a1afff8b2cff52f3f7e3171811f33d7014a655",
       "status": "SUCCESS",
-      "ledger": 5083519
+      "ledger": 5083655
     },
     {
-      "file": "rpc/0103-simulateTransaction-simulate-oz-mint-sgg-delegate-3.json",
+      "file": "rpc/0115-simulateTransaction-simulate-oz-mint-sgg-delegate-3.json",
       "method": "simulateTransaction",
       "note": "simulate-oz-mint-sgg-delegate-3",
-      "capturedAtUtc": "2026-10-08T06:33:04.804Z",
+      "capturedAtUtc": "2026-10-08T06:44:23.110Z",
       "eventCount": 3
     },
     {
-      "file": "rpc/0105-getTransaction-final-oz-mint-sgg-delegate-3.json",
+      "file": "rpc/0117-getTransaction-final-oz-mint-sgg-delegate-3.json",
       "method": "getTransaction",
       "note": "final-oz-mint-sgg-delegate-3",
-      "capturedAtUtc": "2026-10-08T06:33:08.831Z",
-      "txHash": "fc2d02eca75b80af88c65ce23cff038bee8ead02f9f1ae8b376d2b1d74465b8a",
+      "capturedAtUtc": "2026-10-08T06:44:29.102Z",
+      "txHash": "2aef69bdbca83ad47341d9c604cd41ca70fb2bfef62a8bcb18037531d6906945",
       "status": "FAILED",
-      "ledger": 5083520
+      "ledger": 5083656
     },
     {
-      "file": "rpc/0106-simulateTransaction-simulate-oz-mint-sgg-delegate-4.json",
+      "file": "rpc/0118-simulateTransaction-simulate-oz-mint-sgg-delegate-4.json",
       "method": "simulateTransaction",
       "note": "simulate-oz-mint-sgg-delegate-4",
-      "capturedAtUtc": "2026-10-08T06:33:09.378Z",
+      "capturedAtUtc": "2026-10-08T06:44:29.595Z",
       "eventCount": 3
     },
     {
-      "file": "rpc/0108-getTransaction-final-oz-mint-sgg-delegate-4.json",
+      "file": "rpc/0120-getTransaction-final-oz-mint-sgg-delegate-4.json",
       "method": "getTransaction",
       "note": "final-oz-mint-sgg-delegate-4",
-      "capturedAtUtc": "2026-10-08T06:33:13.525Z",
-      "txHash": "991cfb72e268ab51112e9dd44266a6e2f6df612bb5c12ab04bb65892e4bb2672",
+      "capturedAtUtc": "2026-10-08T06:44:33.818Z",
+      "txHash": "c98b0ed8667dda897f2bd839eb36d7f44428d11bd4cb04c083894c79f6efcd34",
       "status": "SUCCESS",
-      "ledger": 5083521
+      "ledger": 5083657
     },
     {
-      "file": "rpc/0109-simulateTransaction-simulate-oz-mint-sgg-delegate-5.json",
+      "file": "rpc/0121-simulateTransaction-simulate-oz-mint-sgg-delegate-5.json",
       "method": "simulateTransaction",
       "note": "simulate-oz-mint-sgg-delegate-5",
-      "capturedAtUtc": "2026-10-08T06:33:14.127Z",
+      "capturedAtUtc": "2026-10-08T06:44:34.485Z",
       "eventCount": 3
     },
     {
-      "file": "rpc/0111-getTransaction-final-oz-mint-sgg-delegate-5.json",
+      "file": "rpc/0123-getTransaction-final-oz-mint-sgg-delegate-5.json",
       "method": "getTransaction",
       "note": "final-oz-mint-sgg-delegate-5",
-      "capturedAtUtc": "2026-10-08T06:33:18.452Z",
-      "txHash": "949c22d62208003bfda6ca3708d6a556584e3d131667fe4e4feec698636040de",
+      "capturedAtUtc": "2026-10-08T06:44:38.832Z",
+      "txHash": "e352ae22bf264bbc3f80af3f8d9c44431ffdef1938374898777bb6f7a94c2b60",
       "status": "FAILED",
-      "ledger": 5083522
+      "ledger": 5083658
     },
     {
-      "file": "rpc/0112-simulateTransaction-simulate-oz-mint-sgg-governor-treasury.json",
+      "file": "rpc/0124-simulateTransaction-simulate-oz-mint-sgg-governor-treasury.json",
       "method": "simulateTransaction",
       "note": "simulate-oz-mint-sgg-governor-treasury",
-      "capturedAtUtc": "2026-10-08T06:33:19.185Z",
+      "capturedAtUtc": "2026-10-08T06:44:40.220Z",
       "eventCount": 3
     },
     {
-      "file": "rpc/0114-getTransaction-final-oz-mint-sgg-governor-treasury.json",
+      "file": "rpc/0126-getTransaction-final-oz-mint-sgg-governor-treasury.json",
       "method": "getTransaction",
       "note": "final-oz-mint-sgg-governor-treasury",
-      "capturedAtUtc": "2026-10-08T06:33:23.383Z",
-      "txHash": "2bbb84ffb53fdee33e216ff6ba822151925c6d0434c95f0d6e2e21b859e3264b",
+      "capturedAtUtc": "2026-10-08T06:44:43.098Z",
+      "txHash": "e2e9eb69ba760fcfa95eefc2535f54cfe59e1ff46e72bfab286430220c07ddb6",
       "status": "SUCCESS",
-      "ledger": 5083523
+      "ledger": 5083659
     },
     {
-      "file": "rpc/0115-simulateTransaction-simulate-oz-delegate-sgg-delegate-4.json",
+      "file": "rpc/0127-simulateTransaction-simulate-oz-selfdelegate-sgg-deployer.json",
       "method": "simulateTransaction",
-      "note": "simulate-oz-delegate-sgg-delegate-4",
-      "capturedAtUtc": "2026-10-08T06:33:23.957Z",
+      "note": "simulate-oz-selfdelegate-sgg-deployer",
+      "capturedAtUtc": "2026-10-08T06:44:44.222Z",
       "eventCount": 4
     },
     {
-      "file": "rpc/0117-getTransaction-final-oz-delegate-sgg-delegate-4.json",
+      "file": "rpc/0129-getTransaction-final-oz-selfdelegate-sgg-deployer.json",
       "method": "getTransaction",
-      "note": "final-oz-delegate-sgg-delegate-4",
-      "capturedAtUtc": "2026-10-08T06:33:28.145Z",
-      "txHash": "8a20a214fb05c50676dfe3f949dd20518efc94528cea3428cb197d7e70049fa5",
+      "note": "final-oz-selfdelegate-sgg-deployer",
+      "capturedAtUtc": "2026-10-08T06:44:48.902Z",
+      "txHash": "4eef19b51324e265b65be1199c8e56443774439b2a1d9a902ac796d2690e41a9",
       "status": "SUCCESS",
-      "ledger": 5083524
+      "ledger": 5083660
     },
     {
-      "file": "rpc/0118-simulateTransaction-simulate-oz-delegate-sgg-delegate-5.json",
+      "file": "rpc/0130-simulateTransaction-simulate-oz-selfdelegate-sgg-delegate-1.json",
       "method": "simulateTransaction",
-      "note": "simulate-oz-delegate-sgg-delegate-5",
-      "capturedAtUtc": "2026-10-08T06:33:28.906Z",
+      "note": "simulate-oz-selfdelegate-sgg-delegate-1",
+      "capturedAtUtc": "2026-10-08T06:44:49.531Z",
       "eventCount": 3
     },
     {
-      "file": "rpc/0120-getTransaction-final-oz-delegate-sgg-delegate-5.json",
+      "file": "rpc/0132-getTransaction-final-oz-selfdelegate-sgg-delegate-1.json",
       "method": "getTransaction",
-      "note": "final-oz-delegate-sgg-delegate-5",
-      "capturedAtUtc": "2026-10-08T06:33:33.515Z",
-      "txHash": "f4a4f94aa6bc767714b968dc0e88d24fa163d9f9e94fead159a8d3f1b5050ad2",
+      "note": "final-oz-selfdelegate-sgg-delegate-1",
+      "capturedAtUtc": "2026-10-08T06:44:53.883Z",
+      "txHash": "ec445df08e56b79965481731c578ff3319e35d0264fb89156378b166171e32ac",
       "status": "SUCCESS",
-      "ledger": 5083525
+      "ledger": 5083661
     },
     {
-      "file": "rpc/0121-simulateTransaction-simulate-oz-propose-o1-transfer-executed.json",
+      "file": "rpc/0133-simulateTransaction-simulate-oz-selfdelegate-sgg-delegate-2.json",
+      "method": "simulateTransaction",
+      "note": "simulate-oz-selfdelegate-sgg-delegate-2",
+      "capturedAtUtc": "2026-10-08T06:44:55.160Z",
+      "eventCount": 4
+    },
+    {
+      "file": "rpc/0135-getTransaction-final-oz-selfdelegate-sgg-delegate-2.json",
+      "method": "getTransaction",
+      "note": "final-oz-selfdelegate-sgg-delegate-2",
+      "capturedAtUtc": "2026-10-08T06:44:57.582Z",
+      "txHash": "3533172ba1894377d6064e22c9d4441ec20379369774956574373096a4763ffe",
+      "status": "SUCCESS",
+      "ledger": 5083662
+    },
+    {
+      "file": "rpc/0136-simulateTransaction-simulate-oz-selfdelegate-sgg-delegate-3.json",
+      "method": "simulateTransaction",
+      "note": "simulate-oz-selfdelegate-sgg-delegate-3",
+      "capturedAtUtc": "2026-10-08T06:44:58.436Z",
+      "eventCount": 3
+    },
+    {
+      "file": "rpc/0138-getTransaction-final-oz-selfdelegate-sgg-delegate-3.json",
+      "method": "getTransaction",
+      "note": "final-oz-selfdelegate-sgg-delegate-3",
+      "capturedAtUtc": "2026-10-08T06:45:03.327Z",
+      "txHash": "820ff3e816451788c0fda9a0973bec9dec1813f7efeae97a746a678bd7291036",
+      "status": "SUCCESS",
+      "ledger": 5083663
+    },
+    {
+      "file": "rpc/0139-simulateTransaction-simulate-oz-selfdelegate-sgg-delegate-4.json",
+      "method": "simulateTransaction",
+      "note": "simulate-oz-selfdelegate-sgg-delegate-4",
+      "capturedAtUtc": "2026-10-08T06:45:03.971Z",
+      "eventCount": 4
+    },
+    {
+      "file": "rpc/0141-getTransaction-final-oz-selfdelegate-sgg-delegate-4.json",
+      "method": "getTransaction",
+      "note": "final-oz-selfdelegate-sgg-delegate-4",
+      "capturedAtUtc": "2026-10-08T06:45:08.460Z",
+      "txHash": "5f9b5435a66467bf58cf46da4ac4e3990ba57c2d52f9b103237542c67cd88d53",
+      "status": "SUCCESS",
+      "ledger": 5083664
+    },
+    {
+      "file": "rpc/0142-simulateTransaction-simulate-oz-selfdelegate-sgg-delegate-5.json",
+      "method": "simulateTransaction",
+      "note": "simulate-oz-selfdelegate-sgg-delegate-5",
+      "capturedAtUtc": "2026-10-08T06:45:09.182Z",
+      "eventCount": 3
+    },
+    {
+      "file": "rpc/0144-getTransaction-final-oz-selfdelegate-sgg-delegate-5.json",
+      "method": "getTransaction",
+      "note": "final-oz-selfdelegate-sgg-delegate-5",
+      "capturedAtUtc": "2026-10-08T06:45:13.871Z",
+      "txHash": "b6d3177e60aed661005bc5ce7f83b7c5d5d8207330d9317bab5a2b4a770e186d",
+      "status": "SUCCESS",
+      "ledger": 5083665
+    },
+    {
+      "file": "rpc/0145-simulateTransaction-simulate-oz-propose-o1-transfer-executed.json",
       "method": "simulateTransaction",
       "note": "simulate-oz-propose-o1-transfer-executed",
-      "capturedAtUtc": "2026-10-08T06:33:34.460Z",
-      "eventCount": 5
+      "capturedAtUtc": "2026-10-08T06:45:14.657Z",
+      "eventCount": 6
     },
     {
-      "file": "rpc/0123-getTransaction-final-oz-propose-o1-transfer-executed.json",
-      "method": "getTransaction",
-      "note": "final-oz-propose-o1-transfer-executed",
-      "capturedAtUtc": "2026-10-08T06:33:38.888Z",
-      "txHash": "de8df274bcc3c518a949b93ee72caf52f27b349eeae6c5f1a10645f16aa381b2",
-      "status": "SUCCESS",
-      "ledger": 5083526
-    },
-    {
-      "file": "rpc/0124-simulateTransaction-simulate-oz-propose-o2-contract-upgrade.json",
+      "file": "rpc/0146-simulateTransaction-simulate-oz-propose-o2-contract-upgrade.json",
       "method": "simulateTransaction",
       "note": "simulate-oz-propose-o2-contract-upgrade",
-      "capturedAtUtc": "2026-10-08T06:33:39.457Z",
-      "eventCount": 6
-    },
-    {
-      "file": "rpc/0125-simulateTransaction-simulate-oz-propose-o3-admin-change.json",
-      "method": "simulateTransaction",
-      "note": "simulate-oz-propose-o3-admin-change",
-      "capturedAtUtc": "2026-10-08T06:33:40.169Z",
-      "eventCount": 6
-    },
-    {
-      "file": "rpc/0126-simulateTransaction-simulate-oz-propose-o4-unknown-contract-call.json",
-      "method": "simulateTransaction",
-      "note": "simulate-oz-propose-o4-unknown-contract-call",
-      "capturedAtUtc": "2026-10-08T06:33:40.675Z",
-      "eventCount": 6
-    },
-    {
-      "file": "rpc/0127-simulateTransaction-simulate-oz-propose-o5-failing-quorum.json",
-      "method": "simulateTransaction",
-      "note": "simulate-oz-propose-o5-failing-quorum",
-      "capturedAtUtc": "2026-10-08T06:33:41.188Z",
+      "capturedAtUtc": "2026-10-08T06:45:15.242Z",
       "eventCount": 5
     },
     {
-      "file": "rpc/0129-getTransaction-final-oz-propose-o5-failing-quorum.json",
+      "file": "rpc/0148-getTransaction-final-oz-propose-o2-contract-upgrade.json",
       "method": "getTransaction",
-      "note": "final-oz-propose-o5-failing-quorum",
-      "capturedAtUtc": "2026-10-08T06:33:47.849Z",
-      "txHash": "78133c789653db4df7b673cbb0824487369ac95185eb49ebd279d3bb3b08ac71",
+      "note": "final-oz-propose-o2-contract-upgrade",
+      "capturedAtUtc": "2026-10-08T06:45:18.037Z",
+      "txHash": "9a2b468fe8d0d6f20d1faf6d990722f1487c4bdcf7502a0f09071ba5b41d6b04",
       "status": "SUCCESS",
-      "ledger": 5083528
+      "ledger": 5083666
     },
     {
-      "file": "rpc/0130-simulateTransaction-simulate-oz-propose-o6-abstain-heavy.json",
+      "file": "rpc/0149-simulateTransaction-simulate-oz-propose-o3-admin-change.json",
       "method": "simulateTransaction",
-      "note": "simulate-oz-propose-o6-abstain-heavy",
-      "capturedAtUtc": "2026-10-08T06:33:48.611Z",
+      "note": "simulate-oz-propose-o3-admin-change",
+      "capturedAtUtc": "2026-10-08T06:45:18.747Z",
       "eventCount": 6
     },
     {
-      "file": "rpc/0131-simulateTransaction-read-oz-proposal_state-o1-transfer-executed.json",
+      "file": "rpc/0150-simulateTransaction-simulate-oz-propose-o4-unknown-contract-call.json",
       "method": "simulateTransaction",
-      "note": "read-oz-proposal_state-o1-transfer-executed",
-      "capturedAtUtc": "2026-10-08T06:33:49.374Z",
+      "note": "simulate-oz-propose-o4-unknown-contract-call",
+      "capturedAtUtc": "2026-10-08T06:45:19.436Z",
+      "eventCount": 5
+    },
+    {
+      "file": "rpc/0152-getTransaction-final-oz-propose-o4-unknown-contract-call.json",
+      "method": "getTransaction",
+      "note": "final-oz-propose-o4-unknown-contract-call",
+      "capturedAtUtc": "2026-10-08T06:45:24.338Z",
+      "txHash": "1f68aa787d7813c993800ddcae6c01073f6acdbcd67daba2c20760b5c75813e4",
+      "status": "SUCCESS",
+      "ledger": 5083667
+    },
+    {
+      "file": "rpc/0153-simulateTransaction-simulate-oz-propose-o5-failing-quorum.json",
+      "method": "simulateTransaction",
+      "note": "simulate-oz-propose-o5-failing-quorum",
+      "capturedAtUtc": "2026-10-08T06:45:25.351Z",
+      "eventCount": 6
+    },
+    {
+      "file": "rpc/0154-simulateTransaction-simulate-oz-propose-o6-abstain-heavy.json",
+      "method": "simulateTransaction",
+      "note": "simulate-oz-propose-o6-abstain-heavy",
+      "capturedAtUtc": "2026-10-08T06:45:26.071Z",
+      "eventCount": 5
+    },
+    {
+      "file": "rpc/0156-getTransaction-final-oz-propose-o6-abstain-heavy.json",
+      "method": "getTransaction",
+      "note": "final-oz-propose-o6-abstain-heavy",
+      "capturedAtUtc": "2026-10-08T06:45:34.066Z",
+      "txHash": "863ae3e5eb8af5b585f363c6afc5c7c3d7a24e144d23654eb1810e2a5b19dbc4",
+      "status": "SUCCESS",
+      "ledger": 5083669
+    },
+    {
+      "file": "rpc/0157-simulateTransaction-simulate-oz-delegate-sgg-delegate-4.json",
+      "method": "simulateTransaction",
+      "note": "simulate-oz-delegate-sgg-delegate-4",
+      "capturedAtUtc": "2026-10-08T06:45:35.147Z",
+      "eventCount": 5
+    },
+    {
+      "file": "rpc/0159-getTransaction-final-oz-delegate-sgg-delegate-4.json",
+      "method": "getTransaction",
+      "note": "final-oz-delegate-sgg-delegate-4",
+      "capturedAtUtc": "2026-10-08T06:45:37.728Z",
+      "txHash": "bb350b54d4c3551c0931e777440e1b3ba6c68ca0c951981b11c01efffeedcbcc",
+      "status": "SUCCESS",
+      "ledger": 5083670
+    },
+    {
+      "file": "rpc/0160-simulateTransaction-simulate-oz-delegate-sgg-delegate-5.json",
+      "method": "simulateTransaction",
+      "note": "simulate-oz-delegate-sgg-delegate-5",
+      "capturedAtUtc": "2026-10-08T06:45:38.445Z",
+      "eventCount": 3
+    },
+    {
+      "file": "rpc/0162-getTransaction-final-oz-delegate-sgg-delegate-5.json",
+      "method": "getTransaction",
+      "note": "final-oz-delegate-sgg-delegate-5",
+      "capturedAtUtc": "2026-10-08T06:45:42.563Z",
+      "txHash": "3f531939b8f3a70ae4fdfeee198dc067202294833eeb8ddd1161639d0c4aaae5",
+      "status": "SUCCESS",
+      "ledger": 5083671
+    },
+    {
+      "file": "rpc/0163-simulateTransaction-read-oz-proposal_state-o2-contract-upgrade.json",
+      "method": "simulateTransaction",
+      "note": "read-oz-proposal_state-o2-contract-upgrade",
+      "capturedAtUtc": "2026-10-08T06:45:43.263Z",
       "eventCount": 2
     },
     {
-      "file": "rpc/0132-simulateTransaction-read-oz-proposal_state-o5-failing-quorum.json",
+      "file": "rpc/0164-simulateTransaction-read-oz-proposal_state-o4-unknown-contract-call.json",
       "method": "simulateTransaction",
-      "note": "read-oz-proposal_state-o5-failing-quorum",
-      "capturedAtUtc": "2026-10-08T06:33:49.963Z",
+      "note": "read-oz-proposal_state-o4-unknown-contract-call",
+      "capturedAtUtc": "2026-10-08T06:45:43.972Z",
+      "eventCount": 2
+    },
+    {
+      "file": "rpc/0165-simulateTransaction-read-oz-proposal_state-o6-abstain-heavy.json",
+      "method": "simulateTransaction",
+      "note": "read-oz-proposal_state-o6-abstain-heavy",
+      "capturedAtUtc": "2026-10-08T06:45:45.096Z",
       "eventCount": 2
     }
   ]
