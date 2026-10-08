@@ -38,15 +38,57 @@ function ctxFrom(state) {
   };
 }
 
+// Resumability policy (see docs/seed-v2.md):
+//  - a step recorded in state.steps is skipped on re-run;
+//  - a failed step is recorded under state.failures (status/error/decoded
+//    result) and retried automatically on the next run, so the runner never
+//    wedges permanently on one step;
+//  - SEED_SKIP="<step>,<step>" skips steps explicitly (recorded with a reason);
+//  - SEED_KEEP_GOING=1 records a failure and continues to later independent
+//    steps instead of aborting the whole run.
+const SKIPPED = new Set(
+  (process.env.SEED_SKIP ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean),
+);
+const KEEP_GOING = process.env.SEED_KEEP_GOING === '1';
+
 async function step(state, name, fn) {
   if (state.steps.includes(name)) {
     console.log(`  skip ${name} (already done)`);
     return null;
   }
-  const result = await fn();
-  state.steps.push(name);
-  saveState(state);
-  return result;
+  if (SKIPPED.has(name)) {
+    state.skipped ??= {};
+    state.skipped[name] = {
+      at: new Date().toISOString(),
+      reason: process.env.SEED_SKIP_REASON ?? 'explicit SEED_SKIP',
+    };
+    saveState(state);
+    console.log(`  SKIP ${name} (explicit: ${state.skipped[name].reason})`);
+    return null;
+  }
+  try {
+    const result = await fn();
+    state.steps.push(name);
+    if (state.failures) delete state.failures[name];
+    saveState(state);
+    return result;
+  } catch (e) {
+    state.failures ??= {};
+    state.failures[name] = {
+      at: new Date().toISOString(),
+      error: e?.message ?? String(e),
+      decodedResult: e?.decodedResult ?? null,
+      txHash: e?.txHash ?? null,
+      ledger: e?.ledger ?? null,
+    };
+    saveState(state);
+    console.error(`  FAIL ${name}: ${state.failures[name].error}`);
+    if (KEEP_GOING) return null;
+    throw e;
+  }
 }
 
 function mintTo(state, tokenContract, notePrefix) {
@@ -289,7 +331,12 @@ async function main() {
   await script3Seed(state, ctx);
   await ozSeed(state, ctx);
 
-  console.log('SEED OK — all steps recorded in .seed/state.json');
+  const failed = Object.keys(state.failures ?? {});
+  if (failed.length > 0) {
+    console.log(`SEED PARTIAL — failed steps: ${failed.join(', ')}; re-run to retry`);
+  } else {
+    console.log('SEED OK — all steps recorded in .seed/state.json');
+  }
 }
 
 main().catch((e) => {

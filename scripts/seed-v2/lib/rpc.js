@@ -6,7 +6,7 @@
 // between the wire and the file.
 import { mkdirSync, readdirSync, appendFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { TransactionBuilder, Contract } from '@stellar/stellar-sdk';
+import { TransactionBuilder, Contract, SorobanDataBuilder, xdr } from '@stellar/stellar-sdk';
 import { rpc } from '@stellar/stellar-sdk';
 import { CAPTURE_DIR, loadDeployments, assertNetwork } from './config.js';
 import { addressOf, keypairOf } from './keys.js';
@@ -108,10 +108,62 @@ function requireOk(json, what) {
   return json.result;
 }
 
+// --- resource margin & transaction-result decoding -------------------------
+//
+// Simulation is a snapshot. At execution the write/instruction footprint can be
+// a few bytes larger than simulation declared, and ANY shortfall fails the whole
+// transaction with `invoke_host_function: resource_limit_exceeded` (diagnostic
+// event `budget: exceeded_limit`, "operation byte-write resources exceeds amount
+// specified"). This is the root cause of the observed Script3 S2 failure:
+// declared write_bytes 1232, actual 1240. Over-declaring resources is always
+// allowed (you only pay a slightly larger resource fee), so we pad the simulated
+// footprint before signing. See docs/seed-v2.md for the full diagnosis.
+const RESOURCE_MARGIN_RATIO = 0.15;
+const RESOURCE_MARGIN_FLAT = 64;
+
+function padded(value) {
+  return Math.ceil(Number(value) * (1 + RESOURCE_MARGIN_RATIO)) + RESOURCE_MARGIN_FLAT;
+}
+
+/**
+ * Rebuild an assembled transaction with the simulated Soroban resource
+ * footprint padded by a fixed + proportional margin. Operations (including
+ * simulation-provided auth) are preserved via TransactionBuilder.cloneFrom.
+ */
+export function withResourceMargin(assembledTx, transactionDataB64) {
+  if (!transactionDataB64) {
+    throw new Error('withResourceMargin requires the simulation transactionData (fail closed)');
+  }
+  const base = new SorobanDataBuilder(transactionDataB64).build().resources;
+  const inflated = new SorobanDataBuilder(transactionDataB64)
+    .setResources(padded(base.instructions), padded(base.diskReadBytes), padded(base.writeBytes))
+    .build();
+  return TransactionBuilder.cloneFrom(assembledTx, {
+    fee: assembledTx.fee,
+    sorobanData: inflated,
+    networkPassphrase: PASSPHRASE,
+  }).build();
+}
+
+/**
+ * Decode a base64 TransactionResult (getTransaction resultXdr) or a failed-send
+ * errorResultXdr into JSON. Never throws: an undecodable result becomes
+ * `{ decode_error }` so the caller still records *something* auditable.
+ */
+export function decodeTransactionResult(xdrB64) {
+  if (!xdrB64) return null;
+  try {
+    return xdr.TransactionResult.fromXDR(xdrB64, 'base64').toJSON();
+  } catch (e) {
+    return { decode_error: e.message };
+  }
+}
+
 /**
  * Build, simulate (raw capture), assemble, sign, send (raw capture) and wait
  * (raw getTransaction capture) a contract invocation. Throws on simulation
- * error, send error, or any non-SUCCESS terminal status.
+ * error, send error, or any non-SUCCESS terminal status. Failed transactions
+ * carry `err.decodedResult` (decoded resultXdr), `err.txHash` and `err.ledger`.
  */
 export async function invoke({ contractId, fn, args = [], sourceId, signerId = sourceId, note = fn }) {
   const source = await SERVER.getAccount(addressOf(sourceId));
@@ -127,7 +179,9 @@ export async function invoke({ contractId, fn, args = [], sourceId, signerId = s
     throw new Error(`simulation failed for ${note}: ${JSON.stringify(sim.error ?? simResult).slice(0, 800)}`);
   }
 
-  const prepared = rpc.assembleTransaction(tx, simResult).build();
+  const assembled = rpc.assembleTransaction(tx, simResult).build();
+  // Pad the simulated resource footprint before signing: see withResourceMargin.
+  const prepared = withResourceMargin(assembled, simResult.transactionData);
   // sign() mutates in place and returns void
   prepared.sign(keypairOf(signerId));
   const signed = prepared;
@@ -135,7 +189,10 @@ export async function invoke({ contractId, fn, args = [], sourceId, signerId = s
   const send = await rpcRaw('sendTransaction', { transaction: signed.toXDR() }, { note: `send-${note}` });
   const sendResult = requireOk(send, `send(${note})`);
   if (sendResult.status === 'ERROR') {
-    throw new Error(`sendTransaction ERROR for ${note}: ${JSON.stringify(sendResult).slice(0, 800)}`);
+    const decoded = decodeTransactionResult(sendResult.errorResultXdr);
+    const err = new Error(`sendTransaction ERROR for ${note}: ${JSON.stringify(decoded ?? sendResult)}`);
+    err.decodedResult = decoded;
+    throw err;
   }
   const hash = sendResult.hash;
 
@@ -149,7 +206,12 @@ export async function invoke({ contractId, fn, args = [], sourceId, signerId = s
   const final = await rpcRaw('getTransaction', { hash }, { note: `final-${note}` });
   const status = final?.result?.status;
   if (status !== 'SUCCESS') {
-    throw new Error(`tx ${hash} (${note}) ended as ${status}: ${JSON.stringify(final).slice(0, 800)}`);
+    const decoded = decodeTransactionResult(final.result.resultXdr);
+    const err = new Error(`tx ${hash} (${note}) ended as ${status}: ${JSON.stringify(decoded)}`);
+    err.decodedResult = decoded;
+    err.txHash = hash;
+    err.ledger = final.result.ledger;
+    throw err;
   }
   return { hash, ledger: final.result.ledger, sim: simResult, status, note };
 }
