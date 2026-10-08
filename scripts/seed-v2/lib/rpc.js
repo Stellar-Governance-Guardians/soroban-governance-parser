@@ -19,6 +19,36 @@ export function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+/**
+ * Block until `ledger` has CLOSED, i.e. until getHealth reports a strictly
+ * greater latestLedger.
+ *
+ * Why this exists (see docs/seed-v2.md "OpenZeppelin checkpoint-index root
+ * cause"): a transaction is visible to getTransaction as soon as it is
+ * *included* in a ledger, which happens BEFORE that ledger closes. Returning at
+ * inclusion time lets the next operation simulate against a snapshot that does
+ * not yet include the previous transaction's state changes. OpenZeppelin's
+ * votes storage derives its write key from a counter held in instance storage
+ * (`NumTotalSupplyCheckpoints`), so a one-ledger-stale snapshot predicts
+ * checkpoint index N while execution needs N+1, and the transaction traps with
+ * `error {storage: exceeded_limit}` on a key that was never in the footprint.
+ *
+ * Waiting for close makes the next simulation observe at least the same state
+ * execution will. Fail-closed: throws rather than silently continuing on a
+ * snapshot known to be stale.
+ */
+export async function waitForLedgerClose(ledger, { note = `close-${ledger}`, timeoutMs = 180000 } = {}) {
+  if (!Number.isFinite(ledger)) throw new Error('waitForLedgerClose requires a numeric ledger (fail closed)');
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const health = requireOk(await rpcRaw('getHealth', {}, { note, capture: false }), `getHealth(${note})`);
+    const latest = Number(health.latestLedger);
+    if (Number.isFinite(latest) && latest > ledger) return { closedThrough: latest, waitedFor: ledger };
+    await sleep(2000);
+  }
+  throw new Error(`ledger ${ledger} did not close within ${timeoutMs}ms (fail closed)`);
+}
+
 mkdirSync(CAPTURE_DIR, { recursive: true });
 let captureSeq = existsSync(CAPTURE_DIR)
   ? readdirSync(CAPTURE_DIR).filter((f) => /^\d{4}-/.test(f)).length
@@ -213,7 +243,12 @@ export async function invoke({ contractId, fn, args = [], sourceId, signerId = s
     err.ledger = final.result.ledger;
     throw err;
   }
-  return { hash, ledger: final.result.ledger, sim: simResult, status, note };
+  // Do NOT return at inclusion time. getTransaction resolves as soon as the tx
+  // is in a ledger, which is before that ledger closes; the next simulate would
+  // then run against a snapshot missing this tx's state changes and predict a
+  // stale checkpoint index. See waitForLedgerClose.
+  const closed = await waitForLedgerClose(final.result.ledger, { note: `close-${note}` });
+  return { hash, ledger: final.result.ledger, closedThrough: closed.closedThrough, sim: simResult, status, note };
 }
 
 /**
