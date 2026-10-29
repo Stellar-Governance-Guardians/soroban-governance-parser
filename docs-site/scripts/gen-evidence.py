@@ -19,6 +19,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "deployments.json"
 TARGET = ROOT / "docs-site/src/generated/evidence.md"
+# Committed provenance the page points at; generation fails if either is gone.
+PROOF = "tests/fixtures/phase1-proof.json"
+FIXTURE_INDEX = "tests/fixtures/README.md"
 
 EXPLORER = "https://stellar.expert/explorer"
 
@@ -118,6 +121,20 @@ def render(registry: dict, digest: str) -> str:
                 out.append(f"| `{key}` | `{wasm_sha}` | {size_text} | {upload_text} |")
             out.append("")
 
+    if not (ROOT / PROOF).exists() or not (ROOT / FIXTURE_INDEX).exists():
+        raise SystemExit(
+            f"gen-evidence: missing provenance file ({PROOF} or {FIXTURE_INDEX})"
+        )
+    out.append("## Fixtures and proofs")
+    out.append("")
+    out.append(
+        f"The raw RPC responses these contracts were deployed with are committed "
+        f"under `tests/fixtures/`; `{FIXTURE_INDEX}` records the provenance of every "
+        f"capture, and `{PROOF}` is the recorded live-testnet proof that the phase 1 "
+        f"claims rest on. `python3 scripts/check-deployments.py` re-checks this "
+        f"registry against those fixtures and the upstream pins in the PR gate."
+    )
+    out.append("")
     total = sum(len(flatten(c)) for c in contracts_by_network.values())
     out.append("## Totals")
     out.append("")

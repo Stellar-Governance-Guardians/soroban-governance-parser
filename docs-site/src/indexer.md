@@ -38,6 +38,21 @@ planned to serve them over a GraphQL API that implements the pinned
   through the same normalization path, tagging rows `source='fixture-replay'`.
   Live rows are `source='live'`, and a later write never flips a row's source.
 
+### Storage
+
+Four tables exist after `migrate` (forward-only, tested from an empty database):
+
+| Table | Holds |
+|---|---|
+| `raw_events` | every ingested event, keyed `(ledger, tx_hash, op_index, event_index)`, with `source` = `live` or `fixture-replay` |
+| `ingest_cursors` | one cursor per registered contract, advanced in the same transaction as its window |
+| `ingest_gaps` | unreadable ledger ranges with the reason (`retention`), written instead of skipping silently |
+| `indexer_meta` | indexer bookkeeping (schema version and run metadata) |
+
+Decoded tables (`proposals`, `proposal_actions`, `risk_flags`, `votes`,
+`power_checkpoints`, `delegations`, `delegates`, `reconciliation_runs`) arrive
+with I3–I5. They do not exist yet.
+
 ### Retry behaviour
 
 Bounded exponential backoff with jitter on RPC failures. There is no unbounded
