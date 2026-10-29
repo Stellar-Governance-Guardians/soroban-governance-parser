@@ -1,0 +1,27 @@
+[book]
+title = "Stellar Governance Guardians"
+authors = ["Stellar Governance Guardians contributors"]
+language = "en"
+description = "Decode, index and read Soroban governance on Stellar: parser, indexer and dashboard, with the evidence behind every claim."
+src = "src"
+
+[build]
+build-dir = "book"
+create-missing = false
+
+[output.html]
+default-theme = "light"
+preferred-dark-theme = "navy"
+git-repository-url = "https://github.com/Stellar-Governance-Guardians/soroban-governance-parser"
+edit-url-template = "https://github.com/Stellar-Governance-Guardians/soroban-governance-parser/edit/main/docs-site/src/{path}"
+no-section-label = true
+# Mermaid is vendored (theme/mermaid.min.js) so the site loads no external
+# script, font or analytics. Pages use <pre class="mermaid"> blocks, which the
+# init script hands to mermaid on load.
+additional-js = ["theme/mermaid.min.js", "theme/mermaid-init.js"]
+
+[output.html.search]
+enable = true
+limit-results = 20
+boost-title = 2
+boost-hierarchy = 1
