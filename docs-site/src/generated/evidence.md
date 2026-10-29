@@ -40,6 +40,10 @@ Every contract id below was deployed on live testnet with the recorded transacti
 | `seedV2OpenZeppelin.ozUpgradeableV1` | `1018bca637343ad206e568dd78a89f0b2a2f768477947be2546682113216c248` | 15,640 | not recorded |
 | `seedV2OpenZeppelin.ozMockSubcall` | `670215400fffd3d0f6303000d18dfd5bab0e2b1a7b26219e4a8a3bce08eab763` | 7,652 | not recorded |
 
+## Fixtures and proofs
+
+The raw RPC responses these contracts were deployed with are committed under `tests/fixtures/`; `tests/fixtures/README.md` records the provenance of every capture, and `tests/fixtures/phase1-proof.json` is the recorded live-testnet proof that the phase 1 claims rest on. `python3 scripts/check-deployments.py` re-checks this registry against those fixtures and the upstream pins in the PR gate.
+
 ## Totals
 
 - Registered contracts: **8**
