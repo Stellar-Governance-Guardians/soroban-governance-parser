@@ -9,6 +9,22 @@ Part of the Stellar Governance Guardians suite:
 [indexer](https://github.com/Stellar-Governance-Guardians/governance-event-indexer) →
 **dashboard**.
 
+**Documentation site:**
+<https://stellar-governance-guardians.github.io/soroban-governance-parser/> —
+architecture, quickstarts, the pinned API reference and the aggregated
+limitations for all three repositories.
+
+**Who it's for:** delegates and DAO participants who want to check a payload or
+an indexer's freshness without connecting a wallet.
+
+**Proven (offline, machine-checked):** browser `ScVal` decoding through the real
+pinned WASM (no mock decode path), strict GraphQL response validation with no
+fallback data, and explicit unavailable-indexer states — 25 unit/component and
+4 Playwright tests, 7/7 README claims.
+
+**Not built:** proposal, delegate and impact pages, `graphql-codegen`, and
+event/transaction decode. See "Honest limitations".
+
 ## Status: app scaffold + `/simulate` + `/status` — data pages not built
 
 This repository contains the application scaffold (Next.js 16 App Router,

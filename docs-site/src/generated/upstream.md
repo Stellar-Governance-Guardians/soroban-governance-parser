@@ -6,8 +6,8 @@ The indexer and dashboard pages on this site are summaries written in this repos
 
 | Repository | Path | Commit | sha256 |
 |---|---|---|---|
-| https://github.com/Stellar-Governance-Guardians/governance-event-indexer | `README.md` | `caa292a034e915803a90ec14cdac40b3db023df9` | `af7053996de75a27bfdb1e83bdac637671a6b2484995aab127ba092d4870cfab` |
-| https://github.com/Stellar-Governance-Guardians/delegate-portal-dashboard | `README.md` | `54f6180763e85007fe9e9e257995319e0eb04d36` | `c3907619d02a854f1215d9b90f4a026d2e979ed134a7632c61314da2a348aa8e` |
+| https://github.com/Stellar-Governance-Guardians/governance-event-indexer | `README.md` | `68aa657c68cb1cc1fca1f87da5f55ec74e7272bf` | `b78f22a64605059e2db939671280835a4ee072947a0d7c1cbe7200da44ea49b3` |
+| https://github.com/Stellar-Governance-Guardians/delegate-portal-dashboard | `README.md` | `0c622709848637eb5908d9d0432475ce1cc92fe6` | `9406bedbc6fcdddbde6278e6bb0ee166390035241fd3d6810660ca899b73bb6c` |
 
 Bumping a pin is a parser-repo PR that shows the vendored byte diff and the review on this site that the summary still matches. This happens at the end of every phase.
 
