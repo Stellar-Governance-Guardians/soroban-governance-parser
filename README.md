@@ -9,6 +9,12 @@ Part of the Stellar-Governance-Guardians suite:
 [indexer](https://github.com/Stellar-Governance-Guardians/governance-event-indexer) →
 [dashboard](https://github.com/Stellar-Governance-Guardians/delegate-portal-dashboard).
 
+**Documentation site:**
+<https://stellar-governance-guardians.github.io/soroban-governance-parser/> —
+architecture, quickstarts, the generated CLI/API/risk-rule references, evidence
+and the aggregated limitations. Every generated page is rebuilt in CI and the
+build fails on any diff.
+
 **Who it's for:** indexer/dashboard builders, delegate-tooling authors, and
 anyone who needs to read Soroban governance without trusting a UI.
 
