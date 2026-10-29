@@ -1,0 +1,17 @@
+{
+  "$comment": "Sibling-repository sources this site summarises. Each entry pins a repository, the exact commit, the path inside it and the sha256 of the bytes. The vendored copy under docs-site/pinned/<repo>/<path> is what the offline PR gate hashes; the nightly docs-live workflow re-fetches the pinned raw URL and fails on drift or an unreachable pin. Bump every entry in the parser PR that ends a phase, never silently.",
+  "sources": [
+    {
+      "repo": "https://github.com/Stellar-Governance-Guardians/governance-event-indexer",
+      "commitSha": "caa292a034e915803a90ec14cdac40b3db023df9",
+      "path": "README.md",
+      "sha256": "af7053996de75a27bfdb1e83bdac637671a6b2484995aab127ba092d4870cfab"
+    },
+    {
+      "repo": "https://github.com/Stellar-Governance-Guardians/delegate-portal-dashboard",
+      "commitSha": "54f6180763e85007fe9e9e257995319e0eb04d36",
+      "path": "README.md",
+      "sha256": "c3907619d02a854f1215d9b90f4a026d2e979ed134a7632c61314da2a348aa8e"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+# Summary
+
+- [Home](index.md)
+- [Architecture](architecture.md)
+- [Quickstart](quickstart/README.md)
+  - [Parser](quickstart/parser.md)
+  - [Indexer](quickstart/indexer.md)
+  - [Dashboard](quickstart/dashboard.md)
+
+- [Parser](parser/README.md)
+  - [Decoding rules](parser/decoding-rules.md)
+  - [Adapter model](parser/adapter-model.md)
+  - [Script3 adapter](parser/script3-adapter.md)
+  - [OpenZeppelin adapter](parser/openzeppelin-adapter.md)
+  - [Risk rules](generated/risk-rules.md)
+  - [CLI reference](generated/cli.md)
+  - [WASM usage](parser/wasm-usage.md)
+  - [Dry run (estimate)](parser/dry-run.md)
+
+- [Indexer](indexer.md)
+- [API reference](generated/api.md)
+- [Dashboard](dashboard.md)
+- [Metrics](metrics.md)
+- [Evidence](generated/evidence.md)
+- [Honest limitations](limitations.md)
+- [Adapter authoring guide](adapter-authoring.md)
+- [Contributing](contributing.md)
+- [Roadmap](roadmap.md)
+- [Changelog](changelog.md)
+
+- [Upstream pins](generated/upstream.md)
