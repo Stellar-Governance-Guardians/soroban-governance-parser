@@ -1,0 +1,52 @@
+name: docs-live
+
+# Nightly + manual tier: the checks that need the network. They never run on a
+# pull request and never block a merge (process rule: the PR gate is offline).
+#
+# 1. every external link in the built site resolves;
+# 2. every sources.lock pin still fetches at its commit with identical bytes;
+# 3. the deployed site answers 200 on the pages the deployment check names.
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live:
+    name: external links / pinned upstream / deployed site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # master
+        with:
+          toolchain: "1.96.0"
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.cargo/bin/mdbook
+          key: mdbook-0.5.4-${{ runner.os }}
+      - name: install mdbook 0.5.4
+        run: |
+          if ! command -v mdbook >/dev/null 2>&1; then
+            cargo install mdbook --version 0.5.4 --locked
+          fi
+      - name: build the book
+        working-directory: docs-site
+        run: mdbook build
+
+      - name: external links resolve
+        working-directory: docs-site
+        run: python3 scripts/check-external-links.py
+
+      - name: pinned upstream bytes still match sources.lock
+        working-directory: docs-site
+        run: python3 scripts/verify-pins.py --fetch
+
+      - name: deployed site answers 200 on the required pages
+        run: python3 docs-site/scripts/check-live-site.py
