@@ -1,4 +1,11 @@
-# soroban-governance-parser
+# Soroban Governance Parser
+
+[![CI](https://github.com/Stellar-Governance-Guardians/soroban-governance-parser/actions/workflows/ci.yml/badge.svg)](https://github.com/Stellar-Governance-Guardians/soroban-governance-parser/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+Maintained by [Stellar Governance Guardians](https://github.com/Stellar-Governance-Guardians).
+Use [GitHub Issues](https://github.com/Stellar-Governance-Guardians/soroban-governance-parser/issues)
+for project discussion, bug reports, and contribution requests.
 
 Rust workspace that decodes raw Soroban `ScVal` governance payloads (events,
 proposal calldata, invocations) into human-readable, risk-classified JSON.
@@ -96,6 +103,18 @@ cargo build --release -p soroban-governance-cli
 # Nightly-live-tier gate form: exit 1 if fewer than N ledgers remain
 ./target/release/sgp ttl --contract CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE --min-remaining 50000
 ```
+
+### Development checks
+
+```bash
+cargo fmt --all -- --check
+cargo clippy --workspace --all-targets -- -D warnings
+cargo test --workspace --all-targets
+```
+
+CI also checks claims, schema compatibility, pinned artifacts, documentation,
+and secret leakage. Network-dependent evidence is kept separate from the
+deterministic pull-request checks.
 
 ## WASM package
 
@@ -259,6 +278,17 @@ tests/fixtures/  live-captured testnet data + provenance README
 claims.json      machine-checkable claims ledger (charter rule 8)
 deployments.json deployment registry (real tx hashes and ledgers only)
 ```
+
+## Contributing
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. Keep
+changes scoped, add or update tests for behavior changes, and update the claims
+ledger when a README or documentation claim changes. Security reports belong in
+[SECURITY.md](SECURITY.md), not in a public issue.
+
+## Contributors
+
+[![Contributors](https://contrib.rocks/image?repo=Stellar-Governance-Guardians/soroban-governance-parser)](https://github.com/Stellar-Governance-Guardians/soroban-governance-parser/graphs/contributors)
 
 ## Development
 ```bash
