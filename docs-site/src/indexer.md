@@ -86,6 +86,6 @@ working around the missing export.
 ## Provenance
 
 The indexer consumes the parser through pins: the SDL and registry at parser
-commit `ba3bf1a3…`, the WASM asset `v0.1.0-alpha.1`. Its README pin table is the
+commit `ba3bf1a3…`, the WASM asset `v0.1.0-alpha.2`. Its README pin table is the
 authoritative list; this page summarises it, and the revisions this summary was
 written against are recorded in `docs-site/sources.lock`.
