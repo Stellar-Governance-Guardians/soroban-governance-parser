@@ -31,16 +31,18 @@ WASM package published with a reproducible sha256; a dry-run parser over real
 `simulateTransaction` captures. Dependency audit and a full-history `gitleaks`
 scan are recorded in [`docs/hardening.md`](docs/hardening.md).
 
-**Not proven / not built:** the OpenZeppelin adapter; any mainnet DAO; a CLI
-`simulate` command; rent estimates. See "Honest limitations".
+**Not proven / not built:** the OpenZeppelin adapter; any mainnet DAO; rent
+estimates; and proposal-action transaction assembly. `sgp simulate` accepts a
+fully assembled transaction envelope and labels every result as an estimate.
+See "Honest limitations".
 
 Phase status: the merged work covers **Phase 1a, Phase 1b (Script3), Phase 2
 (WASM package + schema freeze) and Phase 4 (dry-run modeling)**. Seed v2 from
 pinned upstream SHAs, the `Script3Adapter`, `RiskContext`, the
 vote-power/checkpoint and tally/quorum replicas, the offline differential tests,
-the published WASM package and the sans-IO dry-run parser are done. Pending: the
-OpenZeppelin adapter (bounded phase 3) and a CLI `simulate` command. Evidence
-below.
+the published WASM package, the sans-IO dry-run parser, and the CLI simulation
+boundary are done. Pending: the OpenZeppelin adapter (bounded phase 3), full
+proposal-action assembly, and rent research. Evidence below.
 
 ## What it does
 - **ScVal → JSON**: total converter over the stellar-xdr 28 type set. Integers
@@ -97,6 +99,11 @@ cargo build --release -p soroban-governance-cli
 
 # Parse a local WASM
 ./target/release/sgp spec-from-wasm path/to/contract.wasm
+
+# Simulate a fully assembled TransactionEnvelope (estimate only)
+./target/release/sgp simulate transaction.xdr --capture simulate-response.json
+# Or read the base64 envelope from stdin
+cat transaction.xdr | ./target/release/sgp simulate -
 
 # Protocol 29 TTL: instance + code liveUntilLedger (fail closed if missing)
 ./target/release/sgp ttl --contract CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE
@@ -187,10 +194,10 @@ All items below are machine-checked by `scripts/check-claims.sh` (see
 - The public testnet RPC times out on wide `getEvents` ranges (>~1000 ledgers);
   consumers must page in small windows. Retention is ~7 days — historical
   backfill (Galexie/Hubble) is an indexer-phase concern.
-- **Dry-run is modeled but not CLI-exposed.** `parse_simulate_response` reads
-  the fields observed in committed `simulateTransaction` captures; the CLI has
-  no `simulate` command yet, so it is exercised by offline tests only. Rent is
-  not modeled ([`docs/dry-run.md`](docs/dry-run.md)).
+- **Dry-run is an estimate, not proposal execution.** `sgp simulate` accepts a
+  fully assembled transaction envelope and reads the fields observed in
+  committed `simulateTransaction` captures. It does not guess proposal action
+  assembly, and rent is not modeled ([`docs/dry-run.md`](docs/dry-run.md)).
 - Vote-weight decay: **not implemented here.** A source reading of both pinned
   governors — Script3 `contracts/votes/src/checkpoints.rs`
   (`get_past_votes`) and OpenZeppelin

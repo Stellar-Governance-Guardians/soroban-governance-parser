@@ -1,14 +1,15 @@
 # Indexer
 
 `governance-event-indexer` moves governance events from the public Stellar
-testnet RPC into Postgres — raw events land before anything is decoded — and is
-planned to serve them over a GraphQL API that implements the pinned
+testnet RPC into Postgres — raw events are preserved and parser-backed event
+decodes are stored durably — and serves an initial read-only GraphQL API for
 `governance-v1` schema.
 
-> **Status: ingestion built (I0–I2). Decode (I3), API (I4), reconciliation (I5),
-> deploy (I6) and the clean-clone prove script (I7) are not built.** There is no
-> GraphQL endpoint to query today. The [API reference](generated/api.md) is the
-> schema the server must implement, not a running service.
+> **Status: ingestion and event decode built (I0–I4). Proposal projections,
+> reconciliation (I5), deploy (I6) and the clean-clone prove script (I7) remain
+> planned.** The GraphQL endpoint serves health and normalized event records;
+> proposal, impact, and delegate fields remain unavailable until their tables
+> are implemented.
 
 ## What is built
 
@@ -35,23 +36,24 @@ planned to serve them over a GraphQL API that implements the pinned
   unreadable range to `ingest_gaps` with reason `retention` and advances past it
   in the same transaction — loud, never a silent skip.
 - **Replay.** `node dist/cli.js replay <dir>` runs committed raw responses
-  through the same normalization path, tagging rows `source='fixture-replay'`.
+  through the same raw-plus-decode path, tagging rows `source='fixture-replay'`.
   Live rows are `source='live'`, and a later write never flips a row's source.
 
 ### Storage
 
-Four tables exist after `migrate` (forward-only, tested from an empty database):
+Five tables exist after `migrate` (forward-only, tested from an empty database):
 
 | Table | Holds |
 |---|---|
 | `raw_events` | every ingested event, keyed `(ledger, tx_hash, op_index, event_index)`, with `source` = `live` or `fixture-replay` |
+| `decoded_events` | parser-versioned normalized topics/payload and explicit `VERIFIED` or `UNVERIFIED` status for each raw event |
 | `ingest_cursors` | one cursor per registered contract, advanced in the same transaction as its window |
 | `ingest_gaps` | unreadable ledger ranges with the reason (`retention`), written instead of skipping silently |
 | `indexer_meta` | indexer bookkeeping (schema version and run metadata) |
 
-Decoded tables (`proposals`, `proposal_actions`, `risk_flags`, `votes`,
+Proposal-level tables (`proposals`, `proposal_actions`, `risk_flags`, `votes`,
 `power_checkpoints`, `delegations`, `delegates`, `reconciliation_runs`) arrive
-with I3–I5. They do not exist yet.
+with I5 and later. Event-level decode is persisted in `decoded_events`.
 
 ### Retry behaviour
 
@@ -63,16 +65,16 @@ cursor does not advance past data that was not stored.
 
 | Milestone | State |
 |---|---|
-| I3 decode through the pinned Script3 adapter | blocked on the parser WASM event surface (`v0.1.0-alpha.2`) |
-| I4 GraphQL (Yoga) implementing the vendored SDL exactly | not started |
-| I5 reconciliation of SQL tallies against on-chain reads | not built; `/health` does not exist |
+| I3 decode through the pinned Script3 adapter | event-level decode persisted through the pinned WASM; proposal projections remain planned |
+| I4 GraphQL (Yoga) implementing the vendored SDL exactly | initial health and event connection implemented; proposal/impact/delegate fields remain planned |
+| I5 reconciliation of SQL tallies against on-chain reads | not built; drift checks remain planned |
 | I6 Docker/compose deploy recipe and a live instance | not built |
 | I7 `scripts/prove-indexer` clean-clone proof | not built |
 
 Decoding governor events in TypeScript would put governor logic outside the
 parser's `GovernorAdapter` and break the project's rule that governor logic
-lives in the parser. That is why I3 waits for a parser release instead of
-working around the missing export.
+lives in the parser. The event-level boundary now uses the pinned parser
+artifact; remaining work is the durable projection of proposal entities.
 
 ## Checks
 

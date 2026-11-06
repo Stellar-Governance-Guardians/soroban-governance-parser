@@ -94,5 +94,5 @@ decode milestone waits on a real parser release instead of a planned one.
 | `crates/core` | `ScVal` → JSON, WASM custom-section extraction, `contractspecv0`, risk rules, `GovernorAdapter`, power/tally replicas, dry-run model | none |
 | `crates/wasm` | wasm-bindgen surface over core for the browser and Node | none |
 | `crates/cli` | `sgp` operator tool | Soroban JSON-RPC |
-| `governance-event-indexer/src` | ingestion, storage, (planned) decode and GraphQL | Postgres, Soroban RPC |
+| `governance-event-indexer/src` | ingestion, durable event decode and GraphQL | Postgres, Soroban RPC |
 | `delegate-portal-dashboard/app` | routes; `/simulate` runs in the browser | HTTP to the indexer |

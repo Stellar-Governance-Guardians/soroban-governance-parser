@@ -51,15 +51,17 @@ product (parser → indexer → dashboard) and is **governor-agnostic** and
 - **Testnet only.** The seeded governors are pinned upstream commits deployed on
   public testnet; no mainnet DAO is claimed.
 - **Single deployment per governor**; no `Against` votes in the corpus.
-- **Dry-run is parser-side only** — no CLI `simulate` command yet; rent not
-  modeled.
+- **Dry-run is estimate-only** — `sgp simulate` accepts a fully assembled
+  transaction envelope and labels the result; proposal-action assembly and
+  rent are not modeled.
 - **Vote-weight decay**: no decay term found in either pinned source (a source
   reading, not a live-verified claim); the parser models none.
 
 ## Roadmap
 
 1. OpenZeppelin adapter (bounded) — `docs/wave-issues/01-…`.
-2. CLI `simulate` wiring — `docs/wave-issues/02-…`.
+2. Proposal-action assembly for a verified subset — new issue after the CLI
+   boundary has real users and captures.
 3. More contextual risk rules — `docs/wave-issues/03-…`.
 4. Hardening (fuzz + audit), v0.1.0 tag, then hand the WASM lock + SDL to the
    indexer and dashboard.

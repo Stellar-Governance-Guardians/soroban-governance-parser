@@ -6,6 +6,7 @@
 //! - fetch-spec: contract id -> live RPC fetch -> parsed contractspecv0 JSON
 //! - health: RPC getHealth summary (retention window verification)
 //! - ttl: read contract instance/code TtlEntries (protocol 29), optional min-remaining gate
+//! - simulate: validated transaction envelope -> labeled simulateTransaction estimate
 
 mod rpc;
 
@@ -60,6 +61,17 @@ enum Command {
         /// exit 1 if remaining ledgers fall below this threshold
         #[arg(long)]
         min_remaining: Option<u32>,
+    },
+    /// Simulate a fully assembled TransactionEnvelope. The result is always
+    /// labeled as an estimate and can optionally be captured verbatim.
+    Simulate {
+        /// base64 XDR TransactionEnvelope (or "-" to read stdin)
+        transaction: String,
+        #[arg(long, default_value = rpc::DEFAULT_TESTNET_RPC)]
+        rpc: String,
+        /// write the raw JSON-RPC response to this path
+        #[arg(long)]
+        capture: Option<PathBuf>,
     },
 }
 
@@ -140,7 +152,50 @@ async fn main() -> Result<(), String> {
         } => {
             cmd_ttl(contract, rpc, min_remaining).await?;
         }
+        Command::Simulate {
+            transaction,
+            rpc,
+            capture,
+        } => {
+            cmd_simulate(transaction, rpc, capture).await?;
+        }
     }
+    Ok(())
+}
+
+async fn cmd_simulate(
+    transaction: String,
+    rpc: String,
+    capture: Option<PathBuf>,
+) -> Result<(), String> {
+    let transaction = if transaction == "-" {
+        use std::io::Read;
+        let mut buf = String::new();
+        std::io::stdin()
+            .read_to_string(&mut buf)
+            .map_err(|e| format!("stdin read failed: {e}"))?;
+        buf
+    } else {
+        transaction
+    };
+    soroban_governance_core::simulate::build_simulate_request(&transaction, 1)
+        .map_err(|e| e.to_string())?;
+    let client = rpc::RpcClient::new(&rpc);
+    let response = client
+        .simulate_transaction(&transaction)
+        .await
+        .map_err(|e| e.to_string())?;
+    if let Some(path) = capture {
+        let bytes = serde_json::to_vec_pretty(&response).map_err(|e| e.to_string())?;
+        std::fs::write(&path, bytes)
+            .map_err(|e| format!("cannot write capture {}: {e}", path.display()))?;
+    }
+    let impact = soroban_governance_core::simulate::parse_simulate_response(&response)
+        .map_err(|e| e.to_string())?;
+    println!(
+        "{}",
+        serde_json::to_string_pretty(&impact).map_err(|e| e.to_string())?
+    );
     Ok(())
 }
 

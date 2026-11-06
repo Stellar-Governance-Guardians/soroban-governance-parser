@@ -7,7 +7,7 @@ visibility without a go-ahead).
 | # | title | area | complexity | points |
 |---|---|---|---|---|
 | 01 | OpenZeppelin governor adapter (skeleton + fail-closed decode) | adapter | high | 200 |
-| 02 | `sgp simulate`: wire the dry-run parser to the CLI | cli | medium | 150 |
+| 02 | `sgp simulate`: wire the dry-run parser to the CLI | cli | medium | 150 | done locally |
 | 03 | Risk rules for token approvals / caller identity | risk | medium | 150 |
 | 04 | `sgp` output modes (`--json` / table) | cli | trivial | 100 |
 | 05 | Soroban custom-type pretty-printers | decode | medium | 150 |

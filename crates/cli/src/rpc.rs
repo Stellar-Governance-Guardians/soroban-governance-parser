@@ -93,6 +93,19 @@ impl RpcClient {
         Ok((v.latest_ledger, v.oldest_ledger, v.ledger_retention_window))
     }
 
+    /// Submit a validated TransactionEnvelope to Soroban RPC's
+    /// `simulateTransaction` method and return the raw JSON-RPC result.
+    pub async fn simulate_transaction(
+        &self,
+        transaction_xdr_base64: &str,
+    ) -> Result<Value, RpcError> {
+        self.call(
+            "simulateTransaction",
+            json!({ "transaction": transaction_xdr_base64 }),
+        )
+        .await
+    }
+
     /// Fetch the contract WASM bytes for a contract id (strkey C...).
     /// Two ledger-entry hops: ContractData(ledger_key_contract_instance) ->
     /// executable wasm hash -> ContractCode(hash).

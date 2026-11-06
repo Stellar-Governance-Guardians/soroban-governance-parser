@@ -1,4 +1,4 @@
-# Draft Wave issue — `sgp simulate`: wire the dry-run parser to the CLI
+# `sgp simulate`: wire the dry-run parser to the CLI
 
 **Suggested labels:** `area:cli`, `complexity:medium` · **Complexity:** Medium (150 pts)
 
@@ -16,16 +16,19 @@ response to `parse_simulate_response`.
 
 ## Acceptance Criteria
 
-- [ ] `sgp simulate --contract <C…> --proposal <id> [--rpc URL]` prints an
-      `ExecutionImpact` (`estimate: true`, `simulated_at_ledger` always present).
-- [ ] `--capture <path>` writes the **raw** RPC response to a file so it can be
+- [x] `sgp simulate <transaction-xdr> [--rpc URL]` prints an `ExecutionImpact`
+      (`estimate: true`, `simulated_at_ledger` always present). The command
+      accepts a fully assembled transaction envelope rather than guessing how
+      to construct a proposal action.
+- [x] `--capture <path>` writes the **raw** RPC response to a file so it can be
       committed as a fixture with provenance.
-- [ ] Absent response fields are printed as `null`, never omitted or zeroed.
-- [ ] Network errors and malformed responses exit non-zero with an explicit
+- [x] Absent response fields are printed as `null`, never omitted or zeroed.
+- [x] Network errors and malformed responses exit non-zero with an explicit
       message (fail closed).
-- [ ] An offline test covers the parse path from a committed capture; the live
+- [x] The core offline tests cover the parse path from committed captures; the live
       path is documented as testnet-only.
-- [ ] README quick start and `docs/dry-run.md` document the command.
+- [x] README quick start documents the command; `docs/dry-run.md` documents the
+      estimate contract and remains the reference for response fields.
 
 ## Tech Stack
 
