@@ -40,7 +40,7 @@ exercises the decode in real Chrome against the production build.
 
 | Artifact | Pin |
 |---|---|
-| Parser WASM | `v0.1.0-alpha.1`, sha256 `7b2eb942…` |
+| Parser WASM | `v0.1.0-alpha.2`, sha256 `65193e43…` |
 | GraphQL SDL | parser commit `ba3bf1a3…`, sha256 `cfbd85a8…` |
 
 ## Checks

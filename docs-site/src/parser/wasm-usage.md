@@ -8,10 +8,10 @@ in one tarball, and consumed by content pin rather than by version range.
 
 | Field | Value |
 |---|---|
-| Version | `0.1.0-alpha.1` |
-| Asset | `sgg-parser-wasm-0.1.0-alpha.1.tgz` |
-| sha256 | `7b2eb9420f0cf0582d079f9603beb1e8548e1c7bac165724688cbae5b9237ecd` |
-| Bytes | 245,210 |
+| Version | `0.1.0-alpha.2` |
+| Asset | `sgg-parser-wasm-0.1.0-alpha.2.tgz` |
+| sha256 | `65193e43642f55abd083e2283aa5ed3caee5839c40a74c7b3f30398ea3ec0629` |
+| Bytes | 283,043 |
 | Targets | `nodejs`, `web` |
 | Schema | `v1` |
 | Toolchain | rustc 1.96.0 / wasm-pack 0.13.1 |
@@ -31,12 +31,15 @@ PR gate checks that the README, the lock file and the asset agree.
 | `script3_tally_from_chain(...)` | reconstruct the tally from chain reads |
 | `evaluate_risk_context(call_json, risk_context_json)` | contextual rules over decoded arguments |
 | `evaluate_tally(...)` | tally and quorum arithmetic |
+| `identify_governor()` | identify the compiled governor adapter |
+| `matches_event(...)` | complete-topic structural event matching |
+| `normalize_event(...)` | verified event normalization with explicit failures |
+| `decode_call(...)` | spec-aware call decoding, or positional unverified output |
 
-There is **no event-normalization export** in this release: `matches_event`,
-`normalize_event` and `decode_call` exist in the Rust core behind
-`GovernorAdapter`, but the adapter trait is not exposed to WASM. Consumers that
-need decoded events must wait for `v0.1.0-alpha.2`; see
-[Honest limitations](../limitations.md).
+Event matching and normalization require the complete topic vector and the
+caller-supplied registry context; an unregistered contract or malformed shape
+returns an explicit failure or an unverified fallback. Call decoding without a
+usable contract spec remains positional and unverified.
 
 ## Node
 
@@ -72,8 +75,5 @@ Both targets are tested against the built package, not against a mock:
 
 ## Versioning
 
-`v0.1.0-alpha.2` is the next release. It is expected to add the adapter event
-surface (`matches_event` / `identify`, `normalize_event` with the `unverified`
-fallback, `decode_call`) and the simulation request/response surface. Consumers
-pin the asset by sha256, so the new package is a deliberate pin bump in each
-consumer repository after the asset exists.
+Consumers pin the asset by sha256. The simulation request/response surface and
+the OpenZeppelin adapter remain separate future work.
