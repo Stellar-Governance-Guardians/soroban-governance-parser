@@ -72,7 +72,7 @@ below.
 |---|---|---|
 | `crates/core` | sans-IO decode pipeline | none |
 | `crates/wasm` | wasm-bindgen bindings for the dashboard | none |
-| `crates/cli` (`sgp`) | operator CLI; the only network code (`src/rpc.rs`) | Soroban JSON-RPC |
+| `crates/cli` (`sgp`) | operator CLI; network code in `src/rpc.rs` | Soroban JSON-RPC |
 
 ## Quick start
 ```bash
