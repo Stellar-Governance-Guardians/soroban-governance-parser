@@ -26,6 +26,13 @@ A pin is bumped only by a PR that shows the diff and re-runs the contract tests
 - `ExecutionImpact.estimate` is `const true` (charter rule 5); `simulatedAtLedger`
   is mandatory.
 
+## Parser v0.1.0-alpha.2 — 2026-11-06
+
+- Added JSON-in/JSON-out WASM bindings for governor identification, event
+  matching, event normalization, and spec-aware call decoding.
+- The governance-v1 SDL is unchanged; consumers must not change their schema
+  pins for this parser release.
+
 ### How to change it
 
 1. Add the new field / type / enum value — never remove or retype inside v1.

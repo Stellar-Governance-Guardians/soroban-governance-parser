@@ -15,7 +15,7 @@ governors actually deployed on Stellar.
 ## What this repo is
 
 `soroban-governance-parser` decodes raw Soroban governance payloads into
-human-readable, risk-classified JSON. It is the first layer of a three-repo
+human-readable, risk-classified JSON. It is the parser layer of a three-repo
 product (parser → indexer → dashboard) and is **governor-agnostic** and
 **fail-closed**: anything it cannot verify is labeled `unverified`, never guessed.
 
@@ -40,7 +40,7 @@ product (parser → indexer → dashboard) and is **governor-agnostic** and
 |---|---|
 | Script3 adapter reproduces real chain state for proposals 0–5 | `crates/core/tests/differential.rs` over committed captures; `OFFLINE=1 bash scripts/check-claims.sh` |
 | 85 tests pass; clippy pedantic clean | `cargo test --workspace` |
-| WASM package published with a reproducible sha256 | GitHub pre-release `v0.1.0-alpha.1`; `releases/parser-wasm.lock.json`; `scripts/check-wasm-release.py` |
+| WASM package built with a reproducible sha256 | GitHub pre-release `v0.1.0-alpha.2`; `releases/parser-wasm.lock.json`; `scripts/check-wasm-release.py` |
 | dry-run models real `simulateTransaction` responses | `crates/core/tests/simulate.rs`; `docs/dry-run.md` |
 | schemas v1 frozen, additive-only | `schemas/CHANGELOG.md`; `scripts/check-schema-additive.py` |
 | no secrets in git history | `gitleaks detect` (full history) |
