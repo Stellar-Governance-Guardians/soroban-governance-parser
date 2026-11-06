@@ -22,7 +22,7 @@ planned** banner. Where a gap blocks a milestone, the blocker is named.
 | Limitation | Detail |
 |---|---|
 | No proposal-level decode | Event normalization is persisted through the pinned WASM; proposal/action projections remain planned. |
-| Initial GraphQL API only | `/graphql` exposes health and a raw-event connection; proposal, impact, and delegate fields remain unimplemented. |
+| GraphQL surface scope | `/graphql` exposes health and a raw-event connection; proposal, impact, and delegate fields remain unimplemented. |
 | Health surface is narrow | `/health` fails on open ingestion gaps, but reconciliation drift checks arrive with I5. |
 | No reconciliation | SQL tallies have not been compared against on-chain reads (I5). |
 | No deploy, no soak | No Docker/compose recipe (I6) and no 72-hour run. Nothing has been deployed. |
