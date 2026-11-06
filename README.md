@@ -104,17 +104,17 @@ both the `nodejs` and `web` targets, packaged in one archive for the dashboard.
 
 | | |
 |---|---|
-| release | GitHub **pre-release** `v0.1.0-alpha.1` (not on npm or crates.io) |
-| asset | `sgg-parser-wasm-0.1.0-alpha.1.tgz` |
-| sha256 | `7b2eb9420f0cf0582d079f9603beb1e8548e1c7bac165724688cbae5b9237ecd` |
+| release | GitHub **pre-release** `v0.1.0-alpha.2` (not on npm or crates.io) |
+| asset | `sgg-parser-wasm-0.1.0-alpha.2.tgz` |
+| sha256 | `65193e43642f55abd083e2283aa5ed3caee5839c40a74c7b3f30398ea3ec0629` |
 | lock | [`releases/parser-wasm.lock.json`](releases/parser-wasm.lock.json) |
 
 Rebuild it deterministically (sorted tar entries, zeroed mtimes, `gzip -n`), so
 the sha256 is stable:
 
 ```bash
-scripts/wasm/package-release.sh 0.1.0-alpha.1
-sha256sum sgg-parser-wasm-0.1.0-alpha.1.tgz   # must equal the lock file
+scripts/wasm/package-release.sh 0.1.0-alpha.2
+sha256sum sgg-parser-wasm-0.1.0-alpha.2.tgz   # must equal the lock file
 ```
 
 `scripts/check-wasm-release.py` (a PR-gate claim) checks that the README's

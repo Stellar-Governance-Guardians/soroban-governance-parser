@@ -118,3 +118,21 @@ governor's vote accounting contains one.
   deployment before marking anything `verified` at runtime.
 - Whether these exact event shapes are emitted by mainnet deployments at v1.1.1:
   UNVERIFIED (we have not queried mainnet).
+
+## WASM adapter bindings
+
+The WASM package exposes the adapter through sans-IO JSON bindings. All base64
+values below are individual XDR-encoded `ScVal` values; malformed JSON, XDR,
+unknown event shapes, and missing contract specs return an explicit error or an
+`unverified` result. The caller must select this adapter from its own registry;
+the parser never guesses an adapter from an event alone.
+
+| Export | Inputs | Output and failure behavior |
+|---|---|---|
+| `identify_governor()` | none | `"script3-soroban-governor"` |
+| `matches_event(contractId, ledger, txHash, topicsJson, value)` | Complete topic vector as a JSON array of base64 XDR plus value | Boolean structural match; malformed input is an error and a non-matching contract/topic shape is `false` |
+| `normalize_event(contractId, ledger, txHash, topicsJson, value)` | Same event inputs | JSON `NormalizedEvent` with verified payload, or an explicit normalization error |
+| `decode_call(contractId, functionName, argsJson, specJson?)` | JSON array of argument XDR and optional `ContractSpec` JSON | JSON `DecodedCall`; without a usable spec, arguments remain positional and `decoding` is `unverified` |
+
+The complete topic vector is required so arity and topic positions are checked;
+passing just `topic[0]` is not sufficient for a match.
