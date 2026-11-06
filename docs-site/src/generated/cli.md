@@ -17,6 +17,7 @@ Commands:
   fetch-spec      Fetch a contract's WASM from a Soroban RPC and parse its contractspecv0
   health          Print RPC health: latest ledger, oldest ledger, retention window
   ttl             Read a contract's instance/code TTL entries (protocol 29) and check remaining ledgers. Fails closed: missing TTL entries are errors
+  simulate        Simulate a fully assembled TransactionEnvelope. The result is always labeled as an estimate and can optionally be captured verbatim
   help            Print this message or the help of the given subcommand(s)
 
 Options:
@@ -99,4 +100,22 @@ Options:
       --rpc <RPC>                      [default: https://soroban-testnet.stellar.org]
       --min-remaining <MIN_REMAINING>  exit 1 if remaining ledgers fall below this threshold
   -h, --help                           Print help
+```
+
+## `sgp simulate`
+
+Simulate a fully assembled TransactionEnvelope. The result is always labeled as an estimate and can optionally be captured verbatim
+
+```text
+Simulate a fully assembled TransactionEnvelope. The result is always labeled as an estimate and can optionally be captured verbatim
+
+Usage: sgp simulate [OPTIONS] <TRANSACTION>
+
+Arguments:
+  <TRANSACTION>  base64 XDR TransactionEnvelope (or "-" to read stdin)
+
+Options:
+      --rpc <RPC>          [default: https://soroban-testnet.stellar.org]
+      --capture <CAPTURE>  write the raw JSON-RPC response to this path
+  -h, --help               Print help
 ```
