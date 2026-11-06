@@ -13,8 +13,8 @@ soroban-governance-parser  →  governance-event-indexer  →  delegate-portal-d
 
 | Repository | What it does today | Status |
 |---|---|---|
-| [parser](quickstart/parser.md) | Decodes `ScVal` → JSON; extracts and parses `contractspecv0`; classifies risk from a published rule table; decodes Script3 proposals and events; models dry-run output from committed captures; ships a WASM package. | Script3 adapter implemented. OpenZeppelin adapter planned. CLI `simulate` command planned. |
-| [indexer](indexer.md) | Ingests raw governance events from the public testnet RPC into Postgres with cursors, ≤1000-ledger windows, retention-gap recording and fixture replay. | Ingestion built. Decode, GraphQL API, reconciliation and deploy are planned. |
+| [parser](quickstart/parser.md) | Decodes `ScVal` → JSON; extracts and parses `contractspecv0`; classifies risk from a published rule table; decodes Script3 proposals and events; models dry-run output from committed captures; ships a WASM package; exposes `sgp simulate` for validated transaction envelopes. | Script3 adapter implemented. OpenZeppelin adapter planned. |
+| [indexer](indexer.md) | Ingests raw governance events from the public testnet RPC into Postgres with cursors, ≤1000-ledger windows, retention-gap recording, fixture replay, and a read-only GraphQL health/raw-event connection. | Ingestion and initial GraphQL surface built. Decode, reconciliation and deploy remain planned. |
 | [dashboard](dashboard.md) | Decodes a pasted base64 `ScVal` in the browser with the pinned parser WASM; shows indexer health and the exact interface pins. | Scaffold merged: `/`, `/simulate`, `/status`. Data pages are planned. |
 
 ## Who this is for
@@ -48,10 +48,10 @@ files do not contain. Prose claims are checked by
 ## What is not built
 
 The [honest limitations](limitations.md) page aggregates every gap across the
-three repositories — including the OpenZeppelin adapter, the missing GraphQL
-server and the dashboard's planned data pages. Nothing on this site describes a
-planned feature as if it existed; planned pages carry a **Status: planned**
-banner.
+three repositories — including the OpenZeppelin adapter, decoded indexer
+tables, reconciliation, deployment, and the dashboard's planned data pages.
+Nothing on this site describes a planned feature as if it existed; planned pages
+carry a **Status: planned** banner.
 
 ## License
 

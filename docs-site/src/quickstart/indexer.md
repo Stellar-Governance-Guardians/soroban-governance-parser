@@ -35,20 +35,22 @@ node dist/cli.js replay <dir>   # replays committed raw responses, source='fixtu
 ## What exists and what does not
 
 Built: ingestion (I2) — registry, cursors, windowed `getEvents`, idempotent raw
-storage, retention-gap recording, fixture replay.
+storage, retention-gap recording, fixture replay, durable parser-backed event
+decode, and an initial GraphQL health/raw-event connection.
 
-Not built: decode (I3), the GraphQL API (I4), reconciliation (I5), deploy (I6)
-and the clean-clone prove script (I7). The [API reference](../generated/api.md)
-describes the pinned schema the server must implement, not a running endpoint.
+Not built: proposal/impact/delegate projections, reconciliation (I5), deploy
+(I6) and the clean-clone prove script (I7).
+The [API reference](../generated/api.md) describes the pinned schema and the
+implemented health/event surface.
 
-The decode milestone is blocked on a parser WASM export surface that
-`v0.1.0-alpha.1` does not provide; see [Honest limitations](../limitations.md).
+The remaining decode milestone depends on persisted tables and replay semantics,
+not on a missing parser export; see [Honest limitations](../limitations.md).
 
 ## Pins
 
 | Pin | Artifact |
 |---|---|
-| `parser.lock` | WASM release asset `v0.1.0-alpha.1` (sha256 `7b2eb942…`) |
+| `parser.lock` | WASM release asset `v0.1.0-alpha.2` (sha256 `65193e43…`) |
 | `schema.lock` | `governance-v1.graphql` @ parser `ba3bf1a3…` (sha256 `cfbd85a8…`) |
 | `registry.lock` | `deployments.json` @ the same parser commit |
 

@@ -44,9 +44,21 @@ it.
 transaction from a decoded `action`, and sending it, is IO and lives in the CLI's
 `RpcClient`; the core crate stays sans-IO.
 
+The CLI exposes the same boundary without guessing how to assemble a proposal:
+
+```bash
+sgp simulate <transaction-envelope-base64> --capture raw-simulate-response.json
+cat transaction-envelope-base64.txt | sgp simulate -
+```
+
+The command validates the envelope before making the RPC call, prints only the
+parsed `ExecutionImpact`, and writes the raw response only when `--capture` is
+provided. The output remains an estimate and is not a guarantee of future
+execution.
+
 ## Not yet done
 
-- The CLI does not expose a `simulate` command yet, so this is exercised by the
-  offline tests, not by an operator command.
+- The CLI accepts a fully assembled transaction envelope; it does not assemble
+  proposal actions it cannot verify.
 - `decode_status` is `unverified`: the impact parser does not decode the result
   XDR against a contract spec.

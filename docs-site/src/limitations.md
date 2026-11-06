@@ -9,8 +9,8 @@ planned** banner. Where a gap blocks a milestone, the blocker is named.
 | Limitation | Detail |
 |---|---|
 | OpenZeppelin adapter not implemented | Research, committed test contracts and fixtures exist; no adapter decodes OZ proposals or events. `claims.json` asserts this state (`oz-adapter-not-implemented`). |
-| No WASM event surface | `matches_event`, `normalize_event` and `decode_call` exist in Rust behind `GovernorAdapter` but are not exported. Planned for `v0.1.0-alpha.2`. |
-| No CLI `simulate` command | The dry-run model is exercised by offline tests against committed captures; an operator cannot run it from `sgp` yet. |
+| WASM event surface | `matches_event`, `normalize_event` and `decode_call` are exported in `v0.1.0-alpha.2`; the indexer still needs persisted decode tables. |
+| CLI simulation boundary | `sgp simulate` accepts a validated transaction envelope and emits an estimate; proposal-action assembly and rent remain out of scope. |
 | Rent is not modelled | The committed `simulateTransaction` captures contain no rent figure; the field is omitted rather than estimated from an assumption. |
 | Dry-run results are estimates | `estimate: true` and `simulatedAtLedger` are mandatory. A simulation runs against the current ledger, not the future execution ledger. |
 | No mainnet DAO exercised | Fixtures come from testnet deployments listed in [Evidence](generated/evidence.md). |
@@ -21,9 +21,9 @@ planned** banner. Where a gap blocks a milestone, the blocker is named.
 
 | Limitation | Detail |
 |---|---|
-| No decode | Raw events are stored; nothing interprets them yet (I3). The pinned WASM is hash-verified but unused. |
-| No GraphQL API | No endpoint exists (I4). The [API reference](generated/api.md) is the schema the server must implement. |
-| No health surface | `ingest_gaps` rows are written and queryable, but there is no `/health` that fails on open gaps; it arrives with I5. |
+| No proposal-level decode | Event normalization is persisted through the pinned WASM; proposal/action projections remain planned. |
+| Initial GraphQL API only | `/graphql` exposes health and a raw-event connection; proposal, impact, and delegate fields remain unimplemented. |
+| Health surface is narrow | `/health` fails on open ingestion gaps, but reconciliation drift checks arrive with I5. |
 | No reconciliation | SQL tallies have not been compared against on-chain reads (I5). |
 | No deploy, no soak | No Docker/compose recipe (I6) and no 72-hour run. Nothing has been deployed. |
 | No clean-clone prove | `scripts/prove-indexer` does not exist (I7). |
@@ -36,8 +36,8 @@ planned** banner. Where a gap blocks a milestone, the blocker is named.
 |---|---|
 | Data pages not built | `/proposal/[id]`, `/delegates`, `/delegate/[address]` and execution-impact panels need the indexer's decoded tables. |
 | No codegen | The single query is hand-written and strictly validated; `graphql-codegen` waits for the full schema to be served. |
-| `/simulate` decodes one `ScVal` | Event XDR, transaction-hash lookup, proposal call decode and risk flags need parser exports that are not in `v0.1.0-alpha.1`. |
-| No live-indexer run | No page has been exercised end to end against a running indexer, because no indexer API exists. |
+| `/simulate` decodes one `ScVal` | Event XDR, transaction-hash lookup, proposal call decode and risk flags are not wired into the dashboard yet. |
+| No live-indexer run | No page has been exercised end to end against a deployed indexer; the local GraphQL contract now exists. |
 | Accessibility checked structurally, not measured | Landmarks, skip link, labelled controls and an `aria-live` region are in place; no Lighthouse score has been measured and none is claimed. |
 | CSP uses `'unsafe-inline'` | Required for Next's hydration bootstrap today; a nonce-based policy is planned. |
 
