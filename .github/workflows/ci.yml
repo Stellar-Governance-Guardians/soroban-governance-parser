@@ -51,7 +51,9 @@ jobs:
         working-directory: crates/wasm/js-tests
         run: |
           npm install --no-save playwright@1.55.0
-          npx playwright install --with-deps chromium
+          # The hosted runner already supplies Chromium system libraries;
+          # --with-deps currently rejects ubuntu26.04 before the browser test.
+          npx playwright install chromium
       - name: headless browser test of the built artifact
         run: node crates/wasm/js-tests/browser.test.mjs
       - name: offline wasm-release claim
