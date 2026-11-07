@@ -43,7 +43,7 @@ Everything on this site is either a page in
 CI rebuilds every generated page and fails on any diff, so a page cannot
 describe a rule table, an export list, a schema or a contract that the source
 files do not contain. Prose claims are checked by
-`docs-site/scripts/check-docs-claims`.
+`docs-site/scripts/check-docs-claims.py`.
 
 ## What is not built
 

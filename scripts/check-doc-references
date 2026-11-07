@@ -1,0 +1,93 @@
+#!/usr/bin/env python3
+"""No phantom references (charter, evidence rule 7).
+
+Scans README.md and every Markdown file under docs/ and docs-site/src/ for
+`scripts/...`, `.github/workflows/...` and relative Markdown links, and fails
+when any of them does not exist in this repository.
+
+Offline and deterministic: no network, no package install. A missing python3 is
+a failure, not a skip (the caller runs it with python3 explicitly).
+"""
+
+import os
+import re
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+SCRIPTS = re.compile(r"scripts/[A-Za-z0-9._/-]+")
+WORKFLOWS = re.compile(r"\.github/workflows/[A-Za-z0-9._/-]+")
+LINKS = re.compile(r"\]\(([^)\s]+)\)")
+
+failures = []
+checked = set()
+
+
+def walk(directory):
+    found = []
+    if not os.path.isdir(directory):
+        return found
+    for dirpath, _dirnames, filenames in os.walk(directory):
+        for name in filenames:
+            if name.endswith(".md"):
+                found.append(os.path.join(dirpath, name))
+    return found
+
+
+def check(kind, target, source):
+    clean = target.rstrip(".,;:)")
+    if clean in ("scripts/", "scripts") or clean.endswith("/"):
+        return
+    checked.add("%s:%s" % (kind, clean))
+    # A reference may be written relative to the file, the repository root, or
+    # (for docs-site pages) the site directory, which is the site's own cwd.
+    bases = [ROOT, os.path.dirname(source), os.path.join(ROOT, "docs-site")]
+    if not any(os.path.exists(os.path.join(base, clean)) for base in bases):
+        failures.append(
+            "%s: missing %s \"%s\"" % (os.path.relpath(source, ROOT), kind, clean)
+        )
+
+
+files = [os.path.join(ROOT, "README.md")]
+files += walk(os.path.join(ROOT, "docs"))
+files += walk(os.path.join(ROOT, "docs-site", "src"))
+files = [f for f in files if os.path.exists(f)]
+
+URLS = re.compile(r"https?://\S+")
+
+for path in files:
+    with open(path, encoding="utf-8") as handle:
+        text = handle.read()
+    # A path inside an absolute URL is not a local reference.
+    scan = URLS.sub("", text)
+    for match in SCRIPTS.finditer(scan):
+        check("script", match.group(0), path)
+    for match in WORKFLOWS.finditer(scan):
+        check("workflow", match.group(0), path)
+    for match in LINKS.finditer(text):
+        target = match.group(1)
+        if (
+            target == ""
+            or target.startswith("#")
+            or target.startswith("http://")
+            or target.startswith("https://")
+            or target.startswith("mailto:")
+            or "<" in target
+            or "{{" in target
+        ):
+            continue
+        check("link", target.split("#")[0], path)
+
+if failures:
+    for failure in failures:
+        print("FAIL %s" % failure, file=sys.stderr)
+    print(
+        "check-doc-references: %d phantom reference(s)" % len(failures),
+        file=sys.stderr,
+    )
+    sys.exit(1)
+
+print(
+    "check-doc-references: ok (%d references across %d files)"
+    % (len(checked), len(files))
+)
