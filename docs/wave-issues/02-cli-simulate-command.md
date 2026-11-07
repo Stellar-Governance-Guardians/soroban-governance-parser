@@ -1,6 +1,5 @@
 # Draft Wave issue — `sgp simulate`: wire the dry-run parser to the CLI
 
-**Suggested labels:** `area:cli`, `complexity:medium` · **Complexity:** Medium (150 pts)
 
 ## Summary
 

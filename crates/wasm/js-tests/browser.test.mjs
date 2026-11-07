@@ -60,12 +60,14 @@ const HARNESS = `<!doctype html><meta charset="utf-8">
 import init, {
   script3_state_from_chain, script3_tally_from_chain, evaluate_tally,
   decode_scval_base64, classify_risk, script3_decode_proposal,
+  identify_governor, matches_event, normalize_event, decode_call,
 } from './sgp_parser_wasm.js';
 try {
   await init();
   window.wasm = {
     script3_state_from_chain, script3_tally_from_chain, evaluate_tally,
     decode_scval_base64, classify_risk, script3_decode_proposal,
+    identify_governor, matches_event, normalize_event, decode_call,
   };
   window.__ready = true;
 } catch (e) {
@@ -158,6 +160,65 @@ try {
     await page.evaluate(() => window.wasm.classify_risk('transfer', true)),
   );
   check('classify_risk tier', risk.tier === 'critical', risk.tier);
+
+  // alpha.3 export surface: the same committed vote_cast vector as the Node
+  // suite, re-attributed to the registered governor contract id.
+  const governorId = await page.evaluate(() => window.wasm.identify_governor());
+  check('identify_governor', governorId === 'script3-soroban-governor', governorId);
+
+  const voteCast = await page.evaluate(
+    ([topic, id, voter]) =>
+      window.wasm.matches_event(
+        'CCKGJBCBBYNWCMSBPV67DFIG3OL72RLDKNGHWJQCR5NASAUHOQRNLEDX',
+        5035908,
+        'ddef35404ed2fbef74c1e2324af631398aed9949ff2c7586d56d7cb17bfbea38',
+        JSON.stringify([topic, id, voter]),
+        'AAAAEAAAAAEAAAACAAAAAwAAAAEAAAAJAAAAAAAAAAAAAAAAAA9CQA==',
+      ),
+    ['AAAADwAAAAl2b3RlX2Nhc3QAAAA=', 'AAAAAwAAAAE=', 'AAAAEgAAAAAAAAAAGAjYtOEbrkJZsPDJqVwqIg/Yz33P3732fRtY3s0mCAo='],
+  );
+  check('matches_event (full topic vector)', voteCast === true, String(voteCast));
+
+  const foreign = await page.evaluate(
+    ([topic, id, voter]) =>
+      window.wasm.matches_event(
+        'CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE',
+        5035908,
+        'x',
+        JSON.stringify([topic, id, voter]),
+        'AAAAEAAAAAEAAAACAAAAAwAAAAEAAAAJAAAAAAAAAAAAAAAAAA9CQA==',
+      ),
+    ['AAAADwAAAAl2b3RlX2Nhc3QAAAA=', 'AAAAAwAAAAE=', 'AAAAEgAAAAAAAAAAGAjYtOEbrkJZsPDJqVwqIg/Yz33P3732fRtY3s0mCAo='],
+  );
+  check('matches_event refuses a foreign contract', foreign === false, String(foreign));
+
+  const normalized = JSON.parse(
+    await page.evaluate(
+      ([topic, id, voter]) =>
+        window.wasm.normalize_event(
+          'CCKGJBCBBYNWCMSBPV67DFIG3OL72RLDKNGHWJQCR5NASAUHOQRNLEDX',
+          5035908,
+          'ddef35404ed2fbef74c1e2324af631398aed9949ff2c7586d56d7cb17bfbea38',
+          JSON.stringify([topic, id, voter]),
+          'AAAAEAAAAAEAAAACAAAAAwAAAAEAAAAJAAAAAAAAAAAAAAAAAA9CQA==',
+        ),
+      ['AAAADwAAAAl2b3RlX2Nhc3QAAAA=', 'AAAAAwAAAAE=', 'AAAAEgAAAAAAAAAAGAjYtOEbrkJZsPDJqVwqIg/Yz33P3732fRtY3s0mCAo='],
+    ),
+  );
+  check('normalize_event amount', normalized.payload.amount === '1000000', normalized.payload.amount);
+  check('normalize_event decoding', normalized.decoding === 'verified', normalized.decoding);
+
+  const call = JSON.parse(
+    await page.evaluate(() =>
+      window.wasm.decode_call(
+        'CCKGJBCBBYNWCMSBPV67DFIG3OL72RLDKNGHWJQCR5NASAUHOQRNLEDX',
+        'vote',
+        JSON.stringify(['AAAAAwAAAAE=']),
+      ),
+    ),
+  );
+  check('decode_call keeps contract id', call.contract_id.startsWith('CCKGJBCB'), call.contract_id);
+  check('decode_call spec-less is positional', call.decoding === 'unverified' && call.arguments[0] === 1, JSON.stringify(call.arguments));
 } finally {
   await browser.close();
   server.close();
