@@ -1,6 +1,5 @@
 # Draft Wave issue — rent-estimate research for dry-run
 
-**Suggested labels:** `area:research`, `area:simulate`, `complexity:high` · **Complexity:** High (200 pts)
 
 ## Summary
 

@@ -1,6 +1,5 @@
 # Draft Wave issue — fuzz targets and a corpus grown from committed fixtures
 
-**Suggested labels:** `area:hardening`, `complexity:medium`, `good-first-issue` · **Complexity:** Medium (150 pts)
 
 ## Summary
 

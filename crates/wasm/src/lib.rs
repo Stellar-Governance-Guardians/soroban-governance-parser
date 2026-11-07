@@ -133,167 +133,16 @@ pub fn evaluate_tally(
     serde_json::to_string(&outcome).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
-// --- Governor adapter exports for browser use ---
+// The alpha.1 `governor_*` convenience family was removed in the alpha.3 line:
+// it read only topic[0], ignored the topic count, dropped the contract id on
+// call decode, and two of its members carried no #[wasm_bindgen] attribute at
+// all. Exactly one `matches_event` contract remains (the full topic vector,
+// exported below), and every documented export is reachable from JavaScript.
 
-/// Identify the governor adapter used by this WASM build.
-/// Returns the adapter name (e.g. "script3") so downstream code can
-/// reason about which governor is active.
-#[wasm_bindgen]
-pub fn governor_identify() -> String {
-    let adapter = Script3Adapter;
-    adapter.name().to_owned()
-}
-
-/// Check whether a governance event belongs to this governor.
-///
-/// This function uses the same logic as `Script3Adapter::matches_event`:
-/// - The event must come from the governor contract (CA contract ID)
-/// - topic[0] must be a known Script3 event symbol with matching arity
-/// - If the symbol or arity doesn't match, returns `false` (never guesses),
-///   so the browser pipeline falls back to `unverified` decoding.
-///
-/// Parameters:
-/// - `contract_id`: the governor contract identifier
-/// - `ledger`: the ledger number
-/// - `topic0_b64`: base64-encoded topic[0] ScVal (the event symbol)
-/// - `topic_count`: the number of topics in the event
-/// - `value_b64`: base64-encoded value ScVal
-#[wasm_bindgen]
-pub fn governor_matches_event(
-    contract_id: &str,
-    ledger: u32,
-    topic0_b64: &str,
-    _topic_count: u32,
-    value_b64: &str,
-) -> bool {
-    // Decode topic[0] from base64 XDR - must be a Symbol
-    let scval_topic0: ScVal = match ScVal::from_xdr_base64(topic0_b64, Limits::none()) {
-        Ok(val) => val,
-        Err(_) => return false,
-    };
-    // Decode value from base64 XDR
-    let scval_value: ScVal = match ScVal::from_xdr_base64(value_b64, Limits::none()) {
-        Ok(val) => val,
-        Err(_) => return false,
-    };
-
-    // Construct RawEvent with topic[0] as the only topic
-    let raw_event = RawEvent {
-        contract_id,
-        ledger,
-        tx_hash: "",
-        topics: std::slice::from_ref(&scval_topic0),
-        value: &scval_value,
-    };
-
-    let adapter = Script3Adapter;
-    adapter.matches_event(&raw_event)
-}
-
-/// Normalize a matched governance event. Fail-closed: if the payload does not
-/// match the verified shape, return an explicit error — never a partial or
-/// defaulted decode. This is the same logic as the Script3Adapter::normalize_event
-/// but exposed to the browser so pages can render the exact failure reason.
-///
-/// The event is specified with topic[0] as the event symbol (base64 XDR),
-/// the full topic count, and the value (base64 XDR). This matches the logic
-/// of Script3Adapter::normalize_event which fail-closures on unexpected payload
-/// shapes and returns explicit AdapterError variants.
-pub fn governor_normalize_event(
-    contract_id: &str,
-    ledger: u32,
-    topic0_b64: &str,
-    _topic_count: u32,
-    value_b64: &str,
-) -> Result<String, JsValue> {
-    // Decode topic[0] from base64 XDR - must be a Symbol
-    let scval_topic0: ScVal = match ScVal::from_xdr_base64(topic0_b64, Limits::none()) {
-        Ok(val) => val,
-        Err(e) => return Err(JsValue::from_str(&format!("invalid topic0: {e}"))),
-    };
-    // Decode value from base64 XDR
-    let scval_value: ScVal = match ScVal::from_xdr_base64(value_b64, Limits::none()) {
-        Ok(val) => val,
-        Err(e) => return Err(JsValue::from_str(&format!("invalid value: {e}"))),
-    };
-
-    // Construct RawEvent with topic[0] as the only topic
-    let raw_event = RawEvent {
-        contract_id,
-        ledger,
-        tx_hash: "",
-        topics: std::slice::from_ref(&scval_topic0),
-        value: &scval_value,
-    };
-
-    let adapter = Script3Adapter;
-    match adapter.normalize_event(&raw_event) {
-        Ok(norm) => serde_json::to_string(&norm).map_err(|e| JsValue::from_str(&e.to_string())),
-        Err(e) => Err(JsValue::from_str(&format!("normalization error: {e}"))),
-    }
-}
-
-/// Decode a proposal's contract call into a `DecodedCall` shape. Without the
-/// contract spec, args are returned positional with `decoding: Unverified`
-/// (charter rule 2: never invent names). With the spec, named arguments are
-/// used when available.
-///
-/// The call is specified with args as a JSON string (array of base64 XDR ScVal
-/// values) and the function name.
-pub fn governor_decode_call(
-    function_name: &str,
-    args_json: &str,
-    spec_json: &str,
-) -> Result<String, JsValue> {
-    // Parse args from JSON array
-    let args_value: serde_json::Value = match serde_json::from_str(args_json) {
-        Ok(v) => v,
-        Err(e) => return Err(JsValue::from_str(&format!("invalid args JSON: {e}"))),
-    };
-    let scval_args: Vec<ScVal> = match args_value {
-        serde_json::Value::Array(arr) => {
-            let mut result = Vec::new();
-            for v in arr {
-                if let Some(s) = v.as_str() {
-                    match ScVal::from_xdr_base64(s, Limits::none()) {
-                        Ok(scval) => result.push(scval),
-                        Err(_) => return Err(JsValue::from_str("invalid arg base64")),
-                    }
-                } else {
-                    return Err(JsValue::from_str("each arg must be a base64 string"));
-                }
-            }
-            result
-        }
-        _ => return Err(JsValue::from_str("args must be a JSON array")),
-    };
-
-    // Parse the contract spec from JSON
-    let spec: soroban_governance_core::spec::ContractSpec = match serde_json::from_str(spec_json) {
-        Ok(s) => s,
-        Err(e) => return Err(JsValue::from_str(&format!("invalid spec: {e}"))),
-    };
-
-    // Construct RawCall
-    let raw_call = RawCall {
-        contract_id: "",
-        function_name,
-        args: &scval_args,
-    };
-
-    let adapter = Script3Adapter;
-    match adapter.decode_call(&raw_call, Some(&spec)) {
-        Ok(decoded) => {
-            serde_json::to_string(&decoded).map_err(|e| JsValue::from_str(&e.to_string()))
-        }
-        Err(e) => Err(JsValue::from_str(&format!("decode error: {e}"))),
-    }
-}
-
-// Stable JSON-in/JSON-out adapter surface.  The older convenience functions
-// above are retained for compatibility with alpha.1 consumers; these exports
-// carry the complete topic vector and transaction hash required by the
-// governance-v1 NormalizedEvent shape.
+// Stable JSON-in/JSON-out adapter surface. These exports carry the complete
+// topic vector and transaction hash required by the governance-v1
+// NormalizedEvent shape, and are the only event-matching contract in the
+// package (there is no topic[0]-only variant).
 
 fn decode_scvals_json(json: &str, label: &str) -> Result<Vec<ScVal>, JsValue> {
     let values: Vec<String> = serde_json::from_str(json).map_err(|e| {
@@ -312,7 +161,7 @@ fn decode_scvals_json(json: &str, label: &str) -> Result<Vec<ScVal>, JsValue> {
 
 #[wasm_bindgen(js_name = identify_governor)]
 pub fn identify_governor() -> String {
-    governor_identify()
+    Script3Adapter.name().to_owned()
 }
 
 #[wasm_bindgen(js_name = matches_event)]

@@ -41,6 +41,26 @@ Release notes:
 
 ## Unreleased
 
+### alpha.3 line — export-surface break (no release yet)
+
+- **Breaking, alpha-line only:** the `governor_identify`,
+  `governor_matches_event`, `governor_normalize_event` and
+  `governor_decode_call` exports are removed. They read only `topic[0]`, ignored
+  the topic count, dropped the contract id on call decode, and two of the four
+  carried no `#[wasm_bindgen]` attribute. Use `identify_governor`,
+  `matches_event`, `normalize_event` and `decode_call`, which take the complete
+  topic vector and preserve the contract id.
+- Exactly one `matches_event` contract remains: full topic vector plus value,
+  `false` for a foreign contract or wrong topic shape, an explicit error for
+  malformed XDR.
+- The Node and headless-browser suites now cover `identify_governor`,
+  `matches_event` (match, foreign contract, topic-count mismatch, wrong topic
+  shape, malformed XDR) and `normalize_event` (verified decode plus a matched
+  event with an unexpected payload shape), and `decode_call` with and without a
+  contract spec.
+- No asset has been published for this line yet: `releases/parser-wasm.lock.json`
+  still pins `v0.1.0-alpha.2`.
+
 - `v0.1.0-alpha.2`: adapter event surface (`matches_event` / `identify`,
   `normalize_event` with the `unverified` fallback, `decode_call`) and the
   simulation request/response surface.
