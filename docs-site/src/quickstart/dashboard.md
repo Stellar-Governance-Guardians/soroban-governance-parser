@@ -11,7 +11,8 @@ npm ci
 npm run dev     # http://localhost:3000
 ```
 
-The `predev`/`prebuild`/`pretest:unit` hooks run `scripts/unpack-wasm.mjs`,
+The dashboard's `predev`/`prebuild`/`pretest:unit` hooks run its unpack step
+([unpack-wasm.mjs](https://github.com/Stellar-Governance-Guardians/delegate-portal-dashboard/blob/main/scripts/unpack-wasm.mjs)),
 which verifies the vendored parser WASM tarball against `parser.lock` and
 unpacks it into `generated/wasm/`. No network access is needed.
 

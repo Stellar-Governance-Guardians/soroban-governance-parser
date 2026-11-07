@@ -62,7 +62,7 @@ depends on and verifies them before use:
 
 | Consumer | Artifact | Pin file | Checked by |
 |---|---|---|---|
-| indexer | parser WASM release asset | `parser.lock` | `node scripts/check-pins.mjs` (offline, every PR) |
+| indexer | parser WASM release asset | `parser.lock` | the indexer's pin check (offline, every PR) |
 | indexer | `governance-v1.graphql` | `schema.lock` | same |
 | indexer | `deployments.json` | `registry.lock` | same |
 | dashboard | parser WASM release asset | `parser.lock` | `npm run check:pins` (offline, every PR) |

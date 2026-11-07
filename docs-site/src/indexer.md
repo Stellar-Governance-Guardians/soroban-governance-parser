@@ -69,7 +69,7 @@ cursor does not advance past data that was not stored.
 | I4 GraphQL (Yoga) implementing the vendored SDL exactly | initial health and event connection implemented; proposal/impact/delegate fields remain planned |
 | I5 reconciliation of SQL tallies against on-chain reads | not built; drift checks remain planned |
 | I6 Docker/compose deploy recipe and a live instance | not built |
-| I7 `scripts/prove-indexer` clean-clone proof | not built |
+| I7 clean-clone [prove script](https://github.com/Stellar-Governance-Guardians/governance-event-indexer/blob/main/scripts/prove-indexer) | built; asserts GraphQL values against the committed fixture replay, never yet run against a live indexer |
 
 Decoding governor events in TypeScript would put governor logic outside the
 parser's `GovernorAdapter` and break the project's rule that governor logic
