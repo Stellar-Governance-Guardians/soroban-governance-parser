@@ -1,6 +1,5 @@
 # Draft Wave issue — risk rules for token approvals / caller identity
 
-**Suggested labels:** `area:risk`, `complexity:medium` · **Complexity:** Medium (150 pts)
 
 ## Summary
 

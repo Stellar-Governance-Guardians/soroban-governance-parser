@@ -9,7 +9,6 @@ planned** banner. Where a gap blocks a milestone, the blocker is named.
 | Limitation | Detail |
 |---|---|
 | OpenZeppelin adapter not implemented | Research, committed test contracts and fixtures exist; no adapter decodes OZ proposals or events. `claims.json` asserts this state (`oz-adapter-not-implemented`). |
-| No WASM event surface | `matches_event`, `normalize_event` and `decode_call` exist in Rust behind `GovernorAdapter` but are not exported. Planned for `v0.1.0-alpha.2`. |
 | No CLI `simulate` command | The dry-run model is exercised by offline tests against committed captures; an operator cannot run it from `sgp` yet. |
 | Rent is not modelled | The committed `simulateTransaction` captures contain no rent figure; the field is omitted rather than estimated from an assumption. |
 | Dry-run results are estimates | `estimate: true` and `simulatedAtLedger` are mandatory. A simulation runs against the current ledger, not the future execution ledger. |

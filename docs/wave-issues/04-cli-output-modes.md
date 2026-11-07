@@ -1,6 +1,5 @@
 # Draft Wave issue — `sgp` output modes (`--json` / table)
 
-**Suggested labels:** `area:cli`, `complexity:trivial`, `good-first-issue` · **Complexity:** Trivial (100 pts)
 
 ## Summary
 

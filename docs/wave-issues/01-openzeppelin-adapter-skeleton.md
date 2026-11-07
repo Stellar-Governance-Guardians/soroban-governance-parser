@@ -1,6 +1,5 @@
 # Draft Wave issue — OpenZeppelin governor adapter (skeleton + fail-closed decode)
 
-**Suggested labels:** `area:adapter`, `complexity:high` · **Complexity:** High (200 pts)
 
 ## Summary
 
