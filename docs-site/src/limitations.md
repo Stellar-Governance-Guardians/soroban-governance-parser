@@ -25,7 +25,7 @@ planned** banner. Where a gap blocks a milestone, the blocker is named.
 | No health surface | `ingest_gaps` rows are written and queryable, but there is no `/health` that fails on open gaps; it arrives with I5. |
 | No reconciliation | SQL tallies have not been compared against on-chain reads (I5). |
 | No deploy, no soak | No Docker/compose recipe (I6) and no 72-hour run. Nothing has been deployed. |
-| No clean-clone prove | `scripts/prove-indexer` does not exist (I7). |
+| Indexer prove is fixture-only | The indexer's clean-clone proof (I7) replays committed fixtures and asserts the GraphQL values; it has not been run against a live indexer or a live ledger. |
 | Integration tests need Postgres | `npm test` fails loudly without `DATABASE_URL` instead of skipping; CI provides a service container. |
 | Testnet resets | The public testnet is reset periodically; pinned artifacts and contract ids can become unreachable. Health and gap reporting are designed to make that visible. |
 
