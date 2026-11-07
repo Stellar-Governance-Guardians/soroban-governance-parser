@@ -1,6 +1,5 @@
 # Draft Wave issue — Soroban custom-type pretty-printers
 
-**Suggested labels:** `area:decode`, `complexity:medium` · **Complexity:** Medium (150 pts)
 
 ## Summary
 

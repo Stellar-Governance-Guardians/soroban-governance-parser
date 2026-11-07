@@ -1,6 +1,5 @@
 # Draft Wave issue — translate the README introduction (good first issue)
 
-**Suggested labels:** `area:docs`, `complexity:trivial`, `good-first-issue` · **Complexity:** Trivial (100 pts)
 
 ## Summary
 
