@@ -188,11 +188,13 @@ test('normalize_event decodes a matched vote_cast from captured XDR', () => {
   assert.equal(event.contract_id, GOVERNOR);
   assert.deepEqual(event.payload, {
     proposal_id: 1,
-    voter: event.payload.voter,
+    // Derived from the topic XDR, not from this implementation: the third
+    // topic is SCV_ADDRESS/account/ed25519 + the 32-byte key, StrKey-encoded.
+    // See js-tests/expected-values.md for the bytes and the encoding steps.
+    voter: 'GAMARWFU4EN24QSZWDYMTKK4FIRA7WGPPXH57PPWPUNVRXWNEYEAUP3C',
     support: 1,
     amount: '1000000',
   });
-  assert.match(event.payload.voter, /^G[A-Z2-7]{55}$/);
 });
 
 test('normalize_event refuses a matched event with an unexpected payload shape', () => {
