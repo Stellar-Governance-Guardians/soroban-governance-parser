@@ -161,8 +161,10 @@ try {
   );
   check('classify_risk tier', risk.tier === 'critical', risk.tier);
 
-  // alpha.3 export surface: the same committed vote_cast vector as the Node
-  // suite, re-attributed to the registered governor contract id.
+  // alpha.3 export surface: the same real seed-v2 vote_cast as the Node suite
+  // (0066-getTransaction-final-s3-vote-...), re-attributed to the registered
+  // governor contract id. The Phase-1 vector encodes the amount as U128, which
+  // the adapter refuses, so it cannot serve as a positive case.
   const governorId = await page.evaluate(() => window.wasm.identify_governor());
   check('identify_governor', governorId === 'script3-soroban-governor', governorId);
 
@@ -173,9 +175,9 @@ try {
         5035908,
         'ddef35404ed2fbef74c1e2324af631398aed9949ff2c7586d56d7cb17bfbea38',
         JSON.stringify([topic, id, voter]),
-        'AAAAEAAAAAEAAAACAAAAAwAAAAEAAAAJAAAAAAAAAAAAAAAAAA9CQA==',
+        'AAAAEAAAAAEAAAACAAAAAwAAAAEAAAAKAAAAAAAAAAAAAAK6fe8wAA==',
       ),
-    ['AAAADwAAAAl2b3RlX2Nhc3QAAAA=', 'AAAAAwAAAAE=', 'AAAAEgAAAAAAAAAAGAjYtOEbrkJZsPDJqVwqIg/Yz33P3732fRtY3s0mCAo='],
+    ['AAAADwAAAAl2b3RlX2Nhc3QAAAA=', 'AAAAAwAAAAA=', 'AAAAEgAAAAAAAAAAzT8nsj+8SDy+0Q+IpClijkUvvaZ8oVUmL8Vs4A=='],
   );
   check('matches_event (full topic vector)', voteCast === true, String(voteCast));
 
@@ -186,9 +188,9 @@ try {
         5035908,
         'x',
         JSON.stringify([topic, id, voter]),
-        'AAAAEAAAAAEAAAACAAAAAwAAAAEAAAAJAAAAAAAAAAAAAAAAAA9CQA==',
+        'AAAAEAAAAAEAAAACAAAAAwAAAAEAAAAKAAAAAAAAAAAAAAK6fe8wAA==',
       ),
-    ['AAAADwAAAAl2b3RlX2Nhc3QAAAA=', 'AAAAAwAAAAE=', 'AAAAEgAAAAAAAAAAGAjYtOEbrkJZsPDJqVwqIg/Yz33P3732fRtY3s0mCAo='],
+    ['AAAADwAAAAl2b3RlX2Nhc3QAAAA=', 'AAAAAwAAAAA=', 'AAAAEgAAAAAAAAAAzT8nsj+8SDy+0Q+IpClijkUvvaZ8oVUmL8Vs4A=='],
   );
   check('matches_event refuses a foreign contract', foreign === false, String(foreign));
 
@@ -200,12 +202,12 @@ try {
           5035908,
           'ddef35404ed2fbef74c1e2324af631398aed9949ff2c7586d56d7cb17bfbea38',
           JSON.stringify([topic, id, voter]),
-          'AAAAEAAAAAEAAAACAAAAAwAAAAEAAAAJAAAAAAAAAAAAAAAAAA9CQA==',
+          'AAAAEAAAAAEAAAACAAAAAwAAAAEAAAAKAAAAAAAAAAAAAAK6fe8wAA==',
         ),
-      ['AAAADwAAAAl2b3RlX2Nhc3QAAAA=', 'AAAAAwAAAAE=', 'AAAAEgAAAAAAAAAAGAjYtOEbrkJZsPDJqVwqIg/Yz33P3732fRtY3s0mCAo='],
+      ['AAAADwAAAAl2b3RlX2Nhc3QAAAA=', 'AAAAAwAAAAA=', 'AAAAEgAAAAAAAAAAzT8nsj+8SDy+0Q+IpClijkUvvaZ8oVUmL8Vs4A=='],
     ),
   );
-  check('normalize_event amount', normalized.payload.amount === '1000000', normalized.payload.amount);
+  check('normalize_event amount', normalized.payload.amount === '3000000000000', normalized.payload.amount);
   check('normalize_event decoding', normalized.decoding === 'verified', normalized.decoding);
 
   const call = JSON.parse(
