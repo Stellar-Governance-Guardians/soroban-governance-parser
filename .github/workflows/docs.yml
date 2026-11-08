@@ -80,7 +80,7 @@ jobs:
       - name: docs claims (offline)
         working-directory: docs-site
         # Failure tail becomes an annotation (no token needed to read it).
-        run: ../scripts/ci-report "docs claims (offline)" -- python3 scripts/check-docs-claims.py
+        run: bash ../scripts/ci-report "docs claims (offline)" -- python3 scripts/check-docs-claims.py
 
       - name: build the book
         working-directory: docs-site
