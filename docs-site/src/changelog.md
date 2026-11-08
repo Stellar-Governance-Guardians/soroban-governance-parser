@@ -43,9 +43,9 @@ Release notes:
 
 ### alpha.3 line — export-surface break (no release yet)
 
-- **Breaking, alpha-line only:** the `governor_identify`,
+- **Breaking change on the alpha line:** the `governor_identify`,
   `governor_matches_event`, `governor_normalize_event` and
-  `governor_decode_call` exports are removed. They read only `topic[0]`, ignored
+  `governor_decode_call` exports are removed. They read just `topic[0]`, ignored
   the topic count, dropped the contract id on call decode, and two of the four
   carried no `#[wasm_bindgen]` attribute. Use `identify_governor`,
   `matches_event`, `normalize_event` and `decode_call`, which take the complete
