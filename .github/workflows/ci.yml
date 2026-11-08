@@ -44,7 +44,9 @@ jobs:
       - name: build nodejs target
         run: wasm-pack build crates/wasm --target nodejs --out-dir pkg/nodejs --out-name sgp_parser_wasm
       - name: Node smoke test of the built artifact
-        run: node --test crates/wasm/js-tests/node.test.mjs
+        # The wrapper preserves the exit status and, on failure, publishes the
+        # last 60 lines as a check-run annotation readable without a token.
+        run: bash scripts/ci-report "Node smoke test" -- node --test crates/wasm/js-tests/node.test.mjs
       - name: build web target
         run: wasm-pack build crates/wasm --target web --out-dir pkg/web --out-name sgp_parser_wasm
       - name: install Playwright Chromium
