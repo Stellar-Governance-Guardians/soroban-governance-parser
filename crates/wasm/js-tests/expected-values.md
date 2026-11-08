@@ -4,54 +4,52 @@
 copied from the implementation. This file records the derivation so a reviewer
 can redo it with the standard library alone (no installs, no network).
 
-## Inputs
+## Source of the vote_cast bytes
 
-| constant | source |
-|---|---|
-| `TOPIC_VOTE_CAST` | `tests/fixtures/phase1-fixture-events.json`, `vote_cast` topic[0] |
-| `TOPIC_PROPOSAL_ID_1` | same capture, `vote_cast` topic[1] (u32 `1`) |
-| `TOPIC_VOTER` | same capture, `vote_cast` topic[2] (address) |
-| `VALUE_VOTE_CAST` | same capture, `vote_cast` value |
-
-The capture was emitted by the fixture contract
-`CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE`. `matches_event`
-requires the registered governor id, so the tests re-attribute the same bytes to
+`tests/fixtures/seed-v2/rpc/0066-getTransaction-final-s3-vote-s1-transfer-executed-sgg-delegate-1.json`,
+`response.result.events.contractEventsXdr[0][0]` — a real testnet event emitted
+by contract `946484410e1b6132417d7df19506db97fd4563534c7b26028f5a0902877422d5`.
+The bytes are re-attributed to the registered governor id
 `CCKGJBCBBYNWCMSBPV67DFIG3OL72RLDKNGHWJQCR5NASAUHOQRNLEDX`
-(`GOVERNOR_CONTRACT_ID` in `crates/core/src/adapters/script3.rs`).
+(`GOVERNOR_CONTRACT_ID` in `crates/core/src/adapters/script3.rs`) because
+`matches_event` correctly refuses a non-governor contract id.
 
-## Value vector
+The Phase-1 vectors are still used only for the **negative** shape case: that
+capture encodes the vote amount as `SCV_U128` (`0x09`), which the Script3
+adapter refuses (`expected I128`), so it is not a valid positive vote_cast.
 
-`VALUE_VOTE_CAST` decodes, byte by byte, as:
+## Event layout (offset 52 onwards in the event XDR)
 
 ```
-00000010  ScVal::Vec
-00000001  present
-00000002  length 2
-00000003 00000001        element 0: ScVal::U32  = 1
-00000009 0000000000000000 00000000000f4240
-                          element 1: ScVal::I128 = 1_000_000
+topic[0]  0000000f 00000009 "vote_cast" 000000   SCV_SYMBOL
+topic[1]  00000003 00000000                     SCV_U32 = 0 (proposal 0)
+topic[2]  00000012 00000000 00000000 <32 bytes>  SCV_ADDRESS / account / ed25519
+value     00000010 00000001 00000002            SCV_VEC of 2
+          00000003 00000001                     support = 1
+          0000000a 0000000000000000 000002ba7def3000
+                                                SCV_I128 = 3_000_000_000_000
 ```
 
-Hence `support: 1` and `amount: "1000000"` (the parser serialises i128 as a
-decimal string).
+Base64 forms used by the test:
+
+```
+topic[0]  AAAADwAAAAl2b3RlX2Nhc3QAAAA=
+topic[1]  AAAAAwAAAAA=
+topic[2]  AAAAEgAAAAAAAAAAzT8nsj+8SDy+0Q+IpClijkUvvaZ8oVUmL8Vs4A==
+value     AAAAEAAAAAEAAAACAAAAAwAAAAEAAAAKAAAAAAAAAAAAAAK6fe8wAA==
+```
 
 ## Voter address
 
-`TOPIC_VOTER` is `ScVal::Address` (type `0x12`) followed by
-`SC_ADDRESS_TYPE_ACCOUNT` (`00000000`), the public-key discriminant
-(`00000000`, ed25519) and the 32-byte key:
+The address payload is the 32-byte key
+`cd3f27b23fbc483cbed10f88a429628e452fbda67ca155262fc56ce051623510`.
+StrKey encoding is base32 of `version byte (6 << 3) || key || crc16-xmodem(LE)`:
 
 ```
-1808d8b4e11bae4259b0f0c9a95c2a220fd8cf7dcfdfbdf67d1b58decd26080a
+GDGT6J5SH66EQPF62EHYRJBJMKHEKL55UZ6KCVJGF7CWZYCRMI2RA235
 ```
 
-StrKey encoding is base32 of `version byte (6 << 3) || key || crc16-xmodem(key, LE)`:
-
-```
-GAMARWFU4EN24QSZWDYMTKK4FIRA7WGPPXH57PPWPUNVRXWNEYEAUP3C
-```
-
-That literal replaces the previous self-referential expectation
+The literal replaces the previous self-referential expectation
 (`voter: event.payload.voter`), which could never disagree with the code.
 
 ## Payload-shape case
