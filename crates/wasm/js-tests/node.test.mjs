@@ -102,12 +102,14 @@ test('decode_proposal accepts an empty RiskContext (documented default)', () => 
 });
 
 // --- alpha.3 export surface -------------------------------------------------
-// Every case below drives the *built* package. Event XDR is the committed
-// Phase-1 capture `tests/fixtures/phase1-fixture-events.json` (vote_cast /
-// proposal_created vectors) re-attributed to the registered Script3 governor
-// contract, because `matches_event` correctly refuses a SAC contract id. The
-// expected values are derived from that raw XDR and from the pinned upstream
-// `contracts/governor/src/events.rs` layout, not from this implementation.
+// Every case below drives the *built* package. The vote_cast bytes are the real
+// event in `tests/fixtures/seed-v2/rpc/0066-getTransaction-final-s3-vote-...json`
+// (contract 9464...), re-attributed to the registered Script3 governor contract
+// because `matches_event` correctly refuses a non-governor contract id. The
+// malformed proposal_created vector stays synthetic on purpose: it exercises the
+// fail-closed arity check. Expected values are derived from the raw XDR and the
+// pinned upstream `contracts/governor/src/events.rs` layout, never from this
+// implementation (see js-tests/expected-values.md).
 
 const GOVERNOR = 'CCKGJBCBBYNWCMSBPV67DFIG3OL72RLDKNGHWJQCR5NASAUHOQRNLEDX';
 const SAC_CONTRACT = 'CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE';
@@ -115,11 +117,14 @@ const TX_HASH = 'ddef35404ed2fbef74c1e2324af631398aed9949ff2c7586d56d7cb17bfbea3
 const TOPIC_VOTE_CAST = 'AAAADwAAAAl2b3RlX2Nhc3QAAAA=';
 const TOPIC_PROPOSAL_CREATED = 'AAAADwAAABBwcm9wb3NhbF9jcmVhdGVk';
 const TOPIC_PROPOSAL_ID_1 = 'AAAAAwAAAAE=';
-const TOPIC_VOTER = 'AAAAEgAAAAAAAAAAGAjYtOEbrkJZsPDJqVwqIg/Yz33P3732fRtY3s0mCAo=';
-const VALUE_VOTE_CAST = 'AAAAEAAAAAEAAAACAAAAAwAAAAEAAAAJAAAAAAAAAAAAAAAAAA9CQA==';
+// Real vote_cast from 0066: topics [vote_cast, proposal 0, voter],
+// data [support 1, i128 3_000_000_000_000].
+const TOPIC_PROPOSAL_ID_0 = 'AAAAAwAAAAA=';
+const TOPIC_VOTER = 'AAAAEgAAAAAAAAAAzT8nsj+8SDy+0Q+IpClijkUvvaZ8oVUmL8Vs4A==';
+const VALUE_VOTE_CAST = 'AAAAEAAAAAEAAAACAAAAAwAAAAEAAAAKAAAAAAAAAAAAAAK6fe8wAA==';
 const VALUE_PROPOSAL_CREATED_2_ELEMENTS =
   'AAAAEAAAAAEAAAACAAAADgAAABFGdW5kIHBhcnNlciBhdWRpdAAAAAAAAAkAAAAAAAAAAAAAAAAAD0JA';
-const VOTE_CAST_TOPICS = JSON.stringify([TOPIC_VOTE_CAST, TOPIC_PROPOSAL_ID_1, TOPIC_VOTER]);
+const VOTE_CAST_TOPICS = JSON.stringify([TOPIC_VOTE_CAST, TOPIC_PROPOSAL_ID_0, TOPIC_VOTER]);
 
 test('identify_governor returns the compiled adapter id', () => {
   assert.equal(wasm.identify_governor(), 'script3-soroban-governor');
@@ -187,13 +192,13 @@ test('normalize_event decodes a matched vote_cast from captured XDR', () => {
   assert.equal(event.tx_hash, TX_HASH);
   assert.equal(event.contract_id, GOVERNOR);
   assert.deepEqual(event.payload, {
-    proposal_id: 1,
+    proposal_id: 0,
     // Derived from the topic XDR, not from this implementation: the third
     // topic is SCV_ADDRESS/account/ed25519 + the 32-byte key, StrKey-encoded.
     // See js-tests/expected-values.md for the bytes and the encoding steps.
-    voter: 'GAMARWFU4EN24QSZWDYMTKK4FIRA7WGPPXH57PPWPUNVRXWNEYEAUP3C',
+    voter: 'GDGT6J5SH66EQPF62EHYRJBJMKHEKL55UZ6KCVJGF7CWZYCRMI2RA235',
     support: 1,
-    amount: '1000000',
+    amount: '3000000000000',
   });
 });
 
