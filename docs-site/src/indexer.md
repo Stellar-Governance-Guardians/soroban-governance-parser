@@ -5,11 +5,11 @@ testnet RPC into Postgres — raw events are preserved and parser-backed event
 decodes are stored durably — and serves an initial read-only GraphQL API for
 `governance-v1` schema.
 
-> **Status: ingestion and event decode built (I0–I4). Proposal projections,
-> reconciliation (I5), deploy (I6) and the clean-clone prove script (I7) remain
-> planned.** The GraphQL endpoint serves health and normalized event records;
-> proposal, impact, and delegate fields remain unavailable until their tables
-> are implemented.
+> **Status: ingestion, durable event decode, the initial GraphQL surface, the
+> deploy recipe (I6) and the clean-clone prove script (I7) are built. Proposal,
+> vote and delegate projections and reconciliation (I5) remain planned.** The
+> GraphQL endpoint serves health and normalized event records; proposal, impact
+> and delegate fields remain unavailable until their tables are implemented.
 
 ## What is built
 
@@ -68,8 +68,8 @@ cursor does not advance past data that was not stored.
 | I3 decode through the pinned Script3 adapter | event-level decode persisted through the pinned WASM; proposal projections remain planned |
 | I4 GraphQL (Yoga) implementing the vendored SDL exactly | initial health and event connection implemented; proposal/impact/delegate fields remain planned |
 | I5 reconciliation of SQL tallies against on-chain reads | not built; drift checks remain planned |
-| I6 Docker/compose deploy recipe and a live instance | not built |
-| I7 clean-clone [prove script](https://github.com/Stellar-Governance-Guardians/governance-event-indexer/blob/main/scripts/prove-indexer) | built; asserts GraphQL values against the committed fixture replay, never yet run against a live indexer |
+| I6 Docker/compose deploy recipe | recipe and `deploy.yml` shipped; no instance has been deployed |
+| I7 clean-clone [prove script](https://github.com/Stellar-Governance-Guardians/governance-event-indexer/blob/d9a755c8cb4e02c4c4bf55ea1c9131a1e6ea6ca5/scripts/prove-indexer) | built; asserts GraphQL values against the committed fixture replay, never yet run against a live indexer |
 
 Decoding governor events in TypeScript would put governor logic outside the
 parser's `GovernorAdapter` and break the project's rule that governor logic
@@ -82,8 +82,8 @@ artifact; remaining work is the durable projection of proposal entities.
 |---|---|
 | `npm run check-pins` | vendored bytes match all three locks, offline |
 | `npm run typecheck`, `npm run lint` | strict TypeScript and ESLint pass |
-| `npm run test:unit` | 48 tests, no database, no network |
-| `npm run test:integration` | 11 tests: migrations from empty, windowing, idempotency, restart safety, gaps, replay |
+| `npm run test:unit` | 59 tests, no database, no network |
+| `npm run test:integration` | 18 tests: migrations from empty, windowing, idempotency, restart safety, gaps, replay |
 
 ## Provenance
 

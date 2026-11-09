@@ -19,11 +19,12 @@ Ordered by dependency, not by desire: each step unblocks the next.
 
 | Step | Depends on | Status |
 |---|---|---|
-| Dependency refresh (TLS/async advisories) | — | open |
+| Dependency refresh (TLS advisories) | — | done: rustls 0.23.46, rustls-webpki 0.103.16, webpki-root-certs 1.0.11 |
 | Parser WASM `v0.1.0-alpha.2`: adapter event surface + simulation request/response | dependency refresh | implemented |
 | Indexer I3: decode through the pinned adapter | alpha.2 asset | planned |
 | Indexer I4: GraphQL health and raw-event connection | I2 | implemented; decoded entities remain planned |
-| Indexer I5–I7: reconciliation, deploy recipe, clean-clone proof | I4 | planned |
+| Indexer I5: reconciliation | I4 | planned |
+| Indexer I6–I7: deploy recipe, clean-clone proof | I4 | shipped; no deployed instance yet |
 | Dashboard data pages, codegen, live-indexer e2e | I4 | planned |
 | OpenZeppelin adapter | fixtures already committed | planned, bounded effort |
 | 72-hour soak on a host | deploy recipe + a host | blocked on infrastructure |
