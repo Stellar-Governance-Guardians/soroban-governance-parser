@@ -1,11 +1,39 @@
 # Soroban Governance Parser
 
-[![CI](https://github.com/Stellar-Governance-Guardians/soroban-governance-parser/actions/workflows/ci.yml/badge.svg)](https://github.com/Stellar-Governance-Guardians/soroban-governance-parser/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+<p align="center">
+  <b>Decode Soroban governance without trusting a UI.</b><br>
+  Raw <code>ScVal</code> events, proposal calldata and dry-run simulation become human-readable, risk-classified JSON.
+</p>
+<p align="center">
+  <a href="https://github.com/Stellar-Governance-Guardians/soroban-governance-parser/actions/workflows/ci.yml"><img src="https://github.com/Stellar-Governance-Guardians/soroban-governance-parser/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license"></a>
+</p>
+<p align="center">
+  <a href="https://stellar-governance-guardians.github.io/soroban-governance-parser/"><strong>Documentation</strong></a> ·
+  <a href="#quick-start"><strong>Quick start</strong></a> ·
+  <a href="#verified-evidence-live-stellar-testnet-2026-10-05"><strong>Evidence</strong></a> ·
+  <a href="https://github.com/Stellar-Governance-Guardians/soroban-governance-parser/issues"><strong>Issues</strong></a>
+</p>
 
-Maintained by [Stellar Governance Guardians](https://github.com/Stellar-Governance-Guardians).
-Use [GitHub Issues](https://github.com/Stellar-Governance-Guardians/soroban-governance-parser/issues)
-for project discussion, bug reports, and contribution requests.
+> [!IMPORTANT]
+> **Testnet evidence, not a mainnet DAO.** Every claim in this repository is backed by a
+> committed raw RPC capture or an offline check; the live tier only reports and never gates a
+> merge. The OpenZeppelin adapter is not implemented, no mainnet deployment is claimed, and
+> dry-run output is an estimate, not an execution. Governor-specific decoding lives behind the
+> `GovernorAdapter` boundary.
+
+| | |
+|---|---|
+| What it is | Rust workspace: `ScVal` → human-readable, risk-classified JSON, governor-agnostic and fail-closed |
+| Crates | `crates/core` (sans-IO pipeline), `crates/wasm` (bindings), `crates/cli` (`sgp` operator CLI) |
+| Cross-repo contract | `schemas/governance-v1.graphql` + `schema-v1.json`, v1 additive-only |
+| WASM package | `sgg-parser-wasm-0.1.0-alpha.2.tgz` — GitHub pre-release with a reproducible sha256, not on npm or crates.io |
+| Evidence | 85 offline tests, captured testnet proposals 0–5, 259 raw RPC fixtures ([evidence table](#verified-evidence-live-stellar-testnet-2026-10-05)) |
+| Documentation | <https://stellar-governance-guardians.github.io/soroban-governance-parser/> |
+| Suite | [parser](https://github.com/Stellar-Governance-Guardians/soroban-governance-parser) → [indexer](https://github.com/Stellar-Governance-Guardians/governance-event-indexer) → [dashboard](https://github.com/Stellar-Governance-Guardians/delegate-portal-dashboard) |
+| License | [MIT](LICENSE) |
+
+## Overview
 
 Rust workspace that decodes raw Soroban `ScVal` governance payloads (events,
 proposal calldata, invocations) into human-readable, risk-classified JSON.
@@ -285,6 +313,25 @@ tests/fixtures/  live-captured testnet data + provenance README
 claims.json      machine-checkable claims ledger (charter rule 8)
 deployments.json deployment registry (real tx hashes and ledgers only)
 ```
+
+## 🤝 Community & maintainers
+
+Join the discussion and get support:
+
+- **Telegram**: [t.me/+OmwD30ukO0wzZWU0](https://t.me/+OmwD30ukO0wzZWU0)
+- **Discord**: [discord.gg/UPbr5FFjX](https://discord.gg/UPbr5FFjX)
+- **Issues and task work**: [soroban-governance-parser issues](https://github.com/Stellar-Governance-Guardians/soroban-governance-parser/issues)
+- **Documentation hub**: <https://stellar-governance-guardians.github.io/soroban-governance-parser/>
+- **The other repositories**: [governance-event-indexer](https://github.com/Stellar-Governance-Guardians/governance-event-indexer)
+  (indexing and GraphQL) and [delegate-portal-dashboard](https://github.com/Stellar-Governance-Guardians/delegate-portal-dashboard)
+  (read-only dashboard)
+
+| Maintainer | Role | Scope |
+|---|---|---|
+| [Stellar-Governance-Guardians](https://github.com/Stellar-Governance-Guardians) | Organization maintainers | Everything, via [CODEOWNERS](.github/CODEOWNERS) |
+
+The project is maintained in the organization namespace; personal accounts are not contact
+points for this repository.
 
 ## Contributing
 
