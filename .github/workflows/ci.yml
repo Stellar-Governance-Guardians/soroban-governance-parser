@@ -14,14 +14,14 @@ jobs:
     name: fmt / clippy-pedantic / test / wasm
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       # Toolchain pinned by rust-toolchain.toml (1.96.0)
-      - uses: dtolnay/rust-toolchain@master
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # master
         with:
           toolchain: "1.96.0"
           components: rustfmt, clippy
           targets: wasm32-unknown-unknown
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
       - run: cargo fmt --all --check
       - run: cargo clippy --workspace --all-targets -- -D warnings
       - run: cargo test --workspace
@@ -31,24 +31,48 @@ jobs:
   wasm-package:
     name: wasm-pack package + Node test
     runs-on: ubuntu-latest
+    env:
+      # Pinned tool + checksum of the release asset. The built bytes must not
+      # change: the release reproducibility check depends on them.
+      WASM_PACK_VERSION: "0.13.1"
+      WASM_PACK_SHA256: "c539d91ccab2591a7e975bcf82c82e1911b03335c80aa83d67ad25ed2ad06539"
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@master
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # master
         with:
           toolchain: "1.96.0"
           targets: wasm32-unknown-unknown
-      - uses: Swatinem/rust-cache@v2
-      - uses: jetli/wasm-pack-action@v0.4.0
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
+      # wasm-pack and the binaryen archive it downloads both come from the
+      # GitHub release CDN, which intermittently returns 504. Cache both so a
+      # rerun does not depend on the CDN, and retry if the cache is cold.
+      - name: cache wasm-pack and its binaryen archive
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
-          version: "v0.13.1"
+          path: |
+            ~/.wasm-pack
+            ~/.cache/.wasm-pack
+          key: wasm-pack-${{ env.WASM_PACK_VERSION }}-${{ runner.os }}
+      - name: install wasm-pack (pinned, checksum-verified, 3 attempts)
+        # No unverified fallback: a failed download or a checksum mismatch fails
+        # the job with an explicit ::error:: line. The token enables the REST
+        # asset endpoint when the release CDN returns 504.
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: bash scripts/ci/install-wasm-pack.sh
       - name: build nodejs target
-        run: wasm-pack build crates/wasm --target nodejs --out-dir pkg/nodejs --out-name sgp_parser_wasm
+        run: bash scripts/ci/retry 3 15 -- wasm-pack build crates/wasm --target nodejs --out-dir pkg/nodejs --out-name sgp_parser_wasm
+      - name: assert the Node artifact exists
+        run: |
+          for f in pkg/nodejs/sgp_parser_wasm.js pkg/nodejs/sgp_parser_wasm_bg.wasm; do
+            if [ ! -s "$f" ]; then echo "::error::missing build artifact: $f"; exit 1; fi
+          done
       - name: Node smoke test of the built artifact
         # The wrapper preserves the exit status and, on failure, publishes the
         # last 60 lines as a check-run annotation readable without a token.
         run: bash scripts/ci-report "Node smoke test" -- node --test crates/wasm/js-tests/node.test.mjs
       - name: build web target
-        run: wasm-pack build crates/wasm --target web --out-dir pkg/web --out-name sgp_parser_wasm
+        run: bash scripts/ci/retry 3 15 -- wasm-pack build crates/wasm --target web --out-dir pkg/web --out-name sgp_parser_wasm
       - name: install Playwright Chromium
         working-directory: crates/wasm/js-tests
         run: |
@@ -65,7 +89,13 @@ jobs:
     name: charter rules (fixtures, namespace, claims)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      # Negative tests for the CI helpers and the live-tier checker: each case
+      # asserts a failure path, so a helper that always succeeds breaks the PR.
+      - name: CI helper self-tests (negative cases)
+        run: bash scripts/ci/test-helpers.sh
+      - name: fixture-events checker self-test (offline)
+        run: bash scripts/check-fixture-events.sh --self-test
       # Rule 1: production crates never reference fixtures
       - name: no fixture imports in production code
         run: |
@@ -85,10 +115,10 @@ jobs:
             | sed 's|https://api\.github\.com/repos/|https://github.com/|' \
             | grep -vE '^https?://github\.com/(Stellar-Governance-Guardians|script3|OpenZeppelin|mermaid-js)$' || true)
           if [ -n "$bad" ]; then echo "FAIL: non-org GitHub URLs:"; echo "$bad"; exit 1; fi
-      - uses: dtolnay/rust-toolchain@master
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # master
         with:
           toolchain: "1.96.0"
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
       # Rule 8: claims ledger. PR gate runs OFFLINE claims only (process rule 2);
       # testnet claims live in the live tier (live-checks.yml, nightly + manual).
       - name: check-claims (offline)

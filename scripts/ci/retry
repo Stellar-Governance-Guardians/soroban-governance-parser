@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Run a command with a bounded number of attempts and fixed backoff.
+#
+#   scripts/ci/retry <attempts> <delay-seconds> -- <command> [args...]
+#
+# Used around `wasm-pack build`, whose first run may download binaryen from the
+# same GitHub release CDN that intermittently returns 504. The command's own
+# output is streamed unchanged. After the final failed attempt the wrapper
+# prints an ::error:: line and exits non-zero, so a persistent failure is loud
+# and can never look green.
+set -uo pipefail
+
+attempts="${1:?usage: retry <attempts> <delay-seconds> -- <command> [args...]}"
+shift
+delay="${1:?usage: retry <attempts> <delay-seconds> -- <command> [args...]}"
+shift
+if [ "${1:-}" != "--" ]; then
+  echo "retry: expected -- before the command, got '${1:-}'" >&2
+  exit 2
+fi
+shift
+if [ "$#" -eq 0 ]; then
+  echo "retry: no command given" >&2
+  exit 2
+fi
+
+for attempt in $(seq 1 "$attempts"); do
+  echo "retry: attempt ${attempt}/${attempts}: $*" >&2
+  if "$@"; then
+    exit 0
+  fi
+  if [ "$attempt" -lt "$attempts" ]; then
+    echo "retry: attempt ${attempt}/${attempts} failed; retrying in ${delay}s" >&2
+    sleep "$delay"
+  fi
+done
+
+echo "::error::command failed after ${attempts} attempts: $*" >&2
+exit 1
