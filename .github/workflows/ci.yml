@@ -103,6 +103,8 @@ jobs:
         run: bash scripts/ci/test-helpers.sh
       - name: fixture-events checker self-test (offline)
         run: bash scripts/check-fixture-events.sh --self-test
+      - name: TTL checker self-test (offline)
+        run: bash scripts/check-contract-ttls.sh --self-test
       # Rule 1: production crates never reference fixtures
       - name: no fixture imports in production code
         run: |
