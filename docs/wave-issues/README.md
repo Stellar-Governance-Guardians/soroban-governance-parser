@@ -1,10 +1,11 @@
-# Draft Drips Wave issues
+# Drips Wave issue preparation — parser
 
-Eight drafted issues for `soroban-governance-parser`.
+Eight drafted issues for `soroban-governance-parser`; six are recommended for
+the initial Wave application.
 
-**Open on GitHub only after the maintainer confirms.** The repository is not yet
+**Open on GitHub only after repository approval.** The repository is not yet
 approved for a Wave program, and issues in this organization are untagged:
-nothing here prescribes a label, a points value or a difficulty rating.
+nothing here prescribes a label, a points value, or a difficulty rating.
 
 | # | title | area |
 |---|---|---|
@@ -17,8 +18,15 @@ nothing here prescribes a label, a points value or a difficulty rating.
 | 07 | Rent-estimate research for dry-run | research |
 | 08 | Translate the README introduction | docs |
 
-Issue 02 is implemented locally; the draft records the acceptance criteria that
-were met.
+## Recommended first set
+
+Open 01, 03, 04, 05, 06, and 08 after approval. They are independently
+actionable with committed fixtures or no network dependency and have explicit
+acceptance criteria.
+
+Do not open 02 as new work: it is implemented locally and the draft records the
+acceptance criteria already met. Hold 07 for a later Wave because it is a
+higher-uncertainty research task and should not compete with the first set.
 
 ## Before opening
 

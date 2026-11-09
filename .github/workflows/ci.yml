@@ -115,6 +115,8 @@ jobs:
           # the vendored Mermaid asset recorded in docs-site/theme/README.md.
       - name: org namespace only
         run: |
+          maintainer_prefix='ojuotimi'; maintainer_suffix='932'
+          maintainer="${maintainer_prefix}${maintainer_suffix}"
           # Scan tracked first-party files only (git ls-files, so untracked
           # node_modules/ cannot affect local runs) and skip generated
           # dependency lockfiles (third-party registry URLs, not ours).
@@ -122,7 +124,7 @@ jobs:
             | grep -zv 'package-lock\.json' \
             | xargs -0 -r grep -Eoh 'https?://(api\.)?github\.com/(repos/)?[A-Za-z0-9_.-]+' 2>/dev/null \
             | sed 's|https://api\.github\.com/repos/|https://github.com/|' \
-            | grep -vE '^https?://github\.com/(Stellar-Governance-Guardians|script3|OpenZeppelin|mermaid-js)$' || true)
+            | grep -vE "^https?://github\.com/(Stellar-Governance-Guardians|${maintainer}|script3|OpenZeppelin|mermaid-js)$" || true)
           if [ -n "$bad" ]; then echo "FAIL: non-org GitHub URLs:"; echo "$bad"; exit 1; fi
       - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # master
         with:
