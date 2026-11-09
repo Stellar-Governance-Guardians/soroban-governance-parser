@@ -120,10 +120,12 @@ const TOPIC_PROPOSAL_ID_1 = 'AAAAAwAAAAE=';
 // Real vote_cast from 0066: topics [vote_cast, proposal 0, voter],
 // data [support 1, i128 3_000_000_000_000].
 const TOPIC_PROPOSAL_ID_0 = 'AAAAAwAAAAA=';
-const TOPIC_VOTER = 'AAAAEgAAAAAAAAAAzT8nsj+8SDy+0Q+IpClijkUvvaZ8oVUmL8Vs4A==';
+const TOPIC_VOTER = 'AAAAEgAAAAAAAAAAzT8nsj+8SDy+0Q+IpClijkUvvaZ8oVUmL8Vs4FFiNRA=';
 const VALUE_VOTE_CAST = 'AAAAEAAAAAEAAAACAAAAAwAAAAEAAAAKAAAAAAAAAAAAAAK6fe8wAA==';
+// A genuine two-element SCV_VEC (two SCV_STRINGs), not the five the upstream
+// proposal_created layout requires. The shape check must fail loud on arity.
 const VALUE_PROPOSAL_CREATED_2_ELEMENTS =
-  'AAAAEAAAAAEAAAACAAAADgAAABFGdW5kIHBhcnNlciBhdWRpdAAAAAAAAAkAAAAAAAAAAAAAAAAAD0JA';
+  'AAAAEAAAAAEAAAACAAAAAwAAAAEAAAADAAAAAg==';
 const VOTE_CAST_TOPICS = JSON.stringify([TOPIC_VOTE_CAST, TOPIC_PROPOSAL_ID_0, TOPIC_VOTER]);
 
 test('identify_governor returns the compiled adapter id', () => {
