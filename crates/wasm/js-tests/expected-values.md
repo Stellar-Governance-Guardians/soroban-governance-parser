@@ -35,7 +35,7 @@ Base64 forms used by the test:
 ```
 topic[0]  AAAADwAAAAl2b3RlX2Nhc3QAAAA=
 topic[1]  AAAAAwAAAAA=
-topic[2]  AAAAEgAAAAAAAAAAzT8nsj+8SDy+0Q+IpClijkUvvaZ8oVUmL8Vs4A==
+topic[2]  AAAAEgAAAAAAAAAAzT8nsj+8SDy+0Q+IpClijkUvvaZ8oVUmL8Vs4FFiNRA=
 value     AAAAEAAAAAEAAAACAAAAAwAAAAEAAAAKAAAAAAAAAAAAAAK6fe8wAA==
 ```
 
