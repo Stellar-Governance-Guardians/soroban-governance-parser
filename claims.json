@@ -192,14 +192,14 @@
       }
     },
     {
-      "id": "fixture-events-queryable",
-      "claim": "the phase 1a fixture governor's events are still queryable on testnet (contract alive and its events within retention)",
+      "id": "fixture-events-observable-or-pruned",
+      "claim": "the phase 1a fixture governor's events are still observable on testnet, or its fixture ledger is provably older than the RPC retention window, in which case the committed capture (tests/fixtures/phase1-fixture-events.json) is the record",
       "statedIn": [
         "README.md"
       ],
       "online": true,
       "check": {
-        "cmd": "curl -sS --max-time 60 -X POST https://soroban-testnet.stellar.org -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getEvents\",\"params\":{\"startLedger\":5035900,\"filters\":[{\"type\":\"contract\",\"contractIds\":[\"CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE\"]}],\"pagination\":{\"limit\":5}}}' | jq -e '.result.events | length > 0'"
+        "cmd": "bash scripts/check-fixture-events.sh"
       }
     },
     {
