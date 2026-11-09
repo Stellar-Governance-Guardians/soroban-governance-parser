@@ -64,7 +64,7 @@ jobs:
         run: bash scripts/ci/retry 3 15 -- wasm-pack build crates/wasm --target nodejs --out-dir pkg/nodejs --out-name sgp_parser_wasm
       - name: assert the Node artifact exists
         run: |
-          for f in pkg/nodejs/sgp_parser_wasm.js pkg/nodejs/sgp_parser_wasm_bg.wasm; do
+          for f in crates/wasm/pkg/nodejs/sgp_parser_wasm.js crates/wasm/pkg/nodejs/sgp_parser_wasm_bg.wasm; do
             if [ ! -s "$f" ]; then echo "::error::missing build artifact: $f"; exit 1; fi
           done
       - name: Node smoke test of the built artifact
