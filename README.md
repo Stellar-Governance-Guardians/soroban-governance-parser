@@ -328,10 +328,10 @@ Join the discussion and get support:
 
 | Maintainer | Role | Scope |
 |---|---|---|
-| [Stellar-Governance-Guardians](https://github.com/Stellar-Governance-Guardians) | Organization maintainers | Everything, via [CODEOWNERS](.github/CODEOWNERS) |
+| [ojuotimi932](https://github.com/ojuotimi932) | Project maintainer | Project direction and maintainer contact; code ownership remains via [CODEOWNERS](.github/CODEOWNERS) |
 
-The project is maintained in the organization namespace; personal accounts are not contact
-points for this repository.
+The repository is maintained in the `Stellar-Governance-Guardians` organization;
+`ojuotimi932` is the named maintainer contact for this project.
 
 ## Contributing
 
