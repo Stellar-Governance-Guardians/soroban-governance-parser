@@ -46,13 +46,14 @@ node crates/wasm/js-tests/browser.test.mjs
 ```
 
 The exported surface is listed on [WASM usage](../parser/wasm-usage.md). The
-current release is `v0.1.0-alpha.1` with sha256
-`7b2eb9420f0cf0582d079f9603beb1e8548e1c7bac165724688cbae5b9237ecd`; the release
+current release is `v0.1.0-alpha.2` with sha256
+`65193e43642f55abd083e2283aa5ed3caee5839c40a74c7b3f30398ea3ec0629`; the release
 lock file is `releases/parser-wasm.lock.json`.
 
 ## What is not wired
 
-- The CLI has no `simulate` command; the dry-run model is exercised by the
-  offline tests. See [Dry run](../parser/dry-run.md).
+- `sgp simulate` accepts a validated transaction envelope and emits an
+  estimate; it does not assemble proposal actions or estimate rent. See
+  [Dry run](../parser/dry-run.md).
 - The OpenZeppelin adapter is not implemented. See
   [OpenZeppelin adapter](../parser/openzeppelin-adapter.md).
