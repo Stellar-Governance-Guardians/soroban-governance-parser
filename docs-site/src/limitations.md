@@ -14,8 +14,8 @@ planned** banner. Where a gap blocks a milestone, the blocker is named.
 | Rent is not modelled | The committed `simulateTransaction` captures contain no rent figure; the field is omitted rather than estimated from an assumption. |
 | Dry-run results are estimates | `estimate: true` and `simulatedAtLedger` are mandatory. A simulation runs against the current ledger, not the future execution ledger. |
 | No mainnet DAO exercised | Fixtures come from testnet deployments listed in [Evidence](generated/evidence.md). |
-| Dependency advisories open | `cargo audit` currently reports advisories in transitive TLS/async crates (`rustls`, `rustls-webpki`, `webpki-root-certs`, an unsound `tokio` API warning). Not yet fixed; the nightly audit job is red until the lockfile is refreshed. |
-| Live-testnet claims can fail silently in CI | The nightly `live-checks` workflow currently fails at its online-claims step. Its logs have expired, so the failing claim is unidentified and must be re-run before any live result is quoted. |
+| TLS advisories fixed by patch update | `cargo audit` reported six advisories in `rustls` 0.23.45, `rustls-webpki` 0.103.15 and `webpki-root-certs` 1.0.9. Updated to 0.23.46, 0.103.16 and 1.0.11; the nightly audit job passes. One unsound-API warning (`tokio`, RUSTSEC-2026-0386) remains a warning with no reported patched release. |
+| Expired live fixtures need the deployer key | Six seed-v2 contracts deployed on 2026-10-08 answer with `liveUntilLedger: 0`. The live tier reports each one as a warning with the re-seed command; refreshing them needs the funded deployer account, which CI does not hold. The phase-1 fixture governor and the seed-v2 governor remain live. |
 
 ## Indexer
 
@@ -25,7 +25,7 @@ planned** banner. Where a gap blocks a milestone, the blocker is named.
 | GraphQL surface scope | `/graphql` exposes health and a raw-event connection; proposal, impact, and delegate fields remain unimplemented. |
 | Health surface is narrow | `/health` fails on open ingestion gaps, but reconciliation drift checks arrive with I5. |
 | No reconciliation | SQL tallies have not been compared against on-chain reads (I5). |
-| No deploy, no soak | No Docker/compose recipe (I6) and no 72-hour run. Nothing has been deployed. |
+| No deploy, no soak | The Docker/compose recipe and `deploy.yml` (I6) ship, but no instance has been deployed and no 72-hour run has happened. |
 | Indexer prove is fixture-only | The indexer's clean-clone proof (I7) replays committed fixtures and asserts the GraphQL values; it has not been run against a live indexer or a live ledger. |
 | Integration tests need Postgres | `npm test` fails loudly without `DATABASE_URL` instead of skipping; CI provides a service container. |
 | Testnet resets | The public testnet is reset periodically; pinned artifacts and contract ids can become unreachable. Health and gap reporting are designed to make that visible. |
