@@ -95,5 +95,43 @@ else
   pass "install-requires-version"
 fi
 
+# install-binaryen: seeds the wasm-pack cache from a verified local tarball
+# ---------------------------------------------------------------------------
+bdir="$tmp/binaryen-version_117"
+mkdir -p "$bdir/bin"
+cat > "$bdir/bin/wasm-opt" <<'EOS'
+#!/usr/bin/env bash
+echo "wasm-opt version 117"
+EOS
+chmod +x "$bdir/bin/wasm-opt"
+tar -czf "$tmp/binaryen-fake.tar.gz" -C "$tmp" binaryen-version_117
+bsha="$(sha256sum "$tmp/binaryen-fake.tar.gz" | cut -d' ' -f1)"
+
+if BINARYEN_URL="file://$tmp/binaryen-fake.tar.gz" \
+   BINARYEN_SHA256="$bsha" \
+   BINARYEN_CACHE_KEY="testkey" \
+   WASM_PACK_CACHE="$tmp/bcache-ok" \
+   bash "$here/install-binaryen.sh" >/dev/null 2>&1 \
+   && [ -x "$tmp/bcache-ok/wasm-opt-testkey/bin/wasm-opt" ]; then
+  pass "binaryen-seeds-cache"
+else
+  fail "binaryen-seeds-cache"
+fi
+
+# install-binaryen: checksum mismatch must fail loudly and seed nothing
+berr="$(BINARYEN_URL="file://$tmp/binaryen-fake.tar.gz" \
+        BINARYEN_SHA256="0000000000000000000000000000000000000000000000000000000000000000" \
+        BINARYEN_CACHE_KEY="testbad" \
+        WASM_PACK_CACHE="$tmp/bcache-bad" \
+        bash "$here/install-binaryen.sh" 2>&1)"
+bstatus=$?
+if [ "$bstatus" -ne 0 ] \
+   && [ ! -e "$tmp/bcache-bad/wasm-opt-testbad/bin/wasm-opt" ] \
+   && printf '%s' "$berr" | grep -q "sha256 mismatch"; then
+  pass "binaryen-rejects-checksum-mismatch"
+else
+  fail "binaryen-rejects-checksum-mismatch (status=$bstatus)"
+fi
+
 echo "helpers: $((cases - failures)) passed, ${failures} failed"
 [ "$failures" -eq 0 ]

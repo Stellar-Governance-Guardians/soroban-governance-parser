@@ -52,7 +52,7 @@ jobs:
           path: |
             ~/.wasm-pack
             ~/.cache/.wasm-pack
-          key: wasm-pack-${{ env.WASM_PACK_VERSION }}-${{ runner.os }}
+          key: wasm-pack-${{ env.WASM_PACK_VERSION }}-binaryen-117-${{ runner.os }}
       - name: install wasm-pack (pinned, checksum-verified, 3 attempts)
         # No unverified fallback: a failed download or a checksum mismatch fails
         # the job with an explicit ::error:: line. The token enables the REST
@@ -60,6 +60,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: bash scripts/ci/install-wasm-pack.sh
+      - name: seed binaryen for wasm-opt (pinned, checksum-verified)
+        # wasm-pack downloads binaryen without retries. Seeding its cache from a
+        # verified tarball keeps wasm-opt (and therefore the built bytes) exactly
+        # as the release had it, without depending on the release CDN.
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: bash scripts/ci/install-binaryen.sh
       - name: build nodejs target
         run: bash scripts/ci/retry 3 15 -- wasm-pack build crates/wasm --target nodejs --out-dir pkg/nodejs --out-name sgp_parser_wasm
       - name: assert the Node artifact exists
