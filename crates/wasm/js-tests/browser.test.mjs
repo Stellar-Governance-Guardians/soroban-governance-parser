@@ -177,7 +177,7 @@ try {
         JSON.stringify([topic, id, voter]),
         'AAAAEAAAAAEAAAACAAAAAwAAAAEAAAAKAAAAAAAAAAAAAAK6fe8wAA==',
       ),
-    ['AAAADwAAAAl2b3RlX2Nhc3QAAAA=', 'AAAAAwAAAAA=', 'AAAAEgAAAAAAAAAAzT8nsj+8SDy+0Q+IpClijkUvvaZ8oVUmL8Vs4A=='],
+    ['AAAADwAAAAl2b3RlX2Nhc3QAAAA=', 'AAAAAwAAAAA=', 'AAAAEgAAAAAAAAAAzT8nsj+8SDy+0Q+IpClijkUvvaZ8oVUmL8Vs4FFiNRA='],
   );
   check('matches_event (full topic vector)', voteCast === true, String(voteCast));
 
@@ -190,7 +190,7 @@ try {
         JSON.stringify([topic, id, voter]),
         'AAAAEAAAAAEAAAACAAAAAwAAAAEAAAAKAAAAAAAAAAAAAAK6fe8wAA==',
       ),
-    ['AAAADwAAAAl2b3RlX2Nhc3QAAAA=', 'AAAAAwAAAAA=', 'AAAAEgAAAAAAAAAAzT8nsj+8SDy+0Q+IpClijkUvvaZ8oVUmL8Vs4A=='],
+    ['AAAADwAAAAl2b3RlX2Nhc3QAAAA=', 'AAAAAwAAAAA=', 'AAAAEgAAAAAAAAAAzT8nsj+8SDy+0Q+IpClijkUvvaZ8oVUmL8Vs4FFiNRA='],
   );
   check('matches_event refuses a foreign contract', foreign === false, String(foreign));
 
@@ -204,7 +204,7 @@ try {
           JSON.stringify([topic, id, voter]),
           'AAAAEAAAAAEAAAACAAAAAwAAAAEAAAAKAAAAAAAAAAAAAAK6fe8wAA==',
         ),
-      ['AAAADwAAAAl2b3RlX2Nhc3QAAAA=', 'AAAAAwAAAAA=', 'AAAAEgAAAAAAAAAAzT8nsj+8SDy+0Q+IpClijkUvvaZ8oVUmL8Vs4A=='],
+      ['AAAADwAAAAl2b3RlX2Nhc3QAAAA=', 'AAAAAwAAAAA=', 'AAAAEgAAAAAAAAAAzT8nsj+8SDy+0Q+IpClijkUvvaZ8oVUmL8Vs4FFiNRA='],
     ),
   );
   check('normalize_event amount', normalized.payload.amount === '3000000000000', normalized.payload.amount);
