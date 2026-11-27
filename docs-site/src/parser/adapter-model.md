@@ -35,6 +35,6 @@ contextual rule projection — live in the same module.
 | Adapter | Status | Where |
 |---|---|---|
 | Script3 (`script3-soroban-governor`) | implemented | `crates/core/src/adapters/script3.rs` |
-| OpenZeppelin | not implemented; fixtures and research committed | `docs/adapters/openzeppelin.md` |
+| OpenZeppelin | implemented; state capture-verified, events source-verified | `docs/adapters/openzeppelin.md` |
 
 To add a governor, follow the [authoring guide](../adapter-authoring.md).

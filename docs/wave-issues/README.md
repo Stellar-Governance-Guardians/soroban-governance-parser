@@ -9,7 +9,7 @@ nothing here prescribes a label, a points value, or a difficulty rating.
 
 | # | title | area |
 |---|---|---|
-| 01 | OpenZeppelin governor adapter (skeleton + fail-closed decode) | adapter |
+| 01 | OpenZeppelin event capture + proposal-id recomputation | adapter |
 | 02 | `sgp simulate`: wire the dry-run parser to the CLI | cli |
 | 03 | Risk rules for token approvals / caller identity | risk |
 | 04 | `sgp` output modes (`--json` / table) | cli |

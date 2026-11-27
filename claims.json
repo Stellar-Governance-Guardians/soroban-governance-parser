@@ -62,13 +62,13 @@
     },
     {
       "id": "unit-test-count",
-      "claim": "at least 85 tests pass across the workspace (unit + differential + property + dry-run)",
+      "claim": "at least 96 tests pass across the workspace (unit + differential + property + dry-run)",
       "statedIn": [
         "README.md"
       ],
       "online": false,
       "check": {
-        "cmd": "n=$(cargo test --workspace 2>/dev/null | grep -oE 'ok\\. [0-9]+ passed' | grep -oE '[0-9]+' | awk '{s+=$1} END{print s+0}'); test \"$n\" -ge 85"
+        "cmd": "n=$(cargo test --workspace 2>/dev/null | grep -oE 'ok\\. [0-9]+ passed' | grep -oE '[0-9]+' | awk '{s+=$1} END{print s+0}'); test \"$n\" -ge 96"
       }
     },
     {
@@ -108,15 +108,16 @@
       }
     },
     {
-      "id": "oz-adapter-not-implemented",
-      "claim": "the OpenZeppelin adapter is not implemented yet, matching the README honest limitation",
+      "id": "openzeppelin-adapter-differential",
+      "claim": "the OpenZeppelin adapter decodes every committed proposal_state capture to its recorded state, both adapters are registered, and the deployed governor's embedded spec declares the adapter's event names (except the documented spec-shaken proposal_queued)",
       "statedIn": [
         "README.md",
-        "SPEC.md"
+        "SPEC.md",
+        "docs/adapters/openzeppelin.md"
       ],
       "online": false,
       "check": {
-        "cmd": "! test -e crates/core/src/adapters/openzeppelin.rs"
+        "cmd": "cargo test -p soroban-governance-core --test openzeppelin_differential --quiet"
       }
     },
     {
