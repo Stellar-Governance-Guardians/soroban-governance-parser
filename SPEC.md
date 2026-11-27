@@ -60,7 +60,16 @@ Claims in `claims.json` run in two tiers:
   real deployed contract, fail-closed demonstration on the non-WASM SAC contract.
 - CI: fmt, clippy pedantic, tests, wasm build, fixture-import check, claims check.
 
-## Phase 1b (partial, delivered)
+## Phase 1b (delivered)
+- **OpenZeppelin adapter** (`crates/core/src/adapters/openzeppelin.rs`) behind
+  `GovernorAdapter`: structural event matching for the pinned governor, map-form
+  event normalization (six event shapes; `vote_cast` orders voter before
+  proposal_id), `state_from_chain` for captured `proposal_state` reads, and
+  `proposal_from_created` for calldata projection into risk-classified calls.
+  The deployed governor's embedded spec declares the matched event names; the
+  `proposal_state` reads for `o1`–`o6` are differentially tested.
+- **Adapter registry** (`adapters::registry`) selects the first structurally
+  matching adapter; the WASM `matches_event`/`normalize_event` exports use it.
 - **Script3 adapter** (`crates/core/src/adapters/script3.rs`) behind
   `GovernorAdapter`: event identification (contract id + symbol + exact arity),
   `normalize_event`, `state_from_chain`, `tally_from_chain`, `decode_proposal`,
@@ -74,7 +83,8 @@ Claims in `claims.json` run in two tiers:
 - **Offline differential tests** against committed raw captures for proposals
   0–5 (`crates/core/tests/differential.rs`) plus `proptest` property tests
   (`crates/core/tests/proptests.rs`).
-- **wasm-bindgen surface** for Script3 decode/state/tally (`crates/wasm`).
+- **wasm-bindgen surface** for Script3 decode/state/tally and OpenZeppelin
+  proposal state (`crates/wasm`).
 
 ## Phase 2 (delivered)
 - **WASM package**: `wasm-bindgen` surface built for both `nodejs` and `web`
@@ -98,7 +108,8 @@ Claims in `claims.json` run in two tiers:
   `crates/core/tests/simulate.rs` over committed captures.
 
 ## Out of scope for phase 1a/1b/2/4 (delivered in later phases)
-- The **OpenZeppelin adapter** (bounded phase 3; fixtures already captured).
+- A **captured OpenZeppelin `getEvents` corpus** and proposal-id recomputation
+  from calldata (the adapter ships, but those two proofs do not exist yet).
 - A CLI `simulate` command (the parser is done; IO wiring is not).
 - Delegate metrics (indexer/dashboard phases).
 

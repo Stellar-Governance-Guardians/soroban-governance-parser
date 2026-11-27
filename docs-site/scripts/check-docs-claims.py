@@ -138,18 +138,18 @@ def main() -> int:
         f"{total} registered contracts rendered",
     )
 
-    # 7. Adapter list: Script3 implemented, OpenZeppelin not, matching claims.json.
+    # 7. Adapter list: both adapters implemented, matching claims.json.
     claims = json.loads(read("claims.json"))["claims"]
-    oz_claim = next((c for c in claims if c["id"] == "oz-adapter-not-implemented"), None)
+    oz_claim = next((c for c in claims if c["id"] == "openzeppelin-adapter-differential"), None)
     adapter_page = read("docs-site/src/parser/adapter-model.md")
     oz_page = read("docs-site/src/parser/openzeppelin-adapter.md")
     check(
         oz_claim is not None
-        and "not implemented" in adapter_page
-        and "Status: planned" in oz_page
+        and "| OpenZeppelin | implemented;" in adapter_page
+        and "Status: implemented" in oz_page
         and "| Script3 (`script3-soroban-governor`) | implemented |" in adapter_page,
         "adapter-list",
-        "Script3 implemented / OpenZeppelin planned, consistent with claims.json",
+        "Script3 and OpenZeppelin implemented, consistent with claims.json",
     )
 
     # 8. No external script, font or tracker in the book configuration.

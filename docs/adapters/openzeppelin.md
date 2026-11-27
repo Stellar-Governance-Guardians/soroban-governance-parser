@@ -1,7 +1,11 @@
 # Adapter notes: OpenZeppelin stellar-contracts Governor
 
-Status: **researched from source, adapter NOT yet implemented** (phase 2 deliverable).
-Everything below was read from the repository/docs on **2026-10-05**.
+Status: **adapter implemented** (`crates/core/src/adapters/openzeppelin.rs`) against the
+pinned source and the deployed governor's embedded spec. Proposal state is
+capture-verified; event payload layouts are source-verified because no
+`getEvents` capture exists for this governor yet. The research below was read
+from the repository/docs on **2026-10-05** and re-checked at the deployed pin
+`b40c5eaefe6a29f0030f00bd2d730b7a91cce330`.
 Repo: `github.com/OpenZeppelin/stellar-contracts` (created 2024-12-11 under this name;
 no former name found — claims of a rename are UNVERIFIED/not applicable).
 
@@ -74,7 +78,25 @@ Note topic ORDER differs from Script3 for `vote_cast` (voter before proposal_id)
   repo or docs. Only multisig example IDs exist (not governance). For testnet proof we must
   build and deploy the example governor ourselves via `scripts/seed-testnet.*`.
 
+## What the adapter implements
+
+| Piece | Where | Evidence |
+|---|---|---|
+| Event matching + normalization (`proposal_created`, `vote_cast`, `proposal_queued`, `proposal_executed`, `proposal_cancelled`, `quorum_changed`) | `crates/core/src/adapters/openzeppelin.rs` | pinned source for field layout; deployed embedded spec for event names (`tests/openzeppelin_differential.rs`) |
+| `ProposalState` reconstruction from `proposal_state` | `state_from_chain` | six committed `o1`–`o6` captures, differentially tested |
+| Calldata projection into `DecodedProposal` | `proposal_from_created` | `proposal_created` map payload; positional args, risk rules applied |
+| Registry selection across Script3 + OZ | `adapters::registry` | unit + differential tests |
+
+`#[contractevent]` defaults are load-bearing: topic 0 is the snake_case struct
+name, `#[topic]` fields follow in declaration order, and the data payload is a
+symbol-keyed map of the remaining fields. `proposal_queued` is absent from the
+deployed governor's embedded spec because queuing is disabled and the SDK shakes
+unused event specs; the adapter still supports the upstream shape.
+
 ## UNVERIFIED / honest limitations
 - Whether the v0.7.0 audit covered the governance packages: UNVERIFIED (audit PDF not read).
-- Event shapes are from source reading; not yet observed on live testnet by us.
+- Event payload layouts are from pinned source reading; no `getEvents` capture
+  for this governor exists yet, so they are not capture-verified.
+- The proposal id is format-checked, not recomputed from calldata (the OZ
+  keccak256 id rule is implemented in the seed scripts but not in the adapter).
 - v0.8.0-rc API may change shapes; adapter targets v0.7.x line.

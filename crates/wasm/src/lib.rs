@@ -2,7 +2,8 @@
 //! all fail-closed behavior live in `soroban-governance-core`. Errors are
 //! surfaced as JS exceptions with explicit messages — never silent defaults.
 
-use soroban_governance_core::adapter::{GovernorAdapter, RawCall, RawEvent};
+use soroban_governance_core::adapter::{select_adapter, GovernorAdapter, RawCall, RawEvent};
+use soroban_governance_core::adapters::openzeppelin::OpenZeppelinAdapter;
 use soroban_governance_core::adapters::script3::Script3Adapter;
 use soroban_governance_core::{spec, DecodeError};
 use stellar_xdr::{Limits, ReadXdr, ScVal};
@@ -64,6 +65,43 @@ pub fn script3_state_from_chain(
         .state_from_chain(proposal_id, &scval)
         .map_err(adapter_err)?;
     serde_json::to_string(&state).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Reconstruct an OpenZeppelin proposal state from a captured `proposal_state`
+/// return value (base64 XDR). Offline and pure; fails closed on an unknown
+/// `ProposalState` discriminant. Returns `OzProposalState` as JSON.
+#[wasm_bindgen]
+pub fn oz_state_from_chain(
+    proposal_id_hex: &str,
+    proposal_state_xdr_base64: &str,
+) -> Result<String, JsValue> {
+    let scval = ScVal::from_xdr_base64(proposal_state_xdr_base64, Limits::none())
+        .map_err(|e| JsValue::from_str(&format!("input is not valid XDR base64 ScVal: {e}")))?;
+    let adapter = OpenZeppelinAdapter;
+    let state = adapter
+        .state_from_chain(proposal_id_hex, &scval)
+        .map_err(adapter_err)?;
+    serde_json::to_string(&state).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Project a normalized OpenZeppelin `proposal_created` payload into the
+/// shared `DecodedProposal` shape (calls + published risk rules).
+/// `risk_context_json` is a serialized `RiskContext`; pass `{}` for defaults.
+#[wasm_bindgen]
+pub fn oz_proposal_from_created(
+    payload_json: &str,
+    risk_context_json: &str,
+) -> Result<String, JsValue> {
+    let payload: serde_json::Value = serde_json::from_str(payload_json)
+        .map_err(|e| JsValue::from_str(&format!("payload_json is not JSON: {e}")))?;
+    let context: soroban_governance_core::risk::RiskContext =
+        serde_json::from_str(risk_context_json).map_err(|e| {
+            JsValue::from_str(&format!("risk_context_json is not a RiskContext: {e}"))
+        })?;
+    let proposal = OpenZeppelinAdapter
+        .proposal_from_created(&payload, &context)
+        .map_err(adapter_err)?;
+    serde_json::to_string(&proposal).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
 /// Reconstruct a Script3 tally from a captured `get_proposal_votes` return
@@ -161,7 +199,21 @@ fn decode_scvals_json(json: &str, label: &str) -> Result<Vec<ScVal>, JsValue> {
 
 #[wasm_bindgen(js_name = identify_governor)]
 pub fn identify_governor() -> String {
+    // Backwards-compatible anchor id. Use `identify_adapters` for the full
+    // registry; this remains the Script3 id because it was the first export.
     Script3Adapter.name().to_owned()
+}
+
+/// Every governor adapter compiled into this package, as a JSON array of ids.
+#[wasm_bindgen(js_name = identify_adapters)]
+pub fn identify_adapters() -> String {
+    serde_json::to_string(
+        &soroban_governance_core::adapters::registry()
+            .iter()
+            .map(|adapter| adapter.name())
+            .collect::<Vec<_>>(),
+    )
+    .unwrap_or_else(|_| "[]".to_owned())
 }
 
 #[wasm_bindgen(js_name = matches_event)]
@@ -182,7 +234,7 @@ pub fn matches_event(
         topics: &topics,
         value: &value,
     };
-    Ok(Script3Adapter.matches_event(&event))
+    Ok(select_adapter(&soroban_governance_core::adapters::registry(), &event).is_some())
 }
 
 #[wasm_bindgen(js_name = normalize_event)]
@@ -203,7 +255,13 @@ pub fn normalize_event(
         topics: &topics,
         value: &value,
     };
-    let normalized = Script3Adapter
+    let registry = soroban_governance_core::adapters::registry();
+    let adapter = select_adapter(&registry, &event).ok_or_else(|| {
+        JsValue::from_str(
+            "event normalization failed: no registered governor adapter matched this event",
+        )
+    })?;
+    let normalized = adapter
         .normalize_event(&event)
         .map_err(|e| JsValue::from_str(&format!("event normalization failed: {e}")))?;
     serde_json::to_string(&normalized).map_err(|e| JsValue::from_str(&e.to_string()))

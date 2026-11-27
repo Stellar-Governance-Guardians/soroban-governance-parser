@@ -26,7 +26,7 @@ Ordered by dependency, not by desire: each step unblocks the next.
 | Indexer I5: reconciliation | I4 | planned |
 | Indexer I6–I7: deploy recipe, clean-clone proof | I4 | shipped; no deployed instance yet |
 | Dashboard data pages, codegen, live-indexer e2e | I4 | planned |
-| OpenZeppelin adapter | fixtures already committed | planned, bounded effort |
+| OpenZeppelin adapter | shipped: events, state, calldata projection | done; event capture + id recomputation remains |
 | 72-hour soak on a host | deploy recipe + a host | blocked on infrastructure |
 
 ## Not scheduled

@@ -8,7 +8,7 @@ planned** banner. Where a gap blocks a milestone, the blocker is named.
 
 | Limitation | Detail |
 |---|---|
-| OpenZeppelin adapter not implemented | Research, committed test contracts and fixtures exist; no adapter decodes OZ proposals or events. `claims.json` asserts this state (`oz-adapter-not-implemented`). |
+| OpenZeppelin events not capture-verified | The adapter ships and `proposal_state` reads `o1`–`o6` are differentially tested, but no `getEvents` capture exists for that governor; payload layouts come from pinned source. Proposal ids are format-checked, not recomputed. `claims.json` asserts the implemented-tested state (`openzeppelin-adapter-differential`). |
 | WASM event surface | `matches_event`, `normalize_event` and `decode_call` are exported in `v0.1.0-alpha.2`; the indexer still needs persisted decode tables. |
 | CLI simulation boundary | `sgp simulate` accepts a validated transaction envelope and emits an estimate; proposal-action assembly and rent remain out of scope. |
 | Rent is not modelled | The committed `simulateTransaction` captures contain no rent figure; the field is omitted rather than estimated from an assumption. |

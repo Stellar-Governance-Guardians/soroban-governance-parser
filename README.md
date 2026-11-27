@@ -18,7 +18,8 @@
 > [!IMPORTANT]
 > **Testnet evidence, not a mainnet DAO.** Every claim in this repository is backed by a
 > committed raw RPC capture or an offline check; the live tier only reports and never gates a
-> merge. The OpenZeppelin adapter is not implemented, no mainnet deployment is claimed, and
+> merge. Both governor adapters ship: Script3 (capture-verified) and OpenZeppelin (proposal
+> state capture-verified, event layouts source-verified). No mainnet deployment is claimed, and
 > dry-run output is an estimate, not an execution. Governor-specific decoding lives behind the
 > `GovernorAdapter` boundary.
 
@@ -28,7 +29,7 @@
 | Crates | `crates/core` (sans-IO pipeline), `crates/wasm` (bindings), `crates/cli` (`sgp` operator CLI) |
 | Cross-repo contract | `schemas/governance-v1.graphql` + `schema-v1.json`, v1 additive-only |
 | WASM package | `sgg-parser-wasm-0.1.0-alpha.2.tgz` — GitHub pre-release with a reproducible sha256, not on npm or crates.io |
-| Evidence | 85 offline tests, captured testnet proposals 0–5, 259 raw RPC fixtures ([evidence table](#verified-evidence-live-stellar-testnet-2026-10-05)) |
+| Evidence | 96 offline tests, captured testnet proposals 0–5 and OZ `o1`–`o6`, 259 raw RPC fixtures ([evidence table](#verified-evidence-live-stellar-testnet-2026-10-05)) |
 | Documentation | <https://stellar-governance-guardians.github.io/soroban-governance-parser/> |
 | Suite | [parser](https://github.com/Stellar-Governance-Guardians/soroban-governance-parser) → [indexer](https://github.com/Stellar-Governance-Guardians/governance-event-indexer) → [dashboard](https://github.com/Stellar-Governance-Guardians/delegate-portal-dashboard) |
 | License | [MIT](LICENSE) |
@@ -54,23 +55,26 @@ build fails on any diff.
 anyone who needs to read Soroban governance without trusting a UI.
 
 **Proven (offline, machine-checked):** the Script3 adapter decodes real captured
-proposals 0–5 and reproduces their tallies; 85 tests pass; a frozen v1 schema; a
-WASM package published with a reproducible sha256; a dry-run parser over real
-`simulateTransaction` captures. Dependency audit and a full-history `gitleaks`
+proposals 0–5 and reproduces their tallies; the OpenZeppelin adapter reproduces
+the captured `proposal_state` reads for `o1`–`o6`; 96 tests pass; a frozen v1
+schema; a WASM package published with a reproducible sha256; a dry-run parser
+over real `simulateTransaction` captures. Dependency audit and a full-history `gitleaks`
 scan are recorded in [`docs/hardening.md`](docs/hardening.md).
 
-**Not proven / not built:** the OpenZeppelin adapter; any mainnet DAO; rent
-estimates; and proposal-action transaction assembly. `sgp simulate` accepts a
-fully assembled transaction envelope and labels every result as an estimate.
-See "Honest limitations".
+**Not proven / not built:** any mainnet DAO; rent estimates; and proposal-action
+transaction assembly. OpenZeppelin event payloads have no `getEvents` capture yet,
+so their layouts are source-verified while the proposal states are
+capture-verified. `sgp simulate` accepts a fully assembled transaction envelope
+and labels every result as an estimate. See "Honest limitations".
 
 Phase status: the merged work covers **Phase 1a, Phase 1b (Script3), Phase 2
 (WASM package + schema freeze) and Phase 4 (dry-run modeling)**. Seed v2 from
 pinned upstream SHAs, the `Script3Adapter`, `RiskContext`, the
 vote-power/checkpoint and tally/quorum replicas, the offline differential tests,
 the published WASM package, the sans-IO dry-run parser, and the CLI simulation
-boundary are done. Pending: the OpenZeppelin adapter (bounded phase 3), full
-proposal-action assembly, and rent research. Evidence below.
+boundary are done, and the OpenZeppelin adapter now ships for events, proposal
+state and calldata. Pending: full proposal-action assembly, a captured
+OpenZeppelin event stream, and rent research. Evidence below.
 
 ## What it does
 - **ScVal → JSON**: total converter over the stellar-xdr 28 type set. Integers
@@ -91,9 +95,16 @@ proposal-action assembly, and rent research. Evidence below.
   `proposal_created`/`vote_cast`/`proposal_voting_closed`/…, reconstructs
   proposal state and tally from `get_proposal`/`get_proposal_votes`, and decodes
   the five `ProposalAction` variants (unknown variants are preserved, never
-  guessed). The **OpenZeppelin adapter is not implemented yet**; its research
-  and fixtures exist (`docs/adapters/openzeppelin.md`,
-  `tests/fixtures/seed-v2/`).
+  guessed). The **OpenZeppelin adapter is implemented**
+  (`crates/core/src/adapters/openzeppelin.rs`): it identifies the pinned
+  governor's six event shapes (whose `vote_cast` topics order voter before
+  proposal_id), decodes the macro's symbol-keyed **map** data payloads,
+  reconstructs `ProposalState` from captured `proposal_state` reads, and
+  projects `proposal_created` calldata — the only place this governor carries
+  it — into risk-classified `DecodedProposal` calls. Event layouts are verified
+  against the pinned upstream source and the governor's own embedded spec;
+  proposal states are differentially tested against the committed `o1`–`o6`
+  captures. A proposal id is format-checked, not recomputed from calldata.
 - **Risk rules are data, not verdicts**: exact-match function-name rules
   (`crates/core/src/risk.rs`, positive + negative test per rule) plus contextual
   rules — `treasury_outflow`, `self_call`, `large_value`, `batched_actions` —
@@ -196,21 +207,25 @@ All items below are machine-checked by `scripts/check-claims.sh` (see
 | contractspecv0 parse works on a real deployed contract | fixture governor `CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE` (deploy tx `a37b875d…`, ledger 5035901); spec functions `propose/vote/get_proposal` parsed from live WASM |
 | real governance events decode correctly | `proposal_created` tx `34dd7cef…` ledger 5035906, `vote_cast` tx `ddef3540…` ledger 5035908 — topics/values decoded to `("Fund parser audit", u128 1000000)` and `(1, u128 1000000)` |
 | fail-closed on non-WASM contracts | `sgp fetch-spec` on the testnet SAC contract exits non-zero with "contract is not WASM-backed … no contractspecv0 available" |
-| 85 tests pass (unit + differential + proptest + dry-run); clippy pedantic `-D warnings` clean | `cargo test --workspace`, `cargo clippy --workspace --all-targets -- -D warnings` |
+| 96 tests pass (unit + differential + proptest + dry-run); clippy pedantic `-D warnings` clean | `cargo test --workspace`, `cargo clippy --workspace --all-targets -- -D warnings` |
 | the Script3 adapter reproduces real chain state | differential tests decode committed `simulateTransaction` captures for proposals 0–5 (`get_proposal`, `get_proposal_votes`, `get_past_votes`, `get_past_total_supply`) and assert equality; `crates/core/tests/differential.rs` |
 | real upstream governors live on testnet | seed v2 deployed pinned Script3 + OpenZeppelin governors and captured 259 raw RPC fixtures (ledgers 5083606–5086043); `docs/seed-v2.md`, `tests/fixtures/seed-v2/` |
-| OpenZeppelin fixtures captured; adapter pending | six OZ proposal shapes exist in the corpus (`o1`…`o6`); `o1`/`o3` carry votes, `o2`/`o4`/`o6` do not (their vote windows closed before the checkpoint fix). The OZ adapter is not yet implemented |
+| OpenZeppelin proposal states reproduce captured reads | committed `proposal_state` captures covering all six `o1`–`o6` proposals decode to the exact state recorded on chain (`o1`/`o3`/`o5` Active, `o2`/`o4`/`o6` Defeated); the deployed governor's embedded spec declares every event the adapter matches except the spec-shaken `proposal_queued`; `crates/core/tests/openzeppelin_differential.rs` |
 | dry-run models real `simulateTransaction` responses | `crates/core/src/simulate.rs` + `crates/core/tests/simulate.rs` parse committed captures: `estimate:true`, `simulated_at_ledger`, `min_resource_fee_stroops`; `cost` was never observed so `cpu_instructions`/`memory_bytes` are `null` |
 | stellar-xdr pinned 28.0.1 | `Cargo.lock` |
 
 ## Honest limitations
-- **Script3 adapter only; OpenZeppelin is not implemented.** Governor
-  attribution for any contract that is not the pinned Script3 governor stays
-  `unverified` — by design.
-- **Differential coverage is Script3 proposals 0–5 only**, from a single seeded
-  deployment of each governor — not other deployments, not mainnet DAOs. The
-  corpus contains no `Against` votes, and OZ proposals `o2`/`o4`/`o6` carry no
-  votes.
+- **OpenZeppelin events are source-verified, not capture-verified.** The corpus
+  has no `getEvents` capture for the OZ governor, so its map-form payload
+  layouts are transcribed from the pinned upstream source and checked against
+  the embedded spec; the `proposal_state` reads are differentially tested.
+  Governor attribution for any contract that is not one of the two pinned
+  governors stays `unverified` — by design. OZ proposal ids are format-checked,
+  not re-derived from a proposal-id hash.
+- **Differential coverage is proposals 0–5 (Script3) and `proposal_state` for
+  `o1`–`o6` (OpenZeppelin)**, from a single seeded deployment of each governor
+  — not other deployments, not mainnet DAOs. The corpus contains no `Against`
+  votes, and OZ proposals `o2`/`o4`/`o6` carry no votes.
 - Event shapes in `docs/adapters/` were originally read from upstream source
   rather than observed on live deployments. **That changed with seed v2**: the
   pinned upstream Script3 and OpenZeppelin governors are now deployed on live
@@ -305,7 +320,7 @@ crates/wasm      wasm-bindgen surface
 crates/cli       sgp binary + RPC client (only IO layer)
 schemas/         cross-repo source of truth (schema-v1.json, governance-v1.graphql)
 docs/adapters/   per-governor research + source-to-behavior mapping
-                 (Script3 implemented; OpenZeppelin pending)
+                 (Script3 and OpenZeppelin implemented)
 scripts/         prove-phase1.sh, check-claims.sh, check-proof.py, check-deployments.py,
                  list-registered-contracts.sh, seed-testnet/ (fixture governor),
                  ttl/extend-fixture-ttl.sh (idempotent TTL extension)

@@ -132,6 +132,54 @@ test('identify_governor returns the compiled adapter id', () => {
   assert.equal(wasm.identify_governor(), 'script3-soroban-governor');
 });
 
+test('identify_adapters lists both implemented governors', () => {
+  assert.deepEqual(JSON.parse(wasm.identify_adapters()), [
+    'script3-soroban-governor',
+    'openzeppelin-stellar-governor',
+  ]);
+});
+
+test('oz_state_from_chain decodes a captured proposal_state read', () => {
+  const xdr = newestXdr('read-oz-proposal_state-o2-contract-upgrade');
+  const state = JSON.parse(wasm.oz_state_from_chain('ab'.repeat(32), xdr));
+  assert.equal(state.governor, 'openzeppelin-stellar-governor');
+  // U32(2): the captured o2 read is Defeated.
+  assert.equal(state.status, 'defeated');
+});
+
+test('oz_state_from_chain fails closed on an unknown state or malformed id', () => {
+  // U32(8) is outside the pinned ProposalState enum.
+  assert.throws(() => wasm.oz_state_from_chain('ab'.repeat(32), 'AAAAAwAAAAg='));
+  assert.throws(() => wasm.oz_state_from_chain('not-a-proposal-id', 'AAAAAwAAAAE='));
+});
+
+test('oz_proposal_from_created projects calls and applies risk rules', () => {
+  const payload = JSON.stringify({
+    proposal_id: 'ab'.repeat(32),
+    proposer: 'GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF',
+    targets: ['CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE'],
+    functions: ['transfer'],
+    args: [[{ _type: 'u128', value: '42' }]],
+  });
+  const proposal = JSON.parse(
+    wasm.oz_proposal_from_created(payload, JSON.stringify({ treasury_addresses: [] })),
+  );
+  assert.equal(proposal.governor, 'openzeppelin-stellar-governor');
+  assert.equal(proposal.calls.length, 1);
+  assert.equal(proposal.calls[0].function_name, 'transfer');
+  assert.equal(proposal.calls[0].decoding, 'unverified');
+});
+
+test('oz_proposal_from_created rejects inconsistent action vectors', () => {
+  const payload = JSON.stringify({
+    proposal_id: 'ab'.repeat(32),
+    targets: ['CDJWPKSQ4NA67PKTNJEPI6R2Q3JEDXPX5EDPM3YOSEHBDGBZ5THBTOKE'],
+    functions: [],
+    args: [[]],
+  });
+  assert.throws(() => wasm.oz_proposal_from_created(payload, '{}'));
+});
+
 test('matches_event accepts a full-topic Script3 vote_cast', () => {
   assert.equal(
     wasm.matches_event(GOVERNOR, 5035908, TX_HASH, VOTE_CAST_TOPICS, VALUE_VOTE_CAST),

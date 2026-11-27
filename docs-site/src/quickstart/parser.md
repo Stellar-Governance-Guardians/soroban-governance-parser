@@ -18,7 +18,7 @@ cd soroban-governance-parser
 
 cargo fmt --all --check
 cargo clippy --workspace --all-targets -- -D warnings   # pedantic, unwrap/expect/panic denied
-cargo test --workspace                                  # 85 tests
+cargo test --workspace                                  # 96 tests
 OFFLINE=1 bash scripts/check-claims.sh                  # 21 pass, 0 fail, 2 skipped (network)
 python3 scripts/check-deployments.py                    # registry vs committed fixtures
 ```
@@ -50,10 +50,11 @@ current release is `v0.1.0-alpha.2` with sha256
 `65193e43642f55abd083e2283aa5ed3caee5839c40a74c7b3f30398ea3ec0629`; the release
 lock file is `releases/parser-wasm.lock.json`.
 
-## What is not wired
+## Known gaps
 
 - `sgp simulate` accepts a validated transaction envelope and emits an
   estimate; it does not assemble proposal actions or estimate rent. See
   [Dry run](../parser/dry-run.md).
-- The OpenZeppelin adapter is not implemented. See
+- The OpenZeppelin adapter is implemented; its event layouts are
+  source-verified until a `getEvents` capture lands. See
   [OpenZeppelin adapter](../parser/openzeppelin-adapter.md).

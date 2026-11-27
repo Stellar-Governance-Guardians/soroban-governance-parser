@@ -26,8 +26,9 @@ product (parser → indexer → dashboard) and is **governor-agnostic** and
   contextual risk rules, and the same action can be dry-run through
   `simulateTransaction` to an `estimate: true` `ExecutionImpact`.
 - **Governor-agnostic by construction.** Governor-specific behavior sits behind
-  the `GovernorAdapter` trait; the Script3 adapter is implemented and the
-  OpenZeppelin adapter is a bounded next step.
+  the `GovernorAdapter` trait. Both live upstream governors are implemented:
+  Script3 (capture-verified events, tallies and state) and OpenZeppelin
+  (capture-verified proposal states, source-verified event layouts).
 - **Evidence over claims.** Every verified statement is backed by a committed
   raw RPC capture and a machine-checked claim; offline tests pass with the
   network disabled.
@@ -39,7 +40,8 @@ product (parser → indexer → dashboard) and is **governor-agnostic** and
 | Claim | Evidence |
 |---|---|
 | Script3 adapter reproduces real chain state for proposals 0–5 | `crates/core/tests/differential.rs` over committed captures; `OFFLINE=1 bash scripts/check-claims.sh` |
-| 85 tests pass; clippy pedantic is clean | `cargo test --workspace` and CI |
+| 96 tests pass; clippy pedantic is clean | `cargo test --workspace` and CI |
+| The OpenZeppelin adapter reproduces captured proposal states `o1`–`o6` and matches only the pinned governor's events | `crates/core/tests/openzeppelin_differential.rs` |
 | WASM package has reproducible bytes and SHA-256 | GitHub pre-release `v0.1.0-alpha.2`; `releases/parser-wasm.lock.json`; `scripts/check-wasm-release.py` |
 | Dry-run models captured `simulateTransaction` responses | `crates/core/tests/simulate.rs`; `docs/dry-run.md` |
 | Schema v1 is frozen and additive-only | `schemas/CHANGELOG.md`; `scripts/check-schema-additive.py` |
@@ -70,8 +72,10 @@ application.
 
 ## Honest limitations
 
-- **OpenZeppelin adapter not implemented**; its fixtures are captured but the
-  adapter is a proposed contributor task.
+- **OpenZeppelin events are source-verified, not capture-verified.** No
+  `getEvents` capture exists for that governor yet, and the proposal id is
+  format-checked rather than recomputed from calldata. Capturing that event
+  stream is the next bounded task.
 - **Testnet only.** The seeded governors are pinned upstream commits deployed on
   public testnet; no mainnet DAO is claimed.
 - **Single deployment per governor** and no `Against` votes in the corpus.
@@ -93,7 +97,7 @@ bounded so a contributor can complete one issue in a one-week sprint:
 | 06 | Fuzz targets and corpus growth | Medium | Offline hardening with bounded CI smoke tests |
 | 08 | README translation | Trivial | Documentation-only, no runtime dependency |
 | 03 | Approval/caller-identity risk rules | High | Pure rules with positive/negative tests |
-| 01 | OpenZeppelin adapter skeleton | High | Adapter-boundary work with fail-closed scope |
+| 01 | OpenZeppelin event capture + id recomputation | Medium | Bounded proof work on an implemented adapter |
 
 The suggested complexity values are planning guidance only. Final point values
 and complexity must be selected in the Drips interface after approval.
@@ -129,8 +133,8 @@ security policy provide the operating controls for this process.
 - **Repository purpose:** decode and risk-classify Soroban governance data with
   verifiable provenance and fail-closed behavior
 - **Current status:** testnet evidence and the parser layer are operational;
-  OpenZeppelin support, proposal-action assembly, and mainnet deployment are
-  explicitly not claimed
+  both governor adapters ship; OpenZeppelin event capture, proposal-action
+  assembly, and mainnet deployment are explicitly not claimed
 - **Contributor interface:** GitHub issues and pull requests with acceptance
   criteria and test expectations
 
@@ -140,7 +144,8 @@ and reduce reviewer confidence.
 
 ## Roadmap
 
-1. OpenZeppelin adapter (bounded) — `docs/wave-issues/01-…`.
+1. OpenZeppelin `getEvents` capture + proposal-id recomputation —
+   `docs/wave-issues/01-…`.
 2. Proposal-action assembly for a verified subset — new issue after the CLI
    boundary has real users and captures.
 3. More contextual risk rules — `docs/wave-issues/03-…`.
